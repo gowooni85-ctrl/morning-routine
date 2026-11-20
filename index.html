@@ -793,6 +793,9 @@
     s.settings = Object.assign({}, (s.settings && typeof s.settings === 'object') ? s.settings : {});
     s.modes = { weekday: weekday, weekend: weekend };
     s.modePref = null;
+    /* v3 이하에는 주말 모드가 없었으니, 저장된 날짜의 모드는 평일 모드다.
+       그래서 날짜가 바뀌며 기록을 남길 때도 어제는 평일 모드로 남는다. */
+    s.mode = 'weekday';
     return s;
   }
 
