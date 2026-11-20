@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<!--
+  아침 루틴 미션 · 7세 아침 루틴 대시보드 (단일 HTML 파일)
+  · 사용법: 파일을 브라우저(사파리·크롬)로 열고, 아이패드/아이폰은 '홈 화면에 추가'하면 앱처럼 쓸 수 있어요.
+  · 등원 출발 목표 시간 기본값은 08:00이며, 오른쪽 위 '👩 엄마 설정'에서 바꿀 수 있어요.
+  · 진행 상황·별·연속 기록은 이 브라우저의 localStorage에 저장되고, 날짜가 바뀌면 체크가 자동으로 초기화돼요.
+  · 인터넷 연결이나 외부 파일 없이 혼자서 동작해요.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7fbff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>아침 루틴 미션</title>
+<style>
+  :root{
+    --ink:#22314e;
+    --ink-soft:#6b7a95;
+    --line:#e6ecf6;
+    --blue:#3f7cf6;
+    --mint:#1fae7d;
+    --amber:#e39400;
+    --coral:#e2464e;
+    --card:#ffffff;
+    --shadow:0 10px 30px rgba(46,72,120,.10), 0 2px 6px rgba(46,72,120,.06);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    color:var(--ink);
+    font-family:'Apple SD Gothic Neo','Pretendard Variable',Pretendard,'Noto Sans KR','Malgun Gothic',system-ui,-apple-system,'Segoe UI',sans-serif;
+    background:
+      radial-gradient(1100px 560px at 102% -8%, #fff1cf 0%, rgba(255,241,207,0) 62%),
+      radial-gradient(900px 520px at -8% -4%, #dcebff 0%, rgba(220,235,255,0) 58%),
+      linear-gradient(180deg,#f7fbff 0%, #fffdf8 100%);
+    background-attachment:fixed;
+    -webkit-text-size-adjust:100%;
+    -webkit-tap-highlight-color:transparent;
+    padding-bottom:calc(24px + env(safe-area-inset-bottom));
+  }
+  button{font-family:inherit}
+  button:focus-visible{outline:3px solid #9dc0ff;outline-offset:2px}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:30;
+    display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;
+    padding:10px clamp(14px,3vw,28px);
+    background:rgba(255,255,255,.82);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    border-bottom:1px solid rgba(226,234,246,.9);
+  }
+  .brand{display:flex;align-items:center;gap:10px;flex:1 1 190px;min-width:0}
+  .logo{
+    width:46px;height:46px;flex:none;border-radius:15px;display:grid;place-items:center;font-size:25px;
+    background:linear-gradient(135deg,#ffeaa6,#ffcf5c);
+    box-shadow:0 6px 14px rgba(255,193,70,.35);
+  }
+  .brand-txt{min-width:0}
+  .brand h1{font-size:1.16rem;margin:0;font-weight:900;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
+  #dateLabel{margin:1px 0 0;font-size:.76rem;color:#8493ab;font-weight:800}
+  .now-box{display:flex;align-items:baseline;gap:1px;font-variant-numeric:tabular-nums;flex:none}
+  .now-label{font-size:.72rem;color:#93a0b6;font-weight:800;margin-right:6px;letter-spacing:.02em}
+  .now-time{font-size:1.66rem;font-weight:900;letter-spacing:-.02em;line-height:1}
+  .now-sec{font-size:.92rem;font-weight:800;color:#93a0b6;min-width:1.5em}
+  .top-actions{display:flex;gap:8px;align-items:center;flex:none}
+  .icon-btn{
+    border:1px solid #e3eaf5;background:#fff;border-radius:14px;padding:10px 12px;
+    font-weight:800;font-size:.9rem;cursor:pointer;color:var(--ink);
+    box-shadow:0 2px 6px rgba(46,72,120,.06);touch-action:manipulation;white-space:nowrap;
+    transition:background .15s,color .15s,border-color .15s,transform .12s;
+  }
+  .icon-btn:active{transform:scale(.96)}
+  .icon-btn.active{background:#2c5fd0;color:#fff;border-color:#2c5fd0;box-shadow:0 6px 14px rgba(44,95,208,.28)}
+
+  /* ---------- layout ---------- */
+  .wrap{max-width:1260px;margin:0 auto;padding:14px clamp(14px,3vw,28px) 40px}
+
+  /* ---------- hero ---------- */
+  .hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:14px;align-items:stretch}
+  @media (max-width:880px){ .hero{grid-template-columns:1fr} }
+
+  .cd-card{
+    --accent:#2f6fe4; --accent-soft:#e9f1ff; --accent-deep:#1e4fb8;
+    position:relative;overflow:hidden;
+    background:#fff;border:1px solid #ecf2fb;border-radius:28px;
+    padding:18px clamp(16px,3vw,26px) 16px;
+    box-shadow:var(--shadow);
+  }
+  .cd-card::after{
+    content:'';position:absolute;right:-50px;bottom:-70px;width:220px;height:220px;border-radius:50%;
+    background:var(--accent-soft);opacity:.85;z-index:0;transition:background .4s;
+  }
+  .cd-card::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:7px;background:linear-gradient(180deg,var(--accent),var(--accent-soft));z-index:1;
+    transition:background .4s;
+  }
+  .cd-card > *{position:relative;z-index:2}
+  .cd-card.calm{--accent:#12a06f;--accent-soft:#e4f9f0;--accent-deep:#0b7d56}
+  .cd-card.tight{--accent:#d18400;--accent-soft:#fff2d8;--accent-deep:#9c6200}
+  .cd-card.behind{--accent:#dc3b44;--accent-soft:#ffe6e8;--accent-deep:#a8242c}
+  .cd-card.done{--accent:#2f6fe4;--accent-soft:#e8f1ff;--accent-deep:#1e4fb8}
+
+  .cd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .cd-label{font-size:.95rem;font-weight:900;color:var(--accent-deep);letter-spacing:-.01em;transition:color .4s}
+  .target-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    border:1px solid #e6edf9;background:#f7faff;color:#3d4f6d;
+    border-radius:99px;padding:6px 12px;font-size:.8rem;font-weight:800;cursor:pointer;
+    touch-action:manipulation;transition:border-color .15s,background .15s;
+  }
+  .target-chip:hover{border-color:#c9d9f5;background:#eef4ff}
+  .target-chip b{font-variant-numeric:tabular-nums;font-size:.86rem;color:#22314e}
+  .cd-time{
+    font-size:clamp(46px,9vw,66px);line-height:1.02;font-weight:900;letter-spacing:-.035em;
+    font-variant-numeric:tabular-nums;color:var(--accent);margin:4px 0 2px;
+    transition:color .4s;
+    display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  }
+  .cd-time small{font-size:.3em;font-weight:900;letter-spacing:0;color:var(--accent-deep);opacity:.75}
+  .cd-time.long{font-size:clamp(30px,6.4vw,42px);letter-spacing:-.02em}
+  .cd-card.behind .cd-time{animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+  .cd-status{
+    display:inline-block;margin-top:2px;
+    background:var(--accent-soft);color:var(--accent-deep);
+    border-radius:12px;padding:7px 12px;font-size:.92rem;font-weight:800;line-height:1.35;
+    transition:background .4s,color .4s;
+  }
+  .cd-track{height:11px;border-radius:99px;background:#eef2f9;overflow:hidden;margin:12px 0 8px}
+  .cd-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s linear,background .4s}
+  .cd-sub{font-size:.8rem;font-weight:700;color:#7d8ba4;display:flex;gap:6px 14px;flex-wrap:wrap}
+  .cd-sub span{white-space:nowrap}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:stretch}
+  .stat{
+    background:#fff;border:1px solid #eef3fb;border-radius:22px;padding:12px 10px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
+  }
+  .stat .ic{font-size:1.5rem;line-height:1}
+  .stat b{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .stat small{font-size:.7rem;font-weight:800;color:#8b98ae}
+  @media (max-width:880px){
+    .stat{padding:10px 6px;border-radius:18px}
+    .stat b{font-size:1.28rem}
+  }
+  @media (max-width:560px){
+    .topbar{padding:8px 14px;gap:8px 10px}
+    .brand{flex:1 1 100%}
+    .now-box{flex:1 1 auto}
+    .now-time{font-size:1.5rem}
+    .icon-btn{padding:9px 11px;font-size:.84rem}
+    .logo{width:40px;height:40px;font-size:22px;border-radius:13px}
+    .brand h1{font-size:1.05rem}
+    .cd-card{border-radius:24px}
+    .progress-card{padding:13px 15px}
+  }
+  .noscript{max-width:640px;margin:24px auto;padding:16px 20px;background:#fff3f3;border:1px solid #ffd6d6;border-radius:16px;font-weight:800;color:#a8242c;text-align:center}
+
+  /* ---------- progress ---------- */
+  .progress-card{
+    background:#fff;border:1px solid #eef3fb;border-radius:24px;padding:14px 18px;margin-top:14px;
+    box-shadow:var(--shadow);
+  }
+  .progress-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .p-title{font-size:1rem;font-weight:900;letter-spacing:-.01em}
+  .p-pct{font-size:1.5rem;font-weight:900;color:var(--blue);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .progress-track{height:16px;background:#eef2f9;border-radius:99px;overflow:hidden;margin:8px 0 9px;position:relative}
+  .progress-fill{
+    height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,#5fd6a8,#3f8ef6 60%,#8a7bfa);
+    transition:width .5s cubic-bezier(.22,1,.36,1);
+    position:relative;overflow:hidden;
+  }
+  .progress-fill::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.55) 45%,transparent 70%);
+    transform:translateX(-100%);animation:shine 2.8s ease-in-out infinite;
+  }
+  @keyframes shine{0%{transform:translateX(-100%)}55%,100%{transform:translateX(140%)}}
+  .p-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.84rem;font-weight:800;color:#6b7a95}
+  #nowTask{color:#2f6fe4}
+
+  /* ---------- parent panel ---------- */
+  .parent-panel{
+    background:linear-gradient(180deg,#fff9ef,#fffdf9);
+    border:1px solid #ffe7c2;border-radius:24px;padding:16px 18px;margin-top:14px;
+    box-shadow:0 8px 24px rgba(190,140,40,.10);
+  }
+  .pp-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+  .pp-head span:first-child{font-size:1rem;font-weight:900}
+  .pp-hint{font-size:.76rem;font-weight:800;color:#b08a45}
+  .pp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
+  .field{display:flex;flex-direction:column;gap:6px;font-size:.82rem;font-weight:800;color:#8a7350}
+  .field input[type=time]{
+    border:1px solid #ecdcc2;background:#fff;border-radius:12px;padding:9px 11px;font:inherit;font-size:1.05rem;
+    font-weight:800;color:var(--ink);width:100%;font-variant-numeric:tabular-nums;
+  }
+  .field input[type=time]:focus{outline:2px solid #ffd28a;border-color:#f0c271}
+  .btn-soft{
+    border:1px solid #ecdcc2;background:#fff;border-radius:12px;padding:10px 12px;font:inherit;
+    font-weight:800;font-size:.88rem;color:#6b5636;cursor:pointer;touch-action:manipulation;
+    transition:background .15s,transform .12s;
+  }
+  .btn-soft:active{transform:scale(.97)}
+  .btn-soft:hover{background:#fff5e6}
+  .pp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .pp-note{margin:12px 0 0;font-size:.78rem;font-weight:700;color:#a08a68;line-height:1.5}
+
+  /* ---------- task grid ---------- */
+  .grid{
+    display:grid;gap:16px;margin-top:22px;padding-top:6px;
+    grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+  }
+  @media (max-width:520px){ .grid{grid-template-columns:1fr;gap:14px} }
+
+  .card{
+    position:relative;display:flex;flex-direction:column;gap:11px;
+    background:#fff;border:2px solid transparent;border-radius:24px;padding:16px;
+    box-shadow:var(--shadow);
+    transition:background .3s,border-color .25s,box-shadow .25s,transform .15s;
+  }
+  .card:active{transform:scale(.995)}
+  .card.current{
+    border-color:#bdd6ff;
+    box-shadow:0 0 0 5px rgba(63,124,246,.09), var(--shadow);
+  }
+  .card.done{
+    background:linear-gradient(165deg,#f3fff9,#e7fbf1);
+    border-color:#b7efd7;
+  }
+  .card.flash{animation:flash .75s ease-in-out 3}
+  @keyframes flash{
+    0%,100%{background:#fff;box-shadow:var(--shadow)}
+    50%{background:#fff4f4;box-shadow:0 0 0 6px rgba(226,70,78,.18),var(--shadow)}
+  }
+
+  .card-head{display:flex;align-items:flex-start;gap:9px}
+  .step{
+    width:28px;height:28px;flex:none;border-radius:9px;display:grid;place-items:center;
+    font-weight:900;font-size:.86rem;background:var(--acc,#eef4ff);color:var(--accInk,#3f7cf6);
+  }
+  .card-head .emoji{font-size:1.55rem;line-height:1.15;flex:none}
+  .name{flex:1;font-size:1.1rem;font-weight:800;line-height:1.32;letter-spacing:-.01em;min-width:0}
+  .card.done .name{color:#1f7d5c}
+  .mins{
+    flex:none;align-self:flex-start;font-size:.76rem;font-weight:800;color:#6b7a95;
+    background:#f2f6fc;border-radius:99px;padding:4px 9px;font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .card.done .mins{background:#e2f7ec;color:#1f8a65}
+
+  .timer{display:flex;align-items:center;gap:12px}
+  .timer-time{
+    font-size:1.85rem;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;
+    color:#3a4a66;min-width:104px;line-height:1;
+  }
+  .card.done .timer-time{color:#1fae7d;font-size:1.35rem}
+  .timer-bar{flex:1;height:12px;border-radius:99px;background:#eef2f9;overflow:hidden;min-width:40px}
+  .timer-bar i{
+    display:block;height:100%;width:0%;border-radius:99px;
+    background:linear-gradient(90deg,#9cc4ff,#4f8dfd);
+    transition:width .3s linear,background .3s;
+  }
+  .card.running .timer-bar i{background:linear-gradient(90deg,#7fe5c0,#22c08a)}
+  .card.low .timer-bar i{background:linear-gradient(90deg,#ffd27a,#f09a1a)}
+  .card.done .timer-bar i{background:linear-gradient(90deg,#a9f0d4,#2fc48f);width:100% !important}
+
+  .btns{display:flex;gap:9px;margin-top:auto}
+  .btn{
+    flex:1;border:0;border-radius:15px;padding:13px 8px;font:inherit;font-size:1rem;font-weight:900;
+    cursor:pointer;touch-action:manipulation;transition:transform .12s,filter .15s,background .2s,color .2s;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;line-height:1.1;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn-start{background:#edf3ff;color:#2a5ecc;flex:1}
+  .btn-start:hover{background:#e2ecff}
+  .btn-start:disabled{opacity:.55;cursor:default}
+  .card.running .btn-start{background:#fff2d9;color:#a46500}
+  .btn-reset{
+    flex:0 0 50px;background:#f4f7fc;color:#5b6b86;border:1px solid #e6ecf6;font-size:1.15rem;
+  }
+  .btn-reset:hover{background:#eaf0fa}
+  .btn-reset:disabled{opacity:.45;cursor:default}
+  .btn-done{
+    background:linear-gradient(135deg,#3ad39b,#18a877);color:#fff;
+    box-shadow:0 6px 14px rgba(24,168,119,.28);
+  }
+  .btn-done .ck{font-size:1.15rem;line-height:1}
+  .card.done .btn-done{
+    background:#e3f8ee;color:#1c8a64;box-shadow:none;border:1px dashed #9fe3c6;
+  }
+
+  .ribbon{
+    display:none;position:absolute;top:-11px;left:16px;z-index:3;
+    background:linear-gradient(135deg,#5e97ff,#3f6ff6);color:#fff;
+    font-size:.74rem;font-weight:900;padding:4px 10px;border-radius:99px;letter-spacing:-.01em;
+    box-shadow:0 5px 12px rgba(63,111,246,.32);
+  }
+  .card.current .ribbon{display:block;animation:bob 1.8s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+  .star-pop{
+    position:absolute;right:18px;top:8px;font-size:1.5rem;pointer-events:none;
+    animation:starUp .9s ease-out forwards;z-index:4;
+  }
+  @keyframes starUp{
+    0%{opacity:0;transform:translateY(6px) scale(.6)}
+    25%{opacity:1;transform:translateY(-6px) scale(1.15)}
+    100%{opacity:0;transform:translateY(-40px) scale(1)}
+  }
+
+  /* edit controls (parent mode only) */
+  .edit{display:none;grid-template-columns:1fr;gap:8px;padding-top:11px;border-top:1px dashed #dfe7f4}
+  body.parent-mode .edit{display:grid}
+  .e-row{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:800;color:#8593ab}
+  .e-row > span:first-child{width:42px;flex:none}
+  .e-row input{
+    flex:1;min-width:0;border:1px solid #dbe4f1;border-radius:10px;padding:8px 10px;
+    font:inherit;font-size:.95rem;font-weight:700;color:var(--ink);background:#f8fbff;
+  }
+  .e-row input:focus{outline:2px solid #bcd3ff;border-color:#9dc0ff}
+  .e-row input.e-min{max-width:88px;font-variant-numeric:tabular-nums}
+  .e-row input.e-emoji{max-width:88px;text-align:center}
+  .e-row .unit{font-size:.8rem;color:#8593ab}
+  .e-btns{display:flex;gap:8px}
+  .e-btns button{
+    flex:1;border:1px solid #dbe4f1;background:#f7faff;border-radius:10px;padding:9px 0;
+    font-size:1rem;font-weight:800;color:#45536b;cursor:pointer;touch-action:manipulation;
+  }
+  .e-btns button:hover{background:#eef4ff}
+  .e-btns button.danger{background:#fff3f3;border-color:#ffd6d6;color:#c23a3a}
+  .e-btns button.armed{background:#ffe1e1;border-color:#ff9e9e;font-size:.86rem;font-weight:900}
+
+  .empty{
+    grid-column:1/-1;text-align:center;padding:44px 16px;color:#8493ab;font-weight:800;
+    background:#fff;border:2px dashed #dfe8f6;border-radius:24px;line-height:1.7;
+  }
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));z-index:90;
+    transform:translate(-50%,18px);opacity:0;pointer-events:none;
+    background:rgba(30,42,64,.94);color:#fff;font-weight:800;font-size:.96rem;
+    padding:13px 20px;border-radius:16px;box-shadow:0 12px 30px rgba(20,30,50,.28);
+    transition:opacity .22s,transform .22s;max-width:min(92vw,460px);text-align:center;line-height:1.35;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- celebration ---------- */
+  .celebrate{
+    position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;
+    background:rgba(22,34,56,.45);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+    animation:fadeIn .25s ease;
+  }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .celebrate-inner{
+    background:#fff;border-radius:30px;padding:26px 24px 22px;max-width:420px;width:100%;
+    text-align:center;box-shadow:0 30px 70px rgba(16,26,48,.32);animation:popIn .4s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes popIn{from{opacity:0;transform:scale(.86) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+  .celebrate .big{font-size:64px;line-height:1;animation:bounce 1.2s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+  .celebrate h2{margin:10px 0 6px;font-size:1.55rem;font-weight:900;letter-spacing:-.02em}
+  .celebrate p{margin:0 0 12px;font-size:.98rem;font-weight:800;color:#5d6c88;line-height:1.45}
+  .celebrate .stars{font-size:1.3rem;letter-spacing:1px;margin-bottom:16px;line-height:1.5}
+  .celebrate button{
+    width:100%;border:0;border-radius:16px;padding:15px;font:inherit;font-size:1.05rem;font-weight:900;
+    background:linear-gradient(135deg,#4f8dfd,#3f6ff6);color:#fff;cursor:pointer;
+    box-shadow:0 10px 22px rgba(63,111,246,.32);touch-action:manipulation;
+  }
+  .celebrate button:active{transform:scale(.98)}
+  #confetti{position:fixed;inset:0;z-index:80;pointer-events:none;display:none}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001s !important;animation-iteration-count:1 !important;transition-duration:.001s !important}
+  }
+  @media print{
+    .topbar,.btns,.edit,.toast,#confetti{display:none !important}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+<noscript><p class="noscript">이 화면은 자바스크립트가 켜져 있어야 움직여요. 브라우저 설정에서 자바스크립트를 켜 주세요.</p></noscript>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">🌞</span>
+    <div class="brand-txt">
+      <h1>아침 루틴 미션</h1>
+      <p id="dateLabel">오늘</p>
+    </div>
+  </div>
+  <div class="now-box" aria-label="지금 시각">
+    <span class="now-label">지금</span>
+    <span class="now-time" id="nowTime">--:--</span>
+    <span class="now-sec" id="nowSec">00</span>
+  </div>
+  <div class="top-actions">
+    <button class="icon-btn" id="soundBtn" type="button" aria-label="소리 켜기 또는 끄기">🔊</button>
+    <button class="icon-btn" id="parentBtn" type="button" aria-pressed="false">👩 엄마 설정</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="hero" aria-label="등원 출발까지 남은 시간">
+    <div class="cd-card calm" id="cdCard">
+      <div class="cd-head">
+        <span class="cd-label" id="cdLabel">등원 출발(08:00)까지 남은 시간</span>
+        <button class="target-chip" id="targetChip" type="button" title="목표 시간 바꾸기">
+          🎯 목표 <b id="targetText">08:00</b> ✏️
+        </button>
+      </div>
+      <div class="cd-time" id="cdTime">--:--<small id="cdUnit">남음</small></div>
+      <div class="cd-status" id="cdStatus">⏳ 시간을 계산하고 있어요</div>
+      <div class="cd-track" aria-hidden="true"><div class="cd-fill" id="cdFill"></div></div>
+      <div class="cd-sub" id="cdSub"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="ic" aria-hidden="true">⭐</span><b id="starCount">0</b><small>모은 별</small></div>
+      <div class="stat"><span class="ic" aria-hidden="true">🔥</span><b id="streakCount">0</b><small>연속 완료</small></div>
+      <div class="stat"><span class="ic" aria-hidden="true">✅</span><b id="doneCount">0/0</b><small>오늘 완료</small></div>
+    </div>
+  </section>
+
+  <section class="progress-card" aria-label="오늘의 미션 진행률">
+    <div class="progress-head">
+      <span class="p-title">오늘의 미션 진행률</span>
+      <span class="p-pct" id="progPct">0%</span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progTrack">
+      <div class="progress-fill" id="progFill"></div>
+    </div>
+    <div class="p-foot">
+      <span id="nowTask">👉 지금 차례를 찾는 중…</span>
+      <span id="pCount">0 / 0 완료</span>
+    </div>
+  </section>
+
+  <section class="parent-panel" id="parentPanel" hidden aria-label="엄마 설정">
+    <div class="pp-head">
+      <span>👩 엄마 설정</span>
+      <span class="pp-hint">바꾸면 바로 저장돼요</span>
+    </div>
+    <div class="pp-grid">
+      <label class="field" for="targetInput">등원 출발 목표 시간
+        <input type="time" id="targetInput" value="08:00" step="60">
+      </label>
+      <div class="field">할 일 목록
+        <button class="btn-soft" id="addTask" type="button">＋ 할 일 추가하기</button>
+      </div>
+    </div>
+    <div class="pp-actions">
+      <button class="btn-soft" id="resetToday" type="button">↺ 오늘 체크 초기화</button>
+      <button class="btn-soft" id="restoreDefaults" type="button">기본 목록으로 되돌리기</button>
+    </div>
+    <p class="pp-note">카드마다 이름·시간·이모지를 고치고 ▲▼로 순서를 바꾸거나 🗑로 지울 수 있어요. 아이가 쓰는 동안에는 이 설정을 닫아 두세요.</p>
+  </section>
+
+  <main class="grid" id="grid" aria-label="아침 루틴 할 일 목록"></main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="celebrate" id="celebrate" hidden role="dialog" aria-modal="true" aria-labelledby="celebrateTitle">
+  <div class="celebrate-inner">
+    <div class="big" aria-hidden="true">🎉</div>
+    <h2 id="celebrateTitle">아침 미션 클리어!</h2>
+    <p id="celebrateMsg">모든 미션을 끝냈어요!</p>
+    <div class="stars" id="celebrateStars" aria-hidden="true">⭐</div>
+    <button id="celebrateClose" type="button">좋아요!</button>
+  </div>
+</div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ================= constants & utils ================= */
+  const STORAGE_KEY = 'morningRoutineDashboard.v1';
+  const DEFAULT_TARGET = '08:00';
+  const DEFAULT_TASKS = [
+    { emoji:'💊', name:'일어나서 약 먹기', minutes:2 },
+    { emoji:'🚿', name:'샤워하기', minutes:10 },
+    { emoji:'👕', name:'옷 입기 + 양말 신기', minutes:5 },
+    { emoji:'🧴', name:'로션 바르기', minutes:3 },
+    { emoji:'💨', name:'머리 말리기', minutes:5 },
+    { emoji:'🍽️', name:'아침상 차리기', minutes:5 },
+    { emoji:'🥣', name:'아침 식사', minutes:20 },
+    { emoji:'💊', name:'식후 약 먹기', minutes:2 },
+    { emoji:'🪥', name:'이 닦기', minutes:5 },
+    { emoji:'🎒', name:'가방 싸기', minutes:5 },
+    { emoji:'📚', name:'리딩게이트 하기', minutes:15 }
+  ];
+  const STEP_BG  = ['#eaf2ff','#e8fbf1','#fff4e0','#fdeaf3','#eef0ff'];
+  const STEP_INK = ['#3f7cf6','#12a06f','#c98600','#c94f8b','#6157d8'];
+  const WEEKDAYS = ['일','월','화','수','목','금','토'];
+
+  const $  = function(sel, root){ return (root || document).querySelector(sel); };
+  const $$ = function(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function setText(el, v){ if(el && el.textContent !== v) el.textContent = v; }
+  function clampInt(v, lo, hi, fallback){
+    var n = parseInt(v, 10);
+    if(!isFinite(n)) return fallback;
+    return Math.min(hi, Math.max(lo, n));
+  }
+  function fmtClock(sec){
+    var s = Math.max(0, Math.ceil(sec));
+    var m = Math.floor(s / 60);
+    return pad(m) + ':' + pad(s % 60);
+  }
+  function fmtCountdown(sec){
+    var s = Math.max(0, Math.ceil(sec));
+    if(s >= 3600){
+      var h = Math.floor(s / 3600);
+      var m = Math.floor((s % 3600) / 60);
+      return { text: h + '시간' + (m > 0 ? ' ' + m + '분' : ''), long: true };
+    }
+    return { text: pad(Math.floor(s / 60)) + ':' + pad(s % 60), long: false };
+  }
+  function dateKey(d){
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+  function yesterdayKey(){
+    return dateKey(new Date(Date.now() - 86400000));
+  }
+  function newId(prefix){
+    return (prefix || 't') + Date.now().toString(36) + Math.floor(Math.random()*1000).toString(36);
+  }
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+
+  /* ================= state ================= */
+  var state, cards = new Map(), parentMode = false, lastSave = 0, doneLock = {}, toastTimer = null, lastSubHtml = '';
+
+  function freshState(){
+    var s = {
+      v: 1,
+      date: dateKey(new Date()),
+      settings: { target: DEFAULT_TARGET, sound: true },
+      tasks: DEFAULT_TASKS.map(function(t, i){
+        return { id: 'd' + (i+1), emoji: t.emoji, name: t.name, minutes: t.minutes };
+      }),
+      done: {},
+      timers: {},
+      runningId: null,
+      stats: { streak: 0, lastAllDone: null, celebrated: null },
+      history: {}
+    };
+    s.tasks.forEach(function(t){ s.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    return s;
+  }
+
+  function normalize(s){
+    if(!s || typeof s !== 'object' || !Array.isArray(s.tasks)) return freshState();
+    s.settings = Object.assign({ target: DEFAULT_TARGET, sound: true }, s.settings || {});
+    if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(s.settings.target))) s.settings.target = DEFAULT_TARGET;
+    s.settings.sound = s.settings.sound !== false;
+    s.stats = Object.assign({ streak:0, lastAllDone:null, celebrated:null }, s.stats || {});
+    s.done = (s.done && typeof s.done === 'object') ? s.done : {};
+    s.history = (s.history && typeof s.history === 'object') ? s.history : {};
+    s.timers = (s.timers && typeof s.timers === 'object') ? s.timers : {};
+    s.tasks = s.tasks.filter(function(t){ return t && typeof t === 'object'; }).map(function(t){
+      return {
+        id: t.id || newId(),
+        emoji: String(t.emoji || '⭐').slice(0, 8),
+        name: String(t.name || '새 할 일').slice(0, 40),
+        minutes: clampInt(t.minutes, 1, 120, 5)
+      };
+    });
+    if(!s.tasks.length) s.tasks = freshState().tasks;
+    var valid = {};
+    s.tasks.forEach(function(t){
+      var tm = s.timers[t.id];
+      if(!tm || typeof tm.left !== 'number' || !isFinite(tm.left) || tm.left < 0){
+        tm = { left: t.minutes*60, endAt: null };
+      }
+      if(tm.left > t.minutes*60) tm.left = t.minutes*60;
+      if(tm.endAt && typeof tm.endAt !== 'number') tm.endAt = null;
+      valid[t.id] = tm;
+    });
+    s.timers = valid;
+    if(s.runningId && !valid[s.runningId]) s.runningId = null;
+    s.date = s.date || dateKey(new Date());
+    if(!s.v) s.v = 1;
+    return s;
+  }
+
+  function loadState(){
+    var raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch(e){ raw = null; }
+    var parsed = null;
+    if(raw){ try { parsed = JSON.parse(raw); } catch(e){ parsed = null; } }
+    return normalize(parsed);
+  }
+
+  function save(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){ /* 저장 불가 환경 */ }
+    lastSave = Date.now();
+  }
+
+  function rolloverIfNeeded(){
+    var today = dateKey(new Date());
+    if(state.date === today) return false;
+    var doneN = Object.keys(state.done).filter(function(k){ return state.done[k]; }).length;
+    if(state.date && doneN > 0){
+      state.history[state.date] = { done: doneN, total: state.tasks.length };
+    }
+    state.date = today;
+    state.done = {};
+    state.runningId = null;
+    state.timers = {};
+    state.tasks.forEach(function(t){ state.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    if(state.stats.celebrated && state.stats.celebrated !== today) state.stats.celebrated = null;
+    var y = yesterdayKey();
+    if(state.stats.lastAllDone && state.stats.lastAllDone !== y && state.stats.lastAllDone !== today){
+      state.stats.streak = 0;
+    }
+    save();
+    return true;
+  }
+
+  /* ================= derived ================= */
+  function doneCount(){
+    return state.tasks.filter(function(t){ return !!state.done[t.id]; }).length;
+  }
+  function totalStars(){
+    var n = 0;
+    Object.keys(state.history).forEach(function(k){ n += (state.history[k] && state.history[k].done) || 0; });
+    return n + doneCount();
+  }
+  function taskLeftSeconds(t){
+    var tm = state.timers[t.id];
+    var full = t.minutes * 60;
+    if(!tm) return full;
+    var left = tm.endAt ? Math.max(0, (tm.endAt - Date.now()) / 1000) : Math.max(0, tm.left);
+    return Math.min(full, left);
+  }
+  function remainingTaskSeconds(){
+    var s = 0;
+    state.tasks.forEach(function(t){
+      if(state.done[t.id]) return;
+      s += taskLeftSeconds(t);
+    });
+    return Math.round(s);
+  }
+  function targetParts(){
+    var p = String(state.settings.target).split(':');
+    return { h: parseInt(p[0], 10) || 0, m: parseInt(p[1], 10) || 0 };
+  }
+
+  /* ================= audio ================= */
+  var actx = null;
+  function ensureAudio(){
+    try {
+      if(!actx){
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if(!AC) return;
+        actx = new AC();
+      }
+      if(actx.state === 'suspended' && actx.resume) actx.resume();
+    } catch(e){ actx = null; }
+  }
+  function playNote(freq, delay, dur, type, vol){
+    if(!actx) return;
+    try {
+      var o = actx.createOscillator();
+      var g = actx.createGain();
+      var t0 = actx.currentTime + delay;
+      o.type = type || 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.16, t0 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g);
+      g.connect(actx.destination);
+      o.start(t0);
+      o.stop(t0 + dur + 0.06);
+    } catch(e){ /* ignore */ }
+  }
+  function chime(kind){
+    if(!state.settings.sound) return;
+    ensureAudio();
+    if(!actx) return;
+    if(kind === 'alarm'){
+      playNote(987.77, 0,    0.45, 'sine', 0.17);
+      playNote(1318.51, 0.18, 0.45, 'sine', 0.15);
+      playNote(987.77, 0.36, 0.6,  'sine', 0.17);
+    } else if(kind === 'pop'){
+      playNote(1046.5, 0,    0.16, 'triangle', 0.11);
+      playNote(1567.98, 0.07, 0.22, 'triangle', 0.09);
+    } else if(kind === 'fanfare'){
+      [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach(function(f, i){
+        playNote(f, i*0.13, 0.6, 'sine', 0.15);
+      });
+    } else if(kind === 'undo'){
+      playNote(659.25, 0, 0.16, 'sine', 0.09);
+      playNote(523.25, 0.08, 0.2, 'sine', 0.08);
+    }
+  }
+
+  /* ================= rendering ================= */
+  function renderClock(now){
+    setText($('#nowTime'), pad(now.getHours()) + ':' + pad(now.getMinutes()));
+    setText($('#nowSec'), pad(now.getSeconds()));
+    var label = (now.getMonth()+1) + '월 ' + now.getDate() + '일 ' + WEEKDAYS[now.getDay()] + '요일';
+    setText($('#dateLabel'), label);
+  }
+
+  function renderGrid(){
+    var grid = $('#grid');
+    if(!state.tasks.length){
+      grid.innerHTML = '<div class="empty">아직 할 일이 없어요.<br>👩 엄마 설정에서 할 일을 추가해 주세요 🐣</div>';
+      cards = new Map();
+      return;
+    }
+    var html = state.tasks.map(function(t, i){
+      var bg = STEP_BG[i % STEP_BG.length];
+      var ink = STEP_INK[i % STEP_INK.length];
+      var tm = state.timers[t.id] || { left: t.minutes*60, endAt: null };
+      var Left = tm.endAt ? Math.max(0, (tm.endAt - Date.now())/1000) : Math.max(0, tm.left);
+      return '' +
+        '<article class="card" data-id="' + esc(t.id) + '">' +
+          '<div class="card-head">' +
+            '<span class="step" style="--acc:' + bg + ';--accInk:' + ink + '">' + (i+1) + '</span>' +
+            '<span class="emoji" aria-hidden="true">' + esc(t.emoji) + '</span>' +
+            '<span class="name">' + esc(t.name) + '</span>' +
+            '<span class="mins">' + t.minutes + '분</span>' +
+          '</div>' +
+          '<div class="timer">' +
+            '<span class="timer-time">' + fmtClock(Left) + '</span>' +
+            '<span class="timer-bar" aria-hidden="true"><i></i></span>' +
+          '</div>' +
+          '<div class="btns">' +
+            '<button class="btn btn-start" type="button" data-action="toggle-timer">▶ 시작</button>' +
+            '<button class="btn btn-reset" type="button" data-action="reset-timer" aria-label="타이머를 처음으로 되돌리기" title="타이머 처음으로">↺</button>' +
+            '<button class="btn btn-done" type="button" data-action="toggle-done"><span class="ck" aria-hidden="true">✓</span><span class="lbl">완료</span></button>' +
+          '</div>' +
+          '<span class="ribbon">지금 차례!</span>' +
+          '<div class="edit">' +
+            '<label class="e-row"><span>이름</span><input class="e-name" type="text" maxlength="24" value="' + esc(t.name) + '" aria-label="할 일 이름"></label>' +
+            '<label class="e-row"><span>시간</span><input class="e-min" type="number" min="1" max="120" step="1" value="' + t.minutes + '" aria-label="걸리는 시간(분)"><span class="unit">분</span></label>' +
+            '<label class="e-row"><span>이모지</span><input class="e-emoji" type="text" maxlength="8" value="' + esc(t.emoji) + '" aria-label="이모지"></label>' +
+            '<div class="e-btns">' +
+              '<button type="button" data-action="up" title="위로 옮기기" aria-label="위로 옮기기">▲</button>' +
+              '<button type="button" data-action="down" title="아래로 옮기기" aria-label="아래로 옮기기">▼</button>' +
+              '<button type="button" class="danger" data-action="del" title="지우기" aria-label="이 할 일 지우기">🗑 지우기</button>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+    }).join('');
+    grid.innerHTML = html;
+    cards = new Map();
+    $$('.card', grid).forEach(function(el){ cards.set(el.dataset.id, el); });
+    updateCards();
+  }
+
+  function updateCards(){
+    var first = null;
+    for(var i = 0; i < state.tasks.length; i++){
+      if(!state.done[state.tasks[i].id]){ first = state.tasks[i]; break; }
+    }
+    state.tasks.forEach(function(t){
+      var el = cards.get(t.id);
+      if(!el) return;
+      var tm = state.timers[t.id];
+      var full = t.minutes * 60;
+      var isDone = !!state.done[t.id];
+      var left = isDone ? 0 : taskLeftSeconds(t);
+      var running = !!(tm && tm.endAt);
+
+      el.classList.toggle('done', isDone);
+      el.classList.toggle('running', running && !isDone);
+      el.classList.toggle('current', !isDone && !!first && first.id === t.id);
+      el.classList.toggle('low', !isDone && running && left <= Math.max(15, full * 0.15));
+
+      var timeEl = el.querySelector('.timer-time');
+      setText(timeEl, isDone ? '완료!' : fmtClock(left));
+
+      var bar = el.querySelector('.timer-bar i');
+      if(bar){
+        var frac = isDone ? 1 : (full > 0 ? Math.min(1, Math.max(0, (full - left) / full)) : 0);
+        var w = (frac * 100).toFixed(1) + '%';
+        if(bar.style.width !== w) bar.style.width = w;
+      }
+
+      var startBtn = el.querySelector('.btn-start');
+      if(startBtn){
+        startBtn.disabled = isDone;
+        var lab = isDone ? '✔ 끝' : (running ? '⏸ 잠깐' : (left < full - 0.5 ? '▶ 계속' : '▶ 시작'));
+        setText(startBtn, lab);
+        startBtn.setAttribute('aria-label', t.name + ' 타이머 ' + (running ? '잠깐 멈추기' : '시작'));
+      }
+      var doneBtn = el.querySelector('.btn-done');
+      if(doneBtn){
+        setText(doneBtn.querySelector('.lbl'), isDone ? '됐어요!' : '완료');
+        doneBtn.setAttribute('aria-pressed', isDone ? 'true' : 'false');
+        doneBtn.setAttribute('aria-label', t.name + (isDone ? ' 완료 취소' : ' 완료로 표시'));
+      }
+      var resetBtn = el.querySelector('.btn-reset');
+      if(resetBtn) resetBtn.disabled = isDone;
+    });
+  }
+
+  function updateHero(){
+    var total = state.tasks.length;
+    var n = doneCount();
+    var pct = total ? Math.round(n / total * 100) : 0;
+    setText($('#progPct'), pct + '%');
+    $('#progFill').style.width = pct + '%';
+    var track = $('#progTrack');
+    if(track) track.setAttribute('aria-valuenow', String(pct));
+    setText($('#pCount'), n + ' / ' + total + ' 완료');
+    setText($('#doneCount'), n + '/' + total);
+    setText($('#starCount'), String(totalStars()));
+    setText($('#streakCount'), String(state.stats.streak));
+
+    var cur = null;
+    for(var i = 0; i < state.tasks.length; i++){
+      if(!state.done[state.tasks[i].id]){ cur = state.tasks[i]; break; }
+    }
+    var nowTask = $('#nowTask');
+    if(!total) setText(nowTask, '할 일을 추가해 주세요');
+    else if(!cur) setText(nowTask, '🎉 모든 미션 완료!');
+    else setText(nowTask, '👉 지금 차례: ' + cur.name + ' (' + cur.minutes + '분)');
+  }
+
+  function updateCountdown(){
+    var now = new Date();
+    var nowSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    var tp = targetParts();
+    var targetSec = tp.h*3600 + tp.m*60;
+    var remain = targetSec - nowSec;
+    var isNextDay = false;
+    if(remain < 0 && now.getHours() >= 12){ remain += 86400; isNextDay = true; }
+    var taskLeft = remainingTaskSeconds();
+    var buffer = remain - taskLeft;
+
+    var total = state.tasks.length;
+    var n = doneCount();
+    var allDone = total > 0 && n === total;
+
+    var cls = 'calm', label = '', status = '';
+    var targetTxt = state.settings.target;
+
+    if(allDone){
+      cls = 'done';
+      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      status = '🎉 미션 완료! 이제 가방만 들고 출발하면 돼요';
+    } else if(isNextDay){
+      cls = 'calm';
+      label = '내일 등원 출발(' + targetTxt + ')까지 남은 시간';
+      status = '🌙 오늘은 여기까지! 내일 아침에 다시 만나요';
+    } else if(remain < 0){
+      cls = 'behind';
+      label = '등원 출발(' + targetTxt + ')을 지났어요';
+      status = '😵 출발 시간이 지났어요! 남은 할 일 ' + Math.ceil(taskLeft/60) + '분, 끝까지 힘내자!';
+    } else if(buffer < 0){
+      cls = 'behind';
+      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      status = '😵 ' + Math.ceil(-buffer/60) + '분이 모자라요! 지금 바로 서두르자!';
+    } else if(buffer < 10*60){
+      cls = 'tight';
+      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      status = '⏰ 아슬아슬! 여유가 ' + Math.max(0, Math.floor(buffer/60)) + '분뿐이에요';
+    } else {
+      cls = 'calm';
+      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      status = '😊 여유 있어요! 목표보다 ' + Math.floor(buffer/60) + '분 넉넉해요';
+    }
+
+    var card = $('#cdCard');
+    if(card){
+      card.classList.remove('calm','tight','behind','done');
+      card.classList.add(cls);
+    }
+    setText($('#cdLabel'), label);
+    setText($('#cdUnit'), isNextDay ? '남음' : (remain < 0 ? '지남' : '남음'));
+
+    var disp = (remain < 0) ? { text: '+' + fmtClock(-remain), long: false } : fmtCountdown(remain);
+    var timeEl = $('#cdTime');
+    if(timeEl){
+      timeEl.classList.toggle('long', disp.long);
+      var secNode = timeEl.querySelector('small');
+      if(secNode){
+        secNode.style.display = disp.long ? 'none' : '';
+        if(timeEl.firstChild && timeEl.firstChild.nodeType === 3) timeEl.firstChild.nodeValue = disp.text;
+        else timeEl.insertBefore(document.createTextNode(disp.text), secNode);
+      } else {
+        setText(timeEl, disp.text);
+      }
+    }
+    setText($('#cdStatus'), status);
+
+    var fill = remain > 0 ? Math.min(100, (taskLeft / Math.max(1, remain)) * 100) : 100;
+    var fillEl = $('#cdFill');
+    if(fillEl) fillEl.style.width = fill.toFixed(1) + '%';
+
+    var finish = new Date(Date.now() + taskLeft * 1000);
+    var finishStr = pad(finish.getHours()) + ':' + pad(finish.getMinutes());
+    setText($('#targetText'), targetTxt);
+
+    var sub = $('#cdSub');
+    if(sub){
+      var subHtml;
+      if(allDone){
+        subHtml = '<span>🎯 목표 ' + esc(targetTxt) + '</span><span>✅ 할 일 모두 완료</span><span>🚀 바로 출발!</span>';
+      } else if(isNextDay){
+        subHtml = '<span>🎯 내일 목표 ' + esc(targetTxt) + '</span>' +
+          '<span>⏳ 할 일 ' + Math.ceil(taskLeft/60) + '분</span>' +
+          '<span>🌙 내일 아침에 시작해요</span>';
+      } else {
+        subHtml = '<span>🎯 목표 ' + esc(targetTxt) + '</span>' +
+          '<span>⏳ 남은 할 일 ' + Math.ceil(taskLeft/60) + '분</span>' +
+          '<span>🏁 예상 완료 ' + finishStr + '</span>';
+      }
+      if(subHtml !== lastSubHtml){ sub.innerHTML = subHtml; lastSubHtml = subHtml; }
+    }
+  }
+
+  /* ================= toast ================= */
+  function toast(msg){
+    var el = $('#toast');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  }
+
+  /* ================= task interactions ================= */
+  function pulseCard(id){
+    var el = cards.get(id);
+    if(!el) return;
+    var s = document.createElement('span');
+    s.className = 'star-pop';
+    s.textContent = '⭐';
+    el.appendChild(s);
+    setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 950);
+  }
+
+  function pauseAll(){
+    var now = Date.now();
+    Object.keys(state.timers).forEach(function(id){
+      var tm = state.timers[id];
+      if(tm && tm.endAt){
+        tm.left = Math.max(0, (tm.endAt - now) / 1000);
+        tm.endAt = null;
+      }
+    });
+    state.runningId = null;
+  }
+
+  function toggleTimer(id){
+    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+    if(!t || state.done[id]) return;
+    var tm = state.timers[id];
+    if(!tm) return;
+    if(tm.endAt){
+      tm.left = Math.max(0, (tm.endAt - Date.now()) / 1000);
+      tm.endAt = null;
+      if(state.runningId === id) state.runningId = null;
+    } else {
+      pauseAll();
+      if(!tm.left || tm.left <= 0) tm.left = t.minutes * 60;
+      tm.endAt = Date.now() + tm.left * 1000;
+      state.runningId = id;
+      ensureAudio();
+    }
+    save();
+    updateCards();
+    updateCountdown();
+  }
+
+  function resetTimer(id){
+    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+    var tm = state.timers[id];
+    if(!t || !tm) return;
+    tm.endAt = null;
+    tm.left = t.minutes * 60;
+    if(state.runningId === id) state.runningId = null;
+    save();
+    updateCards(); updateCountdown();
+  }
+
+  function toggleDone(id){
+    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+    if(!t) return;
+    var tm = state.timers[id];
+
+    if(state.done[id]){
+      if(doneLock[id] && Date.now() - doneLock[id] < 1200) return;
+      delete state.done[id];
+      if(tm){ tm.endAt = null; tm.left = t.minutes * 60; }
+      if(state.runningId === id) state.runningId = null;
+      chime('undo');
+      save();
+      updateCards(); updateHero(); updateCountdown();
+      return;
+    }
+
+    state.done[id] = true;
+    doneLock[id] = Date.now();
+    if(tm && tm.endAt){
+      tm.left = Math.max(0, (tm.endAt - Date.now()) / 1000);
+      tm.endAt = null;
+    }
+    if(state.runningId === id) state.runningId = null;
+    chime('pop');
+    pulseCard(id);
+    save();
+    updateCards(); updateHero(); updateCountdown();
+    checkAllDone();
+  }
+
+  function moveTask(id, dir){
+    var i = state.tasks.findIndex(function(t){ return t.id === id; });
+    var j = i + dir;
+    if(i < 0 || j < 0 || j >= state.tasks.length) return;
+    var tmp = state.tasks[i];
+    state.tasks[i] = state.tasks[j];
+    state.tasks[j] = tmp;
+    save();
+    renderGrid();
+    updateHero();
+    updateCountdown();
+  }
+
+  function deleteTask(btn, id){
+    if(btn.dataset.armed === '1'){
+      state.tasks = state.tasks.filter(function(t){ return t.id !== id; });
+      delete state.timers[id];
+      delete state.done[id];
+      if(state.runningId === id) state.runningId = null;
+      save();
+      renderGrid(); updateHero(); updateCountdown();
+      toast('할 일을 지웠어요');
+      return;
+    }
+    var old = btn.textContent;
+    btn.dataset.armed = '1';
+    btn.textContent = '정말 지울까요?';
+    btn.classList.add('armed');
+    setTimeout(function(){
+      if(!btn.isConnected) return;
+      btn.dataset.armed = '';
+      btn.textContent = old;
+      btn.classList.remove('armed');
+    }, 2600);
+  }
+
+  function addTask(){
+    var t = { id: newId(), emoji: '⭐', name: '새 할 일', minutes: 5 };
+    state.tasks.push(t);
+    state.timers[t.id] = { left: t.minutes*60, endAt: null };
+    save();
+    renderGrid(); updateHero(); updateCountdown();
+    var el = cards.get(t.id);
+    if(el){
+      try { el.scrollIntoView({ behavior:'smooth', block:'center' }); } catch(e){}
+      var inp = el.querySelector('.e-name');
+      if(inp){ inp.focus(); inp.select(); }
+    }
+  }
+
+  function resetToday(){
+    if(!window.confirm('오늘 체크한 내용과 타이머를 모두 지울까요?')) return;
+    state.done = {};
+    state.runningId = null;
+    state.stats.celebrated = null;
+    doneLock = {};
+    state.tasks.forEach(function(t){ state.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    save();
+    renderGrid(); updateHero(); updateCountdown();
+    toast('오늘 체크를 처음으로 되돌렸어요');
+  }
+
+  function restoreDefaults(){
+    if(!window.confirm('할 일 목록과 목표 시간을 처음 상태로 되돌릴까요?')) return;
+    var fresh = freshState();
+    state.tasks = fresh.tasks;
+    state.timers = fresh.timers;
+    state.done = {};
+    state.runningId = null;
+    state.settings.target = DEFAULT_TARGET;
+    state.stats.celebrated = null;
+    var inp = $('#targetInput');
+    if(inp) inp.value = DEFAULT_TARGET;
+    save();
+    renderGrid(); updateHero(); updateCountdown();
+    toast('기본 목록으로 되돌렸어요');
+  }
+
+  /* ================= parent mode ================= */
+  function setParent(on){
+    parentMode = !!on;
+    document.body.classList.toggle('parent-mode', parentMode);
+    var panel = $('#parentPanel');
+    if(panel) panel.hidden = !parentMode;
+    var btn = $('#parentBtn');
+    if(btn){
+      btn.classList.toggle('active', parentMode);
+      btn.setAttribute('aria-pressed', parentMode ? 'true' : 'false');
+      setText(btn, parentMode ? '👩 설정 끝내기' : '👩 엄마 설정');
+    }
+    var tInp = $('#targetInput');
+    if(tInp) tInp.value = state.settings.target;
+    if(parentMode && panel){
+      try { panel.scrollIntoView({ behavior:'smooth', block:'nearest' }); } catch(e){}
+    }
+  }
+
+  /* ================= celebration ================= */
+  function checkAllDone(){
+    var total = state.tasks.length;
+    if(!total) return;
+    if(doneCount() < total) return;
+    var today = dateKey(new Date());
+    if(state.stats.lastAllDone !== today){
+      state.stats.streak = (state.stats.lastAllDone === yesterdayKey()) ? (state.stats.streak + 1) : 1;
+      state.stats.lastAllDone = today;
+      save();
+    }
+    if(state.stats.celebrated !== today){
+      state.stats.celebrated = today;
+      save();
+      celebrate();
+    }
+    updateHero();
+  }
+
+  function celebrate(){
+    var now = new Date();
+    var tp = targetParts();
+    var target = new Date(now.getTime());
+    target.setHours(tp.h, tp.m, 0, 0);
+    var diff = Math.round((target - now) / 60000);
+    var msg;
+    if(diff > 0) msg = '등원 출발 ' + state.settings.target + '보다 ' + diff + '분 일찍 끝냈어요!';
+    else if(diff === 0) msg = '딱 등원 출발 시간에 맞춰 끝냈어요!';
+    else msg = '조금 늦었지만 ' + state.tasks.length + '개 미션을 모두 해냈어요!';
+
+    setText($('#celebrateMsg'), msg);
+    var stars = $('#celebrateStars');
+    if(stars){
+      var n = Math.min(20, state.tasks.length);
+      stars.textContent = new Array(n + 1).join('⭐');
+    }
+    var ov = $('#celebrate');
+    if(ov) ov.hidden = false;
+    chime('fanfare');
+    if(!reduceMotion) confettiBurst();
+  }
+
+  function closeCelebrate(){
+    var ov = $('#celebrate');
+    if(ov) ov.hidden = true;
+  }
+
+  function confettiBurst(){
+    var cv = $('#confetti');
+    if(!cv || !cv.getContext) return;
+    var ctx = cv.getContext('2d');
+    if(!ctx) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var W = window.innerWidth, H = window.innerHeight;
+    cv.width = Math.floor(W * dpr);
+    cv.height = Math.floor(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cv.style.display = 'block';
+
+    var colors = ['#ff8a8a','#ffc75f','#7ee0b8','#7fb6ff','#c9a7ff','#ff9ecd','#ffe27a','#79d7e6'];
+    var parts = [];
+    var N = Math.min(220, Math.max(90, Math.round(W / 6)));
+    for(var i = 0; i < N; i++){
+      parts.push({
+        x: Math.random() * W,
+        y: -30 - Math.random() * H * 0.6,
+        w: 6 + Math.random() * 9,
+        h: 8 + Math.random() * 11,
+        vx: -50 + Math.random() * 100,
+        vy: 70 + Math.random() * 160,
+        rot: Math.random() * Math.PI * 2,
+        vr: -7 + Math.random() * 14,
+        c: colors[Math.floor(Math.random() * colors.length)],
+        round: Math.random() < 0.3
+      });
+    }
+    var t0 = performance.now();
+    var DUR = 4600;
+    function frame(t){
+      var elapsed = t - t0;
+      ctx.clearRect(0, 0, W, H);
+      var alpha = Math.max(0, 1 - elapsed / DUR);
+      for(var k = 0; k < parts.length; k++){
+        var p = parts[k];
+        p.x += p.vx * 0.016;
+        p.y += p.vy * 0.016;
+        p.vy += 0.65;
+        p.rot += p.vr * 0.016;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.c;
+        if(p.round){
+          ctx.beginPath();
+          ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        }
+        ctx.restore();
+      }
+      if(elapsed < DUR){
+        requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, W, H);
+        cv.style.display = 'none';
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ================= loop ================= */
+  function tickTimers(now){
+    var ended = [];
+    state.tasks.forEach(function(t){
+      var tm = state.timers[t.id];
+      if(!tm || !tm.endAt) return;
+      if(tm.endAt - now <= 0){
+        tm.left = 0;
+        tm.endAt = null;
+        state.runningId = null;
+        ended.push(t);
+      }
+    });
+    if(ended.length){
+      save();
+      updateCards();
+      updateCountdown();
+      ended.forEach(function(t){
+        chime('alarm');
+        toast('⏰ ' + t.name + ' 시간이 다 됐어요!');
+        var el = cards.get(t.id);
+        if(el){
+          el.classList.add('flash');
+          setTimeout(function(){ el.classList.remove('flash'); }, 2600);
+        }
+        if(navigator.vibrate){ try { navigator.vibrate([90, 70, 90]); } catch(e){} }
+      });
+    }
+  }
+
+  function loop(){
+    var now = Date.now();
+    if(rolloverIfNeeded()){
+      renderGrid();
+      updateHero();
+    }
+    renderClock(new Date(now));
+    tickTimers(now);
+    updateCards();
+    updateCountdown();
+    if(state.runningId && now - lastSave > 5000) save();
+  }
+
+  /* ================= events ================= */
+  function wire(){
+    var grid = $('#grid');
+
+    grid.addEventListener('click', function(e){
+      var btn = e.target.closest ? e.target.closest('button[data-action]') : null;
+      var cardEl = e.target.closest ? e.target.closest('.card') : null;
+      if(!cardEl) return;
+      var id = cardEl.dataset.id;
+      if(!btn) return;
+      var action = btn.dataset.action;
+      if(action === 'toggle-timer'){ toggleTimer(id); }
+      else if(action === 'reset-timer'){ resetTimer(id); }
+      else if(action === 'toggle-done'){ toggleDone(id); }
+      else if(action === 'up'){ moveTask(id, -1); }
+      else if(action === 'down'){ moveTask(id, 1); }
+      else if(action === 'del'){ deleteTask(btn, id); }
+    });
+
+    grid.addEventListener('change', function(e){
+      var cardEl = e.target.closest ? e.target.closest('.card') : null;
+      if(!cardEl) return;
+      var id = cardEl.dataset.id;
+      var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+      if(!t) return;
+      var el = e.target;
+
+      if(el.classList.contains('e-name')){
+        var v = el.value.trim();
+        if(v) t.name = v.slice(0, 24);
+        el.value = t.name;
+        save();
+        renderGrid(); updateHero(); updateCountdown();
+      } else if(el.classList.contains('e-min')){
+        t.minutes = clampInt(el.value, 1, 120, t.minutes);
+        el.value = t.minutes;
+        var tm = state.timers[id];
+        if(tm && !tm.endAt) tm.left = t.minutes * 60;
+        save();
+        renderGrid(); updateHero(); updateCountdown();
+      } else if(el.classList.contains('e-emoji')){
+        var em = el.value.trim().slice(0, 8) || '⭐';
+        t.emoji = em;
+        el.value = em;
+        save();
+        renderGrid(); updateHero(); updateCountdown();
+      }
+    });
+
+    $('#parentBtn').addEventListener('click', function(){ setParent(!parentMode); });
+
+    $('#soundBtn').addEventListener('click', function(){
+      state.settings.sound = !state.settings.sound;
+      if(state.settings.sound){ ensureAudio(); chime('pop'); }
+      this.textContent = state.settings.sound ? '🔊' : '🔇';
+      this.setAttribute('aria-label', state.settings.sound ? '소리 끄기' : '소리 켜기');
+      save();
+      toast(state.settings.sound ? '소리를 켰어요' : '소리를 껐어요');
+    });
+
+    $('#targetChip').addEventListener('click', function(){
+      setParent(true);
+      var inp = $('#targetInput');
+      if(inp){ inp.focus(); try { inp.showPicker && inp.showPicker(); } catch(e){} }
+    });
+
+    $('#targetInput').addEventListener('change', function(){
+      var v = this.value;
+      if(/^([01]\d|2[0-3]):[0-5]\d$/.test(v)){
+        state.settings.target = v;
+        save();
+        updateCountdown();
+        toast('목표 시간을 ' + v + '로 바꿨어요');
+      } else {
+        this.value = state.settings.target;
+        toast('시간을 다시 확인해 주세요');
+      }
+    });
+
+    $('#addTask').addEventListener('click', addTask);
+    $('#resetToday').addEventListener('click', resetToday);
+    $('#restoreDefaults').addEventListener('click', restoreDefaults);
+    $('#celebrateClose').addEventListener('click', closeCelebrate);
+
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        if(!$('#celebrate').hidden) closeCelebrate();
+        else if(parentMode) setParent(false);
+      }
+    });
+
+    document.addEventListener('pointerdown', function(){ if(state.settings.sound) ensureAudio(); }, { once:true });
+
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden){
+        if(rolloverIfNeeded()){ renderGrid(); updateHero(); }
+        updateCards(); updateHero(); updateCountdown();
+      } else {
+        save();
+      }
+    });
+
+    window.addEventListener('beforeunload', save);
+    window.addEventListener('pagehide', save);
+  }
+
+  /* ================= init ================= */
+  function init(){
+    state = loadState();
+    rolloverIfNeeded();
+
+    var today = dateKey(new Date());
+    if(state.stats.lastAllDone && state.stats.lastAllDone !== today && state.stats.lastAllDone !== yesterdayKey()){
+      state.stats.streak = 0;
+    }
+
+    var sb = $('#soundBtn');
+    if(sb){
+      sb.textContent = state.settings.sound ? '🔊' : '🔇';
+      sb.setAttribute('aria-label', state.settings.sound ? '소리 끄기' : '소리 켜기');
+    }
+    var ti = $('#targetInput');
+    if(ti) ti.value = state.settings.target;
+
+    renderGrid();
+    renderClock(new Date());
+    updateHero();
+    updateCountdown();
+    setParent(false);
+    wire();
+    setInterval(loop, 250);
+    loop();
+    save();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
