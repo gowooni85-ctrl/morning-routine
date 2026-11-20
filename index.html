@@ -1805,7 +1805,7 @@
 
     var tl = $('#targetFieldLabel');
     if(tl){
-      setText(tl, '요일별 목표 시간 · 오늘은 ' + WEEKDAYS[new Date().getDay()] + '요일 ' + activeTarget());
+      setText(tl, '요일별 목표 시간 · 지금 적용 ' + targetGroupInfo(activeTargetGroup()).label + ' ' + activeTarget());
     }
     var note = $('#ppModeNote');
     if(note){
