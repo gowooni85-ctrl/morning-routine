@@ -2,12 +2,13 @@
 <!--
   아침 루틴 미션 · 7세 아침 루틴 대시보드 (단일 HTML 파일)
   · 사용법: 파일을 브라우저(사파리·크롬)로 열고, 아이패드/아이폰은 '홈 화면에 추가'하면 앱처럼 쓸 수 있어요.
-  · 토·일은 저절로 '🌈 주말 모드'(가방 싸기 빼고 7단계, 목표 10:00)로, 월~금은 '🎒 평일 모드'(8단계, 목표 08:00)로 열려요.
+  · 토·일은 저절로 '🌈 주말 모드'(가방 싸기 빼고 7단계)로, 월~금은 '🎒 평일 모드'(8단계)로 열려요.
     머리말의 모드 버튼으로 그날만 바꿀 수도 있어요.
+  · 목표 시간은 요일마다 달라요: 월~목 08:00 · 금 08:35 · 토 08:30 · 일 08:20.
   · 할 일 타이머가 00:00이 되면 종료 알림음이 울려요(아이폰·아이패드는 '👩 엄마 설정 → 🔔 소리 테스트'로 미리 확인).
   · 마지막 '🎲 놀기'는 따로 시간을 정하지 않고 목표 시간까지 남는 시간이 저절로 계산돼요.
   · 할 일 타이머가 끝나면 그 할 일은 자동으로 완료되고, 다음 할 일 타이머가 저절로 이어서 시작돼요.
-  · 목표 시간은 오른쪽 위 '👩 엄마 설정'에서 모드마다 따로 바꿀 수 있어요.
+  · 목표 시간은 오른쪽 위 '👩 엄마 설정'에서 요일 묶음(월~목 / 금 / 토 / 일)마다 따로 바꿀 수 있어요.
   · 진행 상황·별·연속 기록은 이 브라우저의 localStorage에 저장되고, 날짜가 바뀌면 체크가 자동으로 초기화돼요.
   · 인터넷 연결이나 외부 파일 없이 혼자서 동작해요.
 -->
@@ -226,7 +227,8 @@
   .pp-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
   .pp-head span:first-child{font-size:1rem;font-weight:900}
   .pp-hint{font-size:.76rem;font-weight:800;color:#b08a45}
-  .pp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
+  .pp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,300px));gap:12px;align-items:end;justify-content:start}
+  .pp-grid .field{align-items:flex-start}
   .field{display:flex;flex-direction:column;gap:6px;font-size:.82rem;font-weight:800;color:#8a7350}
   .field input[type=time]{
     border:1px solid #ecdcc2;background:#fff;border-radius:12px;padding:9px 11px;font:inherit;font-size:1.05rem;
@@ -247,6 +249,39 @@
     background:#fff4e2;border:1px dashed #f0dcb6;border-radius:12px;padding:8px 11px;line-height:1.45;
   }
   .pp-mode b{color:#7a5a22}
+
+  /* ---------- 요일별 목표 시간 (엄마 설정) ---------- */
+  .pp-targets-head{margin:0 0 8px}
+  #targetFieldLabel{font-size:.9rem;font-weight:900;color:#8a7350}
+  .pp-targets{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:12px;
+  }
+  @media (max-width:640px){ .pp-targets{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  .tg{
+    position:relative;display:flex;flex-direction:column;gap:3px;
+    background:#fff;border:1.5px solid #ecdcc2;border-radius:14px;padding:9px 11px 8px;
+    transition:border-color .2s,box-shadow .2s,background .2s;
+  }
+  .tg-top{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:18px}
+  .tg-name{font-size:.82rem;font-weight:900;color:#8a7350;white-space:nowrap}
+  .tg-badge{
+    font-size:.64rem;font-weight:900;color:#fff;background:#e39400;border-radius:99px;
+    padding:2px 7px;font-style:normal;letter-spacing:.02em;white-space:nowrap;
+  }
+  .tg input[type=time]{
+    border:0;border-bottom:1px dashed #ecdcc2;background:transparent;border-radius:0;
+    padding:2px 0 4px;font:inherit;font-size:1.12rem;font-weight:900;color:var(--ink);
+    width:100%;font-variant-numeric:tabular-nums;
+  }
+  .tg input[type=time]:focus{outline:none;border-bottom:2px solid #e39400}
+  .tg-sub{font-size:.66rem;font-weight:800;color:#b09a78;white-space:nowrap}
+  .tg.today{
+    background:linear-gradient(180deg,#fff8ec,#fffdf9);border-color:#f2b95e;
+    box-shadow:0 4px 12px rgba(226,148,0,.16);
+  }
+  .tg.today .tg-name{color:#9a6200}
+  .tg.ring{animation:tgRing 1.5s ease-out 2}
+  @keyframes tgRing{0%,100%{box-shadow:0 0 0 0 rgba(243,166,60,0)}50%{box-shadow:0 0 0 6px rgba(243,166,60,.30)}}
 
   /* ---------- task grid ---------- */
   .grid{
@@ -496,10 +531,30 @@
       <span>👩 엄마 설정</span>
       <span class="pp-hint">바꾸면 바로 저장돼요</span>
     </div>
-    <div class="pp-grid">
-      <label class="field" for="targetInput"><span id="targetFieldLabel">등원 출발 목표 시간</span>
-        <input type="time" id="targetInput" value="08:00" step="60">
+    <div class="pp-targets-head"><span id="targetFieldLabel">요일별 목표 시간</span></div>
+    <div class="pp-targets" role="group" aria-label="요일별 목표 시간">
+      <label class="tg" data-group="monThu">
+        <span class="tg-top"><span class="tg-name">🎒 월~목</span><span class="tg-badge" hidden>오늘</span></span>
+        <input type="time" data-target-group="monThu" value="08:00" step="60" aria-label="월~목 목표 시간">
+        <span class="tg-sub">등원 출발</span>
       </label>
+      <label class="tg" data-group="fri">
+        <span class="tg-top"><span class="tg-name">🎒 금</span><span class="tg-badge" hidden>오늘</span></span>
+        <input type="time" data-target-group="fri" value="08:35" step="60" aria-label="금요일 목표 시간">
+        <span class="tg-sub">등원 출발</span>
+      </label>
+      <label class="tg" data-group="sat">
+        <span class="tg-top"><span class="tg-name">🌈 토</span><span class="tg-badge" hidden>오늘</span></span>
+        <input type="time" data-target-group="sat" value="08:30" step="60" aria-label="토요일 목표 시간">
+        <span class="tg-sub">주말 미션</span>
+      </label>
+      <label class="tg" data-group="sun">
+        <span class="tg-top"><span class="tg-name">🌈 일</span><span class="tg-badge" hidden>오늘</span></span>
+        <input type="time" data-target-group="sun" value="08:20" step="60" aria-label="일요일 목표 시간">
+        <span class="tg-sub">주말 미션</span>
+      </label>
+    </div>
+    <div class="pp-grid">
       <div class="field">할 일 목록
         <button class="btn-soft" id="addTask" type="button">＋ 할 일 추가하기</button>
       </div>
@@ -536,12 +591,23 @@
 
   /* ================= constants & utils ================= */
   const STORAGE_KEY = 'morningRoutineDashboard.v1';
-  const DEFAULT_TARGET_WEEKDAY = '08:00';
-  const DEFAULT_TARGET_WEEKEND = '10:00';
-  const DEFAULT_TARGET = DEFAULT_TARGET_WEEKDAY;
-  /* 저장 형식 버전: v4부터 평일/주말 모드의 목록·목표 시간·오늘 체크를 따로 저장하고,
-     v5부터 마지막에 '🎲 놀기'(목표 시간에서 남는 시간 자동 계산) 단계가 붙는다. */
-  const SCHEMA_V = 5;
+  /* 목표 시간은 요일 묶음마다 다르다: 월~목 08:00 · 금 08:35 · 토 08:30 · 일 08:20 */
+  const DEFAULT_TARGETS = { monThu:'08:00', fri:'08:35', sat:'08:30', sun:'08:20' };
+  const TARGET_KEYS = ['monThu', 'fri', 'sat', 'sun'];
+  /* 엄마 설정에 보여 주는 순서와 이름 */
+  const TARGET_GROUPS = [
+    { key:'monThu', label:'월~목', days:'월·화·수·목요일', emoji:'🎒', targetName:'등원 출발' },
+    { key:'fri',    label:'금',    days:'금요일',        emoji:'🎒', targetName:'등원 출발' },
+    { key:'sat',    label:'토',    days:'토요일',        emoji:'🌈', targetName:'주말 미션' },
+    { key:'sun',    label:'일',    days:'일요일',        emoji:'🌈', targetName:'주말 미션' }
+  ];
+  /* v5까지 쓰던 모드별 기본 목표 시간 — 마이그레이션할 때 '직접 고친 값인지'를 가릴 때만 쓴다. */
+  const OLD_TARGET_WEEKDAY = '08:00';
+  const OLD_TARGET_WEEKEND = '10:00';
+  /* 저장 형식 버전: v4부터 평일/주말 모드의 목록·오늘 체크를 따로 저장하고,
+     v5부터 마지막에 '🎲 놀기'(목표 시간에서 남는 시간 자동 계산) 단계가 붙고,
+     v6부터 목표 시간을 요일 묶음(월~목 / 금 / 토 / 일)별로 저장한다. */
+  const SCHEMA_V = 6;
   /* 마지막 단계 '놀기': 시간을 정하지 않고 목표 시간까지 남는 시간이 저절로 계산된다. */
   const PLAY_TASK = { emoji:'🎲', name:'놀기', autoRemaining:true };
   /* 평일 모드 기본 목록의 고정 할 일 (7단계 · 75분) */
@@ -577,8 +643,8 @@
   const DEFAULT_WEEKDAY_TASKS = BASE_WEEKDAY_TASKS.concat([PLAY_TASK]);
   const DEFAULT_WEEKEND_TASKS = BASE_WEEKEND_TASKS.concat([PLAY_TASK]);
   const MODES = {
-    weekday: { key:'weekday', emoji:'🎒', label:'평일', targetName:'등원 출발', defaultTarget: DEFAULT_TARGET_WEEKDAY },
-    weekend: { key:'weekend', emoji:'🌈', label:'주말', targetName:'주말 미션', defaultTarget: DEFAULT_TARGET_WEEKEND }
+    weekday: { key:'weekday', emoji:'🎒', label:'평일', targetName:'등원 출발' },
+    weekend: { key:'weekend', emoji:'🌈', label:'주말', targetName:'주말 미션' }
   };
   const MODE_KEYS = ['weekday', 'weekend'];
   /* v2에서 쓰던 8개 기본 목록(아침상 차리기·아침 식사를 하나로 합치기 전).
@@ -703,16 +769,16 @@
     var full = isAuto(t) ? 0 : t.minutes * 60;
     return { left: full, endAt: null, span: full };
   }
-  function freshMode(defs, prefix, target){
+  function freshMode(defs, prefix){
     var tasks = defaultModeTasks(defs, prefix);
     var timers = {};
     tasks.forEach(function(t){ timers[t.id] = freshTimer(t); });
-    return { target: timeOk(target) ? target : DEFAULT_TARGET, tasks: tasks, done: {}, timers: timers };
+    return { tasks: tasks, done: {}, timers: timers };
   }
 
-  /* 지금 모드(평일/주말)의 저장 묶음: 목표 시간·할 일·오늘 체크·타이머를 모드별로 따로 보관한다. */
+  /* 지금 모드(평일/주말)의 저장 묶음: 할 일·오늘 체크·타이머를 모드별로 따로 보관한다. */
   function M(){
-    if(!state || !state.modes) return { target: DEFAULT_TARGET, tasks: [], done: {}, timers: {} };
+    if(!state || !state.modes) return { tasks: [], done: {}, timers: {} };
     return state.modes[state.mode === 'weekend' ? 'weekend' : 'weekday'];
   }
   /* 주말(토·일)은 저절로 주말 모드, 평일(월~금)은 평일 모드 */
@@ -728,15 +794,81 @@
     return autoMode(new Date());
   }
 
+  /* ================= 목표 시간 (요일 묶음별) ================= */
+  /* 그 날짜가 어느 목표 시간 묶음인지: 월~목 · 금 · 토 · 일 */
+  function targetGroupOfDate(d){
+    var day = (d || new Date()).getDay();
+    if(day === 5) return 'fri';
+    if(day === 6) return 'sat';
+    if(day === 0) return 'sun';
+    return 'monThu';
+  }
+  /* 지금 화면에 적용할 목표 시간 묶음.
+     오늘 요일 그대로면 그 요일의 묶음이고, 다른 모드를 손으로 켜서 미리 보는 중이면
+     그 모드의 대표 묶음(평일 = 월~목, 금요일이면 금 / 주말 = 토, 일요일이면 일)을 쓴다. */
+  function activeTargetGroup(){
+    var day = new Date().getDay();
+    if(state && state.mode === 'weekend') return day === 0 ? 'sun' : 'sat';
+    return day === 5 ? 'fri' : 'monThu';
+  }
+  function targetOf(key){
+    var v = (state && state.targets) ? state.targets[key] : null;
+    return timeOk(v) ? v : DEFAULT_TARGETS[key];
+  }
+  function activeTarget(){ return targetOf(activeTargetGroup()); }
+  /* 목표 칩이 가리킬 묶음: 지금 화면의 묶음, 저녁에 목표를 지났으면 내일 묶음 */
+  function chipGroupNow(){
+    var now = new Date();
+    var g = activeTargetGroup();
+    var nowSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+    if(now.getHours() >= 12 && nowSec > clockToSecs(targetOf(g))){
+      return targetGroupOfDate(new Date(now.getTime() + 86400000));
+    }
+    return g;
+  }
+  function targetGroupInfo(key){
+    for(var i = 0; i < TARGET_GROUPS.length; i++){ if(TARGET_GROUPS[i].key === key) return TARGET_GROUPS[i]; }
+    return TARGET_GROUPS[0];
+  }
+  /* 'HH:MM' → 하루 중 초 */
+  function clockToSecs(v){
+    var p = String(v || '00:00').split(':');
+    return (parseInt(p[0], 10) || 0) * 3600 + (parseInt(p[1], 10) || 0) * 60;
+  }
+  /* v6: 요일 묶음별 목표 시간을 만든다.
+     예전(모드별) 목표 시간이 '직접 고친 값'이면 그 값을 살린다.
+       · 평일 목표가 08:00이 아니면 월~목에 그 값을 쓴다.
+       · 주말 목표가 옛 기본값 10:00이 아니면 토·일 모두 그 값을 쓴다.
+       · 금요일은 이번에 새로 생긴 묶음이라 08:35가 기본이다. */
+  function normalizeTargets(saved, legacy){
+    var old = (saved && typeof saved === 'object') ? saved : {};
+    var wd = (legacy && timeOk(legacy.weekday)) ? legacy.weekday : null;
+    var we = (legacy && timeOk(legacy.weekend)) ? legacy.weekend : null;
+    var wdCustom = !!wd && wd !== OLD_TARGET_WEEKDAY;
+    var weCustom = !!we && we !== OLD_TARGET_WEEKEND;
+    var out = {};
+    TARGET_KEYS.forEach(function(k){
+      var v = timeOk(old[k]) ? old[k] : null;
+      if(!v){
+        if(k === 'fri') v = DEFAULT_TARGETS.fri;
+        else if(k === 'monThu') v = wdCustom ? wd : DEFAULT_TARGETS.monThu;
+        else v = weCustom ? we : DEFAULT_TARGETS[k];
+      }
+      out[k] = v;
+    });
+    return out;
+  }
+
   function freshState(){
     return {
       v: SCHEMA_V,
       date: dateKey(new Date()),
       mode: autoMode(new Date()),
       modePref: null,
+      targets: Object.assign({}, DEFAULT_TARGETS),
       modes: {
-        weekday: freshMode(DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY),
-        weekend: freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
+        weekday: freshMode(DEFAULT_WEEKDAY_TASKS, 'd'),
+        weekend: freshMode(DEFAULT_WEEKEND_TASKS, 'w')
       },
       settings: { sound: true },
       runningId: null,
@@ -787,7 +919,7 @@
     return valid;
   }
 
-  function normBlock(b, defs, prefix, defTarget){
+  function normBlock(b, defs, prefix){
     b = (b && typeof b === 'object') ? b : {};
     var tasks = normalizeTaskList(b.tasks);
     if(!tasks.length) tasks = defaultModeTasks(defs, prefix);
@@ -795,7 +927,6 @@
     var done = {};
     tasks.forEach(function(t){ if(rawDone[t.id]) done[t.id] = true; });
     return {
-      target: timeOk(b.target) ? b.target : defTarget,
       tasks: tasks,
       done: done,
       timers: normalizeTimers(tasks, b.timers)
@@ -816,7 +947,7 @@
   function migrateLegacy(s){
     var oldTasks = normalizeTaskList(s.tasks);
     var oldDone = (s.done && typeof s.done === 'object') ? s.done : {};
-    var oldTarget = (s.settings && timeOk(s.settings.target)) ? s.settings.target : DEFAULT_TARGET_WEEKDAY;
+    var oldTarget = (s.settings && timeOk(s.settings.target)) ? s.settings.target : OLD_TARGET_WEEKDAY;
     var rule = pickRule(oldTasks);
     var wdTasks, wdDone = {};
     if(rule){
@@ -833,7 +964,7 @@
       wdTasks.forEach(function(t){ if(oldDone[t.id]) wdDone[t.id] = true; });
     }
     var weekday = { target: oldTarget, tasks: wdTasks, done: wdDone, timers: normalizeTimers(wdTasks, s.timers) };
-    var weekend = freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND);
+    var weekend = freshMode(DEFAULT_WEEKEND_TASKS, 'w');
     /* 이미 해 둔 오늘 체크는 이름이 같은 주말 미션에도 옮겨 둔다(가방 싸기는 주말에 없으니 그대로). */
     var byName = {};
     weekend.tasks.forEach(function(t){ byName[normName(t.name)] = t.id; });
@@ -906,14 +1037,23 @@
   function normalize(s){
     if(!s || typeof s !== 'object') return freshState();
     var fromV = (typeof s.v === 'number' && isFinite(s.v)) ? s.v : 1;
+    var legacy = { weekday: null, weekend: null };
     if(fromV < 4 || !s.modes || typeof s.modes !== 'object'){
       s = migrateLegacy(s);
+      legacy = {
+        weekday: (s.modes && s.modes.weekday && timeOk(s.modes.weekday.target)) ? s.modes.weekday.target : null,
+        weekend: (s.modes && s.modes.weekend && timeOk(s.modes.weekend.target)) ? s.modes.weekend.target : null
+      };
     } else {
-      s.modes = {
-        weekday: normBlock(s.modes.weekday, DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY),
-        weekend: normBlock(s.modes.weekend, DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
+      legacy = {
+        weekday: (s.modes.weekday && timeOk(s.modes.weekday.target)) ? s.modes.weekday.target : null,
+        weekend: (s.modes.weekend && timeOk(s.modes.weekend.target)) ? s.modes.weekend.target : null
       };
     }
+    s.modes = {
+      weekday: normBlock(s.modes && s.modes.weekday, DEFAULT_WEEKDAY_TASKS, 'd'),
+      weekend: normBlock(s.modes && s.modes.weekend, DEFAULT_WEEKEND_TASKS, 'w')
+    };
     /* v4 이하 저장값: 바뀐 기본 시간을 반영하고, 두 모드 끝에 '🎲 놀기'를 붙인다.
        v5부터는 지운 건 지운 채로, 고친 건 고친 채로 둔다. */
     if(fromV < 5){
@@ -927,6 +1067,8 @@
     delete s.tasks;
     delete s.done;
     delete s.timers;
+    /* v6: 목표 시간은 요일 묶음별로 따로 보관한다. */
+    s.targets = normalizeTargets(s.targets, legacy);
     s.settings = Object.assign({}, (s.settings && typeof s.settings === 'object') ? s.settings : {});
     delete s.settings.target;
     s.settings.sound = s.settings.sound !== false;
@@ -1058,7 +1200,7 @@
     return Math.round(s);
   }
   function targetParts(){
-    var p = String(M().target).split(':');
+    var p = String(activeTarget()).split(':');
     return { h: parseInt(p[0], 10) || 0, m: parseInt(p[1], 10) || 0 };
   }
 
@@ -1276,11 +1418,19 @@
   function updateCountdown(){
     var now = new Date();
     var nowSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-    var tp = targetParts();
-    var targetSec = tp.h*3600 + tp.m*60;
-    var remain = targetSec - nowSec;
+    /* 오늘(또는 미리 보는 모드)에 적용되는 요일 묶음의 목표 시간 */
+    var group = activeTargetGroup();
+    var targetTxt = targetOf(group);
+    var remain = clockToSecs(targetTxt) - nowSec;
     var isNextDay = false;
-    if(remain < 0 && now.getHours() >= 12){ remain += 86400; isNextDay = true; }
+    var nextGroup = null;
+    /* 목표 시간을 지난 저녁에는 내일(내일 요일 묶음) 목표까지 남은 시간으로 보여 준다. */
+    if(remain < 0 && now.getHours() >= 12){
+      nextGroup = targetGroupOfDate(new Date(now.getTime() + 86400000));
+      targetTxt = targetOf(nextGroup);
+      remain = 86400 + clockToSecs(targetTxt) - nowSec;
+      isNextDay = true;
+    }
     var taskLeft = remainingTaskSeconds();
     var buffer = remain - taskLeft;
 
@@ -1295,10 +1445,10 @@
     var playMin = Math.floor(playSec / 60);
 
     var cls = 'calm', label = '', status = '';
-    var targetTxt = M().target;
     var cfg = MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'];
     var isWeekend = cfg.key === 'weekend';
-    var untilTxt = cfg.targetName + '(' + targetTxt + ')';
+    var chipInfo = targetGroupInfo(nextGroup || group);
+    var untilTxt = chipInfo.targetName + '(' + targetTxt + ')';
 
     if(allDone){
       cls = 'done';
@@ -1597,20 +1747,19 @@
     var isWeekend = state.mode === 'weekend';
     if(!window.confirm((isWeekend ? '주말 모드' : '평일 모드') + '의 할 일 목록과 목표 시간을 처음 상태로 되돌릴까요?')) return;
     var fresh = isWeekend
-      ? freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
-      : freshMode(DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY);
+      ? freshMode(DEFAULT_WEEKEND_TASKS, 'w')
+      : freshMode(DEFAULT_WEEKDAY_TASKS, 'd');
     M().tasks = fresh.tasks;
     M().timers = fresh.timers;
     M().done = {};
-    M().target = fresh.target;
+    var g = activeTargetGroup();
+    state.targets[g] = DEFAULT_TARGETS[g];
     state.runningId = null;
     state.stats.celebrated = null;
     doneLock = {};
-    var inp = $('#targetInput');
-    if(inp) inp.value = fresh.target;
     save();
     renderGrid(); renderMode(); updateHero(); updateCountdown();
-    toast('기본 목록으로 되돌렸어요');
+    toast('기본 목록으로 되돌렸어요 · ' + targetGroupInfo(g).label + ' 목표 ' + DEFAULT_TARGETS[g]);
   }
 
   /* ================= parent mode ================= */
@@ -1625,8 +1774,6 @@
       btn.setAttribute('aria-pressed', parentMode ? 'true' : 'false');
       setText(btn, parentMode ? '👩 설정 끝내기' : '👩 엄마 설정');
     }
-    var tInp = $('#targetInput');
-    if(tInp) tInp.value = M().target;
     if(parentMode && panel){
       try { panel.scrollIntoView({ behavior:'smooth', block:'nearest' }); } catch(e){}
     }
@@ -1657,17 +1804,42 @@
     if(title) setText(title, cfg.emoji + ' 오늘의 ' + cfg.label + ' 미션 진행률');
 
     var tl = $('#targetFieldLabel');
-    if(tl) setText(tl, cfg.targetName + ' 목표 시간');
+    if(tl){
+      setText(tl, '요일별 목표 시간 · 오늘은 ' + WEEKDAYS[new Date().getDay()] + '요일 ' + activeTarget());
+    }
     var note = $('#ppModeNote');
     if(note){
       var hasPlay = blk.tasks.some(function(t){ return isAuto(t); });
       note.innerHTML = '지금은 ' + cfg.emoji + ' <b>' + esc(cfg.label) + ' 모드</b>의 목록을 고치고 있어요 · ' +
-        blk.tasks.length + '단계 · 목표 ' + esc(blk.target) +
+        blk.tasks.length + '단계 · 목표 ' + esc(activeTarget()) +
         (state.modePref ? ' · 오늘은 손으로 바꾼 모드' : ' · 요일에 맞춰 자동') +
+        '<br>🎯 목표 시간 · ' + TARGET_GROUPS.map(function(g){ return esc(g.label) + ' ' + esc(targetOf(g.key)); }).join(' · ') +
         (hasPlay ? '<br>🎲 놀기 = 목표 시간에서 남는 시간이 저절로 계산돼요(시간 입력 없음)' : '');
     }
-    var ti = $('#targetInput');
-    if(ti) ti.value = blk.target;
+    renderTargets();
+  }
+
+  /* 엄마 설정의 네 칸(월~목 / 금 / 토 / 일)을 저장값과 맞추고, 오늘 적용되는 칸을 표시한다. */
+  function renderTargets(){
+    var active = activeTargetGroup();
+    $$('input[data-target-group]').forEach(function(inp){
+      var k = inp.getAttribute('data-target-group');
+      if(TARGET_KEYS.indexOf(k) < 0) return;
+      var v = targetOf(k);
+      if(inp.value !== v) inp.value = v;
+      var card = inp.closest ? inp.closest('.tg') : null;
+      if(card){
+        card.classList.toggle('today', k === active);
+        var badge = card.querySelector('.tg-badge');
+        if(badge) badge.hidden = (k !== active);
+      }
+      inp.setAttribute('aria-label', targetGroupInfo(k).days + ' 목표 시간 ' + v + (k === active ? ' (오늘)' : ''));
+    });
+    var chip = $('#targetChip');
+    if(chip){
+      var ck = chipGroupNow();
+      chip.title = targetGroupInfo(ck).label + ' 목표 시간 바꾸기 (' + targetOf(ck) + ')';
+    }
   }
 
   /* 손으로 모드 바꾸기: 그날 하루만 기억한다. */
@@ -1714,7 +1886,7 @@
     var diff = Math.round((target - now) / 60000);
     var tn = MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'].targetName;
     var msg;
-    if(diff > 0) msg = tn + ' ' + M().target + '보다 ' + diff + '분 일찍 끝냈어요!';
+    if(diff > 0) msg = tn + ' ' + activeTarget() + '보다 ' + diff + '분 일찍 끝냈어요!';
     else if(diff === 0) msg = '딱 ' + tn + ' 시간에 맞춰 끝냈어요!';
     else msg = '조금 늦었지만 ' + M().tasks.length + '개 미션을 모두 해냈어요!';
 
@@ -1942,24 +2114,44 @@
       toast('🔔 이렇게 소리가 나요! (타이머가 끝나면 두 번 울려요)');
     });
 
+    /* 목표 칩: 오늘(저녁이면 내일) 적용되는 요일 묶음의 목표 시간 칸으로 바로 간다. */
     $('#targetChip').addEventListener('click', function(){
       setParent(true);
-      var inp = $('#targetInput');
-      if(inp){ inp.focus(); try { inp.showPicker && inp.showPicker(); } catch(e){} }
+      var g = chipGroupNow();
+      var inp = document.querySelector('input[data-target-group="' + g + '"]');
+      if(inp){
+        var card = inp.closest ? inp.closest('.tg') : null;
+        if(card){
+          card.classList.remove('ring');
+          void card.offsetWidth;
+          card.classList.add('ring');
+          setTimeout(function(){ card.classList.remove('ring'); }, 3200);
+        }
+        inp.focus();
+        try { inp.showPicker && inp.showPicker(); } catch(e){}
+      }
     });
 
-    $('#targetInput').addEventListener('change', function(){
-      var v = this.value;
-      if(/^([01]\d|2[0-3]):[0-5]\d$/.test(v)){
-        M().target = v;
+    /* 요일 묶음별 목표 시간 고치기 (월~목 / 금 / 토 / 일) */
+    $$('input[data-target-group]').forEach(function(inp){
+      inp.addEventListener('change', function(){
+        var k = this.getAttribute('data-target-group');
+        if(TARGET_KEYS.indexOf(k) < 0) return;
+        var v = this.value;
+        if(!timeOk(v)){
+          this.value = targetOf(k);
+          toast('시간을 다시 확인해 주세요');
+          return;
+        }
+        state.targets[k] = v;
         save();
+        renderTargets();
         renderMode();
         updateCountdown();
-        toast(MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'].targetName + ' 시간을 ' + v + '로 바꿨어요');
-      } else {
-        this.value = M().target;
-        toast('시간을 다시 확인해 주세요');
-      }
+        var info = targetGroupInfo(k);
+        toast('목표 시간을 바꿨어요 · ' + info.emoji + ' ' + info.days + ' ' + v +
+          (k === activeTargetGroup() ? '' : ' (오늘 화면에는 ' + activeTarget() + ' 적용)'));
+      });
     });
 
     $('#addTask').addEventListener('click', addTask);
@@ -2008,9 +2200,6 @@
       sb.textContent = state.settings.sound ? '🔊' : '🔇';
       sb.setAttribute('aria-label', state.settings.sound ? '소리 끄기' : '소리 켜기');
     }
-    var ti = $('#targetInput');
-    if(ti) ti.value = M().target;
-
     renderGrid();
     renderMode();
     renderClock(new Date());
