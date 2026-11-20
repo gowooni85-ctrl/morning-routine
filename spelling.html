@@ -26,6 +26,7 @@
     min-height:100dvh;
     -webkit-user-select:none;user-select:none;
     touch-action:manipulation;
+    -webkit-touch-callout:none;
     overscroll-behavior:none;
     -webkit-text-size-adjust:100%;
   }
@@ -214,7 +215,7 @@
   .key:active{transform:translateY(3px);box-shadow:none}
   .key.wide{flex:2.4 1 0;font-size:clamp(11px,3.2vw,14px);color:#64748b}
   .typed-note{
-    text-align:center;font-size:13.5px;font-weight:800;color:#b91c1c;margin:12px 0 0;
+    text-align:center;font-size:13.5px;font-weight:800;color:#94a3b8;margin:12px 0 0;
     min-height:20px;line-height:1.35;
   }
   .typed-note b{color:#15803d;font-family:"Avenir Next","Trebuchet MS",sans-serif;letter-spacing:.5px}
@@ -603,7 +604,7 @@
     mode:'blocks', filter:'all',
     queue:[], qi:0,
     wrong:0, hint:false, locked:false,
-    streak:0, round:[]
+    streak:0, round:[], runId:0
   };
 
   function showScreen(name){
@@ -639,6 +640,8 @@
   function startGame(mode){
     unlockAudio();
     G.mode = mode;
+    G.runId++;
+    $('flash').classList.remove('on');
     var list = (G.filter === 'focus') ? FOCUS : WORDS;
     G.queue = shuffle(list);
     G.qi = 0;
@@ -742,7 +745,7 @@
         sfx('bad');
         if(!$('pTip').hidden) return;
         $('pTip').hidden = false;
-        $('pTip').textContent = '지금 필요한 글자는 "' + need + '" 예요. 다시 찾아보세요!';
+        $('pTip').textContent = '지금 차례에는 다른 글자가 와요. 다시 골라볼까요? 🙂';
         setTimeout(function(){
           if(!G.locked){ $('pTip').hidden = true; $('pTip').textContent = w.tip; }
         }, 2200);
@@ -837,7 +840,7 @@
         setTimeout(function(){ b.classList.remove('shake'); }, 430);
         sfx('bad');
         $('pTip').hidden = false;
-        $('pTip').textContent = '이 자리에 들어갈 글자는 "' + need + '" 소리가 나요. 다시!';
+        $('pTip').textContent = '그 글자가 아니에요. 소리를 다시 들어보고 골라요!';
         setTimeout(function(){
           if(!G.locked){ $('pTip').hidden = true; $('pTip').textContent = w.tip; }
         }, 2200);
@@ -986,6 +989,7 @@
   function wordDone(){
     if(G.locked) return;
     G.locked = true;
+    var rid = G.runId;
     var w = G.queue[G.qi];
     var earned = (G.wrong === 0 && !G.hint) ? 3 : (G.wrong <= 2 ? 2 : 1);
     var prev = starOf(w.en);
@@ -1014,7 +1018,7 @@
 
     setTimeout(function(){
       $('flash').classList.remove('on');
-      if(G.locked){
+      if(rid === G.runId && G.locked){
         G.qi++;
         loadWord();
       }
@@ -1106,7 +1110,7 @@
       var b = document.createElement('button');
       b.className = 'wc' + (n === 0 ? ' locked' : '');
       b.innerHTML = '<div class="e">' + w.emoji + '</div>' +
-                    '<div class="w">' + (n === 0 ? '??? ' : '') + w.en + '</div>' +
+                    '<div class="w">' + w.en + '</div>' +
                     '<div class="k">' + w.ko + '</div>' +
                     '<div class="s" style="color:#f59e0b">' + (n === 0 ? '☆☆☆' : stars(n)) + '</div>';
       b.addEventListener('click', function(){ openWord(w); });
@@ -1149,8 +1153,10 @@
     });
     $('btnQuit').addEventListener('click', function(){
       sfx('tap');
-      showScreen('home');
+      G.runId++;
       G.locked = true;
+      showScreen('home');
+      updateScore();
     });
     $('btnAgain').addEventListener('click', function(){
       sfx('tap');
