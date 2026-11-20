@@ -486,19 +486,29 @@
   const STORAGE_KEY = 'morningRoutineDashboard.v1';
   const DEFAULT_TARGET = '08:00';
   /* 기본 목록 버전: 저장된 v가 이보다 낮으면 아래 기본 목록으로 올려 준다. */
-  const SCHEMA_V = 2;
+  const SCHEMA_V = 3;
   const DEFAULT_TASKS = [
     { emoji:'💊', name:'일어나서 약 먹기', minutes:2 },
     { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:20 },
-    { emoji:'🍽️', name:'아침상 차리기', minutes:5 },
-    { emoji:'🥣', name:'아침 식사', minutes:20 },
+    { emoji:'🍽️', name:'아침상 차리기 · 아침 식사', minutes:25 },
     { emoji:'💊', name:'식후 약 먹기', minutes:2 },
     { emoji:'🪥', name:'이 닦기', minutes:5 },
     { emoji:'🎒', name:'가방 싸기', minutes:5 },
     { emoji:'📚', name:'리딩게이트 하기', minutes:15 }
   ];
-  /* v1에서 쓰던 11개 기본 목록(2~5번을 하나로 합치기 전).
-     저장된 목록이 이것과 똑같으면 사용자가 따로 고친 적이 없다는 뜻이라 안전하게 새 8개로 바꾼다. */
+  /* v2에서 쓰던 8개 기본 목록(아침상 차리기·아침 식사를 하나로 합치기 전).
+     저장된 목록이 이것과 똑같으면 사용자가 따로 고친 적이 없다는 뜻이라 안전하게 새 7개로 바꾼다. */
+  const V2_DEFAULT_TASKS = [
+    { name:'일어나서 약 먹기', minutes:2 },
+    { name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:20 },
+    { name:'아침상 차리기', minutes:5 },
+    { name:'아침 식사', minutes:20 },
+    { name:'식후 약 먹기', minutes:2 },
+    { name:'이 닦기', minutes:5 },
+    { name:'가방 싸기', minutes:5 },
+    { name:'리딩게이트 하기', minutes:15 }
+  ];
+  /* v1에서 쓰던 11개 기본 목록(2~5번을 하나로 합치기 전). */
   const V1_DEFAULT_TASKS = [
     { name:'일어나서 약 먹기', minutes:2 },
     { name:'샤워하기', minutes:10 },
@@ -512,9 +522,26 @@
     { name:'가방 싸기', minutes:5 },
     { name:'리딩게이트 하기', minutes:15 }
   ];
-  /* v1 순번 → v2 순번 (사워·옷·로션·머리 말리기는 2번 하나로 합쳐짐) */
-  const V1_TO_V2 = { 'd1':'d1', 'd6':'d3', 'd7':'d4', 'd8':'d5', 'd9':'d6', 'd10':'d7', 'd11':'d8' };
-  const V1_MERGED_INTO_V2 = ['d2', 'd3', 'd4', 'd5'];
+  /* 예전 저장값 → 지금(7개) 순번.
+     저장된 목록이 그 버전의 기본 목록과 똑같을 때만 옮긴다.
+     map: 옛 id → 새 id, merged: 여러 개를 하나로 합친 것(전부 체크했을 때만 새 것도 완료로). */
+  const MIGRATIONS = {
+    1: {
+      defaults: V1_DEFAULT_TASKS,
+      map: { 'd1':'d1', 'd8':'d4', 'd9':'d5', 'd10':'d6', 'd11':'d7' },
+      merged: [
+        { to:'d2', from:['d2','d3','d4','d5'] },  /* 샤워하기·옷 입기·로션·머리 말리기 */
+        { to:'d3', from:['d6','d7'] }             /* 아침상 차리기·아침 식사 */
+      ]
+    },
+    2: {
+      defaults: V2_DEFAULT_TASKS,
+      map: { 'd1':'d1', 'd2':'d2', 'd5':'d4', 'd6':'d5', 'd7':'d6', 'd8':'d7' },
+      merged: [
+        { to:'d3', from:['d3','d4'] }             /* 아침상 차리기·아침 식사 */
+      ]
+    }
+  };
   const STEP_BG  = ['#eaf2ff','#e8fbf1','#fff4e0','#fdeaf3','#eef0ff'];
   const STEP_INK = ['#3f7cf6','#12a06f','#c98600','#c94f8b','#6157d8'];
   const WEEKDAYS = ['일','월','화','수','목','금','토'];
@@ -590,20 +617,29 @@
     return true;
   }
 
-  /* v1의 11개 기본 목록을 쓰던 브라우저를 새 8개 목록으로 옮긴다.
+  /* 예전 기본 목록(v1 11개 / v2 8개)을 쓰던 브라우저를 지금 7개 목록으로 옮긴다.
      사용자가 이름·시간을 고쳤거나 할 일을 늘렸다 줄였다 했다면(목록이 다르면) 손대지 않는다. */
-  function migrateFromV1(s, fromV){
-    if(fromV >= 2) return false;
-    if(!sameTaskList(s.tasks, V1_DEFAULT_TASKS)) return false;
+  function migrateTasks(s, fromV){
+    if(fromV >= SCHEMA_V) return false;
+    /* 저장된 버전과 같은 규칙을 먼저 보고, 목록 모양이 안 맞으면 다른 예전 규칙도 본다. */
+    var versions = Object.keys(MIGRATIONS).map(Number).sort(function(a, b){
+      return ((a < fromV ? 1 : 0) - (b < fromV ? 1 : 0)) || (a - b);
+    });
+    var rule = null;
+    for(var i = 0; i < versions.length; i++){
+      if(sameTaskList(s.tasks, MIGRATIONS[versions[i]].defaults)){ rule = MIGRATIONS[versions[i]]; break; }
+    }
+    if(!rule) return false;
     var fresh = freshState();
     var oldDone = s.done || {};
-    var mergedDone = V1_MERGED_INTO_V2.every(function(id){ return !!oldDone[id]; });
     s.tasks = fresh.tasks;
     s.timers = fresh.timers;
     s.done = {};
-    if(mergedDone) s.done['d2'] = true;
-    Object.keys(V1_TO_V2).forEach(function(from){
-      if(oldDone[from]) s.done[V1_TO_V2[from]] = true;
+    rule.merged.forEach(function(m){
+      if(m.from.every(function(id){ return !!oldDone[id]; })) s.done[m.to] = true;
+    });
+    Object.keys(rule.map).forEach(function(from){
+      if(oldDone[from]) s.done[rule.map[from]] = true;
     });
     s.runningId = null;
     return true;
@@ -628,7 +664,7 @@
       };
     });
     if(!s.tasks.length) s.tasks = freshState().tasks;
-    migrateFromV1(s, fromV);
+    migrateTasks(s, fromV);
     var valid = {};
     s.tasks.forEach(function(t){
       var tm = s.timers[t.id];
