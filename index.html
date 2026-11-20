@@ -2,7 +2,9 @@
 <!--
   아침 루틴 미션 · 7세 아침 루틴 대시보드 (단일 HTML 파일)
   · 사용법: 파일을 브라우저(사파리·크롬)로 열고, 아이패드/아이폰은 '홈 화면에 추가'하면 앱처럼 쓸 수 있어요.
-  · 등원 출발 목표 시간 기본값은 08:00이며, 오른쪽 위 '👩 엄마 설정'에서 바꿀 수 있어요.
+  · 토·일은 저절로 '🌈 주말 모드'(가방 싸기 빼고 6단계, 목표 10:00)로, 월~금은 '🎒 평일 모드'(7단계, 목표 08:00)로 열려요.
+    머리말의 모드 버튼으로 그날만 바꿀 수도 있어요.
+  · 목표 시간은 오른쪽 위 '👩 엄마 설정'에서 모드마다 따로 바꿀 수 있어요.
   · 진행 상황·별·연속 기록은 이 브라우저의 localStorage에 저장되고, 날짜가 바뀌면 체크가 자동으로 초기화돼요.
   · 인터넷 연결이나 외부 파일 없이 혼자서 동작해요.
 -->
@@ -76,6 +78,33 @@
   }
   .icon-btn:active{transform:scale(.96)}
   .icon-btn.active{background:#2c5fd0;color:#fff;border-color:#2c5fd0;box-shadow:0 6px 14px rgba(44,95,208,.28)}
+
+  /* ---------- mode pill (평일 / 주말) ---------- */
+  .mode-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    border:1px solid #dbe6fa;background:linear-gradient(135deg,#eef4ff,#dce9ff);
+    color:#22406f;border-radius:99px;padding:7px 14px 7px 10px;cursor:pointer;
+    font:inherit;font-weight:900;touch-action:manipulation;white-space:nowrap;
+    box-shadow:0 4px 12px rgba(63,124,246,.14);
+    transition:background .35s,color .35s,border-color .35s,transform .12s,box-shadow .35s;
+  }
+  .mode-pill:active{transform:scale(.96)}
+  .mode-pill .mp-face{font-size:1.25rem;line-height:1}
+  .mode-pill .mp-body{display:flex;flex-direction:column;align-items:flex-start;line-height:1.15}
+  .mode-pill .mp-text{font-size:.92rem;letter-spacing:-.01em}
+  .mode-pill .mp-count{font-size:.68rem;font-weight:800;color:#6b86b3}
+  .mode-pill.weekend{
+    background:linear-gradient(135deg,#ffe6f3,#e8f0ff 48%,#dcfaee);
+    border-color:#f4d3e7;color:#8a3a69;
+    box-shadow:0 5px 16px rgba(217,110,170,.20);
+  }
+  .mode-pill.weekend .mp-count{color:#a86a8d}
+  body.weekend-mode .logo{background:linear-gradient(135deg,#ffd9ec,#cfe4ff 55%,#c9f7e4);box-shadow:0 6px 14px rgba(180,150,220,.32)}
+  body.weekend-mode{background:
+    radial-gradient(1100px 560px at 102% -8%, #ffe9f4 0%, rgba(255,233,244,0) 62%),
+    radial-gradient(900px 520px at -8% -4%, #e2f4ff 0%, rgba(226,244,255,0) 58%),
+    linear-gradient(180deg,#fdf9ff 0%, #fbfeff 100%);
+  }
 
   /* ---------- layout ---------- */
   .wrap{max-width:1260px;margin:0 auto;padding:14px clamp(14px,3vw,28px) 40px}
@@ -210,6 +239,11 @@
   .btn-soft:hover{background:#fff5e6}
   .pp-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
   .pp-note{margin:12px 0 0;font-size:.78rem;font-weight:700;color:#a08a68;line-height:1.5}
+  .pp-mode{
+    margin:0 0 12px;font-size:.8rem;font-weight:800;color:#8a7350;
+    background:#fff4e2;border:1px dashed #f0dcb6;border-radius:12px;padding:8px 11px;line-height:1.45;
+  }
+  .pp-mode b{color:#7a5a22}
 
   /* ---------- task grid ---------- */
   .grid{
@@ -401,13 +435,17 @@
     <span class="now-sec" id="nowSec">00</span>
   </div>
   <div class="top-actions">
+    <button class="mode-pill" id="modePill" type="button" aria-pressed="false" title="평일/주말 모드 바꾸기">
+      <span class="mp-face" aria-hidden="true">🎒</span>
+      <span class="mp-body"><span class="mp-text">평일</span><span class="mp-count">7단계</span></span>
+    </button>
     <button class="icon-btn" id="soundBtn" type="button" aria-label="소리 켜기 또는 끄기">🔊</button>
     <button class="icon-btn" id="parentBtn" type="button" aria-pressed="false">👩 엄마 설정</button>
   </div>
 </header>
 
 <div class="wrap">
-  <section class="hero" aria-label="등원 출발까지 남은 시간">
+  <section class="hero" aria-label="목표 시간까지 남은 시간">
     <div class="cd-card calm" id="cdCard">
       <div class="cd-head">
         <span class="cd-label" id="cdLabel">등원 출발(08:00)까지 남은 시간</span>
@@ -448,16 +486,18 @@
       <span class="pp-hint">바꾸면 바로 저장돼요</span>
     </div>
     <div class="pp-grid">
-      <label class="field" for="targetInput">등원 출발 목표 시간
+      <label class="field" for="targetInput"><span id="targetFieldLabel">등원 출발 목표 시간</span>
         <input type="time" id="targetInput" value="08:00" step="60">
       </label>
       <div class="field">할 일 목록
         <button class="btn-soft" id="addTask" type="button">＋ 할 일 추가하기</button>
       </div>
     </div>
+    <p class="pp-mode" id="ppModeNote"></p>
     <div class="pp-actions">
       <button class="btn-soft" id="resetToday" type="button">↺ 오늘 체크 초기화</button>
       <button class="btn-soft" id="restoreDefaults" type="button">기본 목록으로 되돌리기</button>
+      <button class="btn-soft" id="autoModeBtn" type="button">🔄 요일대로 자동</button>
     </div>
     <p class="pp-note">카드마다 이름·시간·이모지를 고치고 ▲▼로 순서를 바꾸거나 🗑로 지울 수 있어요. 아이가 쓰는 동안에는 이 설정을 닫아 두세요.</p>
   </section>
@@ -484,10 +524,13 @@
 
   /* ================= constants & utils ================= */
   const STORAGE_KEY = 'morningRoutineDashboard.v1';
-  const DEFAULT_TARGET = '08:00';
-  /* 기본 목록 버전: 저장된 v가 이보다 낮으면 아래 기본 목록으로 올려 준다. */
-  const SCHEMA_V = 3;
-  const DEFAULT_TASKS = [
+  const DEFAULT_TARGET_WEEKDAY = '08:00';
+  const DEFAULT_TARGET_WEEKEND = '10:00';
+  const DEFAULT_TARGET = DEFAULT_TARGET_WEEKDAY;
+  /* 저장 형식 버전: v4부터 평일/주말 모드의 목록·목표 시간·오늘 체크를 따로 저장한다. */
+  const SCHEMA_V = 4;
+  /* 평일 모드 기본 목록 (7단계 · 74분) */
+  const DEFAULT_WEEKDAY_TASKS = [
     { emoji:'💊', name:'일어나서 약 먹기', minutes:2 },
     { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:20 },
     { emoji:'🍽️', name:'아침상 차리기 · 아침 식사', minutes:25 },
@@ -496,6 +539,20 @@
     { emoji:'🎒', name:'가방 싸기', minutes:5 },
     { emoji:'📚', name:'리딩게이트 하기', minutes:15 }
   ];
+  /* 주말 모드 기본 목록 (6단계 · 69분 · 가방 싸기 없음) */
+  const DEFAULT_WEEKEND_TASKS = [
+    { emoji:'💊', name:'일어나서 약 먹기', minutes:2 },
+    { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:20 },
+    { emoji:'🍽️', name:'아침상 차리기 · 아침 식사', minutes:25 },
+    { emoji:'💊', name:'식후 약 먹기', minutes:2 },
+    { emoji:'🪥', name:'이 닦기', minutes:5 },
+    { emoji:'📚', name:'리딩게이트 하기', minutes:15 }
+  ];
+  const MODES = {
+    weekday: { key:'weekday', emoji:'🎒', label:'평일', targetName:'등원 출발', defaultTarget: DEFAULT_TARGET_WEEKDAY },
+    weekend: { key:'weekend', emoji:'🌈', label:'주말', targetName:'주말 미션', defaultTarget: DEFAULT_TARGET_WEEKEND }
+  };
+  const MODE_KEYS = ['weekday', 'weekend'];
   /* v2에서 쓰던 8개 기본 목록(아침상 차리기·아침 식사를 하나로 합치기 전).
      저장된 목록이 이것과 똑같으면 사용자가 따로 고친 적이 없다는 뜻이라 안전하게 새 7개로 바꾼다. */
   const V2_DEFAULT_TASKS = [
@@ -522,10 +579,15 @@
     { name:'가방 싸기', minutes:5 },
     { name:'리딩게이트 하기', minutes:15 }
   ];
-  /* 예전 저장값 → 지금(7개) 순번.
+  /* 예전 저장값 → 지금 평일 모드(d1~d7) 순번.
      저장된 목록이 그 버전의 기본 목록과 똑같을 때만 옮긴다.
      map: 옛 id → 새 id, merged: 여러 개를 하나로 합친 것(전부 체크했을 때만 새 것도 완료로). */
   const MIGRATIONS = {
+    3: {
+      defaults: DEFAULT_WEEKDAY_TASKS,
+      map: { 'd1':'d1', 'd2':'d2', 'd3':'d3', 'd4':'d4', 'd5':'d5', 'd6':'d6', 'd7':'d7' },
+      merged: []
+    },
     1: {
       defaults: V1_DEFAULT_TASKS,
       map: { 'd1':'d1', 'd8':'d4', 'd9':'d5', 'd10':'d6', 'd11':'d7' },
@@ -589,95 +651,179 @@
   /* ================= state ================= */
   var state, cards = new Map(), parentMode = false, lastSave = 0, doneLock = {}, toastTimer = null, lastSubHtml = '';
 
+  function timeOk(v){ return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(v)); }
+  function normName(s){ return String(s == null ? '' : s).replace(/\s+/g, ''); }
+
+  function defaultModeTasks(defs, prefix){
+    return defs.map(function(t, i){
+      return { id: prefix + (i+1), emoji: t.emoji || '⭐', name: t.name, minutes: t.minutes };
+    });
+  }
+  function freshMode(defs, prefix, target){
+    var tasks = defaultModeTasks(defs, prefix);
+    var timers = {};
+    tasks.forEach(function(t){ timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    return { target: timeOk(target) ? target : DEFAULT_TARGET, tasks: tasks, done: {}, timers: timers };
+  }
+
+  /* 지금 모드(평일/주말)의 저장 묶음: 목표 시간·할 일·오늘 체크·타이머를 모드별로 따로 보관한다. */
+  function M(){
+    if(!state || !state.modes) return { target: DEFAULT_TARGET, tasks: [], done: {}, timers: {} };
+    return state.modes[state.mode === 'weekend' ? 'weekend' : 'weekday'];
+  }
+  /* 주말(토·일)은 저절로 주말 모드, 평일(월~금)은 평일 모드 */
+  function autoMode(d){
+    var day = (d || new Date()).getDay();
+    return (day === 0 || day === 6) ? 'weekend' : 'weekday';
+  }
+  /* 오늘의 모드: 손으로 바꿔 둔 게 있으면 그 모드(그날만), 없으면 요일대로 */
+  function resolveMode(s){
+    var today = dateKey(new Date());
+    var p = s && s.modePref;
+    if(p && p.date === today && (p.mode === 'weekday' || p.mode === 'weekend')) return p.mode;
+    return autoMode(new Date());
+  }
+
   function freshState(){
-    var s = {
+    return {
       v: SCHEMA_V,
       date: dateKey(new Date()),
-      settings: { target: DEFAULT_TARGET, sound: true },
-      tasks: DEFAULT_TASKS.map(function(t, i){
-        return { id: 'd' + (i+1), emoji: t.emoji, name: t.name, minutes: t.minutes };
-      }),
-      done: {},
-      timers: {},
+      mode: autoMode(new Date()),
+      modePref: null,
+      modes: {
+        weekday: freshMode(DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY),
+        weekend: freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
+      },
+      settings: { sound: true },
       runningId: null,
       stats: { streak: 0, lastAllDone: null, celebrated: null },
       history: {}
     };
-    s.tasks.forEach(function(t){ s.timers[t.id] = { left: t.minutes*60, endAt: null }; });
-    return s;
   }
 
   function sameTaskList(tasks, defs){
     if(!tasks || tasks.length !== defs.length) return false;
     for(var i = 0; i < defs.length; i++){
-      var a = String(tasks[i].name).replace(/\s+/g, '');
-      var b = String(defs[i].name).replace(/\s+/g, '');
+      var a = normName(tasks[i] && tasks[i].name);
+      var b = normName(defs[i].name);
       if(a !== b || tasks[i].minutes !== defs[i].minutes) return false;
     }
     return true;
   }
 
-  /* 예전 기본 목록(v1 11개 / v2 8개)을 쓰던 브라우저를 지금 7개 목록으로 옮긴다.
-     사용자가 이름·시간을 고쳤거나 할 일을 늘렸다 줄였다 했다면(목록이 다르면) 손대지 않는다. */
-  function migrateTasks(s, fromV){
-    if(fromV >= SCHEMA_V) return false;
-    /* 저장된 버전과 같은 규칙을 먼저 보고, 목록 모양이 안 맞으면 다른 예전 규칙도 본다. */
-    var versions = Object.keys(MIGRATIONS).map(Number).sort(function(a, b){
-      return ((a < fromV ? 1 : 0) - (b < fromV ? 1 : 0)) || (a - b);
-    });
-    var rule = null;
-    for(var i = 0; i < versions.length; i++){
-      if(sameTaskList(s.tasks, MIGRATIONS[versions[i]].defaults)){ rule = MIGRATIONS[versions[i]]; break; }
-    }
-    if(!rule) return false;
-    var fresh = freshState();
-    var oldDone = s.done || {};
-    s.tasks = fresh.tasks;
-    s.timers = fresh.timers;
-    s.done = {};
-    rule.merged.forEach(function(m){
-      if(m.from.every(function(id){ return !!oldDone[id]; })) s.done[m.to] = true;
-    });
-    Object.keys(rule.map).forEach(function(from){
-      if(oldDone[from]) s.done[rule.map[from]] = true;
-    });
-    s.runningId = null;
-    return true;
-  }
-
-  function normalize(s){
-    if(!s || typeof s !== 'object' || !Array.isArray(s.tasks)) return freshState();
-    var fromV = (typeof s.v === 'number' && isFinite(s.v)) ? s.v : 1;
-    s.settings = Object.assign({ target: DEFAULT_TARGET, sound: true }, s.settings || {});
-    if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(s.settings.target))) s.settings.target = DEFAULT_TARGET;
-    s.settings.sound = s.settings.sound !== false;
-    s.stats = Object.assign({ streak:0, lastAllDone:null, celebrated:null }, s.stats || {});
-    s.done = (s.done && typeof s.done === 'object') ? s.done : {};
-    s.history = (s.history && typeof s.history === 'object') ? s.history : {};
-    s.timers = (s.timers && typeof s.timers === 'object') ? s.timers : {};
-    s.tasks = s.tasks.filter(function(t){ return t && typeof t === 'object'; }).map(function(t){
+  function normalizeTaskList(list){
+    return (Array.isArray(list) ? list : []).filter(function(t){ return t && typeof t === 'object'; }).map(function(t){
       return {
-        id: t.id || newId(),
+        id: t.id ? String(t.id) : newId(),
         emoji: String(t.emoji || '⭐').slice(0, 8),
         name: String(t.name || '새 할 일').slice(0, 40),
         minutes: clampInt(t.minutes, 1, 120, 5)
       };
     });
-    if(!s.tasks.length) s.tasks = freshState().tasks;
-    migrateTasks(s, fromV);
+  }
+
+  function normalizeTimers(tasks, raw){
     var valid = {};
-    s.tasks.forEach(function(t){
-      var tm = s.timers[t.id];
-      if(!tm || typeof tm.left !== 'number' || !isFinite(tm.left) || tm.left < 0){
+    tasks.forEach(function(t){
+      var tm = (raw && typeof raw === 'object') ? raw[t.id] : null;
+      if(!tm || typeof tm !== 'object' || typeof tm.left !== 'number' || !isFinite(tm.left) || tm.left < 0){
         tm = { left: t.minutes*60, endAt: null };
       }
       if(tm.left > t.minutes*60) tm.left = t.minutes*60;
       if(tm.endAt && typeof tm.endAt !== 'number') tm.endAt = null;
-      valid[t.id] = tm;
+      valid[t.id] = { left: tm.left, endAt: tm.endAt || null };
     });
-    s.timers = valid;
-    if(s.runningId && !valid[s.runningId]) s.runningId = null;
-    s.date = s.date || dateKey(new Date());
+    return valid;
+  }
+
+  function normBlock(b, defs, prefix, defTarget){
+    b = (b && typeof b === 'object') ? b : {};
+    var tasks = normalizeTaskList(b.tasks);
+    if(!tasks.length) tasks = defaultModeTasks(defs, prefix);
+    var rawDone = (b.done && typeof b.done === 'object') ? b.done : {};
+    var done = {};
+    tasks.forEach(function(t){ if(rawDone[t.id]) done[t.id] = true; });
+    return {
+      target: timeOk(b.target) ? b.target : defTarget,
+      tasks: tasks,
+      done: done,
+      timers: normalizeTimers(tasks, b.timers)
+    };
+  }
+
+  /* 저장된 목록이 그 버전의 기본 목록과 똑같으면 그 마이그레이션 규칙을 쓴다. */
+  function pickRule(tasks){
+    var versions = Object.keys(MIGRATIONS).map(Number).sort(function(a, b){ return b - a; });
+    for(var i = 0; i < versions.length; i++){
+      if(sameTaskList(tasks, MIGRATIONS[versions[i]].defaults)) return MIGRATIONS[versions[i]];
+    }
+    return null;
+  }
+
+  /* v3 이하(모드 구분이 없던 저장값) → v4의 평일·주말 묶음.
+     별·연속 기록·지난 기록은 그대로 두고, 오늘 체크는 이름을 맞춰 옮긴다. */
+  function migrateLegacy(s){
+    var oldTasks = normalizeTaskList(s.tasks);
+    var oldDone = (s.done && typeof s.done === 'object') ? s.done : {};
+    var oldTarget = (s.settings && timeOk(s.settings.target)) ? s.settings.target : DEFAULT_TARGET_WEEKDAY;
+    var rule = pickRule(oldTasks);
+    var wdTasks, wdDone = {};
+    if(rule){
+      wdTasks = defaultModeTasks(DEFAULT_WEEKDAY_TASKS, 'd');
+      rule.merged.forEach(function(m){
+        if(m.from.every(function(id){ return !!oldDone[id]; })) wdDone[m.to] = true;
+      });
+      Object.keys(rule.map).forEach(function(from){
+        if(oldDone[from]) wdDone[rule.map[from]] = true;
+      });
+    } else {
+      /* 손수 고친 목록이면 그대로 평일 모드로 살린다. */
+      wdTasks = oldTasks.length ? oldTasks : defaultModeTasks(DEFAULT_WEEKDAY_TASKS, 'd');
+      wdTasks.forEach(function(t){ if(oldDone[t.id]) wdDone[t.id] = true; });
+    }
+    var weekday = { target: oldTarget, tasks: wdTasks, done: wdDone, timers: normalizeTimers(wdTasks, s.timers) };
+    var weekend = freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND);
+    /* 이미 해 둔 오늘 체크는 이름이 같은 주말 미션에도 옮겨 둔다(가방 싸기는 주말에 없으니 그대로). */
+    var byName = {};
+    weekend.tasks.forEach(function(t){ byName[normName(t.name)] = t.id; });
+    wdTasks.forEach(function(t){
+      var to = byName[normName(t.name)];
+      if(to && wdDone[t.id]) weekend.done[to] = true;
+    });
+    s.settings = Object.assign({}, (s.settings && typeof s.settings === 'object') ? s.settings : {});
+    s.modes = { weekday: weekday, weekend: weekend };
+    s.modePref = null;
+    return s;
+  }
+
+  function normalize(s){
+    if(!s || typeof s !== 'object') return freshState();
+    var fromV = (typeof s.v === 'number' && isFinite(s.v)) ? s.v : 1;
+    if(fromV < SCHEMA_V || !s.modes || typeof s.modes !== 'object'){
+      s = migrateLegacy(s);
+    } else {
+      s.modes = {
+        weekday: normBlock(s.modes.weekday, DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY),
+        weekend: normBlock(s.modes.weekend, DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
+      };
+    }
+    delete s.tasks;
+    delete s.done;
+    delete s.timers;
+    s.settings = Object.assign({}, (s.settings && typeof s.settings === 'object') ? s.settings : {});
+    delete s.settings.target;
+    s.settings.sound = s.settings.sound !== false;
+    s.stats = Object.assign({ streak:0, lastAllDone:null, celebrated:null }, (s.stats && typeof s.stats === 'object') ? s.stats : {});
+    s.history = (s.history && typeof s.history === 'object') ? s.history : {};
+    s.date = (typeof s.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s.date)) ? s.date : dateKey(new Date());
+    s.modePref = (s.modePref && typeof s.modePref === 'object' && (s.modePref.mode === 'weekday' || s.modePref.mode === 'weekend') && /^\d{4}-\d{2}-\d{2}$/.test(String(s.modePref.date)))
+      ? { date: String(s.modePref.date), mode: s.modePref.mode }
+      : null;
+    /* 저장된 모드는 그 날짜의 모드다. 날짜가 바뀌었으면 날짜가 넘어갈 때(rollover)
+       어제 기록을 남긴 뒤에 오늘 모드로 바꿔 준다. */
+    s.mode = (s.mode === 'weekday' || s.mode === 'weekend') ? s.mode : resolveMode(s);
+    var act = s.modes[s.mode];
+    if(s.runningId && !act.timers[s.runningId]) s.runningId = null;
     s.v = SCHEMA_V;
     return s;
   }
@@ -697,16 +843,26 @@
 
   function rolloverIfNeeded(){
     var today = dateKey(new Date());
-    if(state.date === today) return false;
-    var doneN = Object.keys(state.done).filter(function(k){ return state.done[k]; }).length;
+    if(state.date === today){
+      var want = resolveMode(state);
+      if(state.mode !== want) state.mode = want;
+      return false;
+    }
+    var act = state.modes[state.mode];
+    var doneN = Object.keys(act.done).filter(function(k){ return act.done[k]; }).length;
     if(state.date && doneN > 0){
-      state.history[state.date] = { done: doneN, total: state.tasks.length };
+      state.history[state.date] = { done: doneN, total: act.tasks.length, mode: state.mode };
     }
     state.date = today;
-    state.done = {};
+    state.modePref = null;
     state.runningId = null;
-    state.timers = {};
-    state.tasks.forEach(function(t){ state.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    MODE_KEYS.forEach(function(k){
+      var b = state.modes[k];
+      b.done = {};
+      b.timers = {};
+      b.tasks.forEach(function(t){ b.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    });
+    state.mode = autoMode(new Date());
     if(state.stats.celebrated && state.stats.celebrated !== today) state.stats.celebrated = null;
     var y = yesterdayKey();
     if(state.stats.lastAllDone && state.stats.lastAllDone !== y && state.stats.lastAllDone !== today){
@@ -718,7 +874,7 @@
 
   /* ================= derived ================= */
   function doneCount(){
-    return state.tasks.filter(function(t){ return !!state.done[t.id]; }).length;
+    return M().tasks.filter(function(t){ return !!M().done[t.id]; }).length;
   }
   function totalStars(){
     var n = 0;
@@ -726,7 +882,7 @@
     return n + doneCount();
   }
   function taskLeftSeconds(t){
-    var tm = state.timers[t.id];
+    var tm = M().timers[t.id];
     var full = t.minutes * 60;
     if(!tm) return full;
     var left = tm.endAt ? Math.max(0, (tm.endAt - Date.now()) / 1000) : Math.max(0, tm.left);
@@ -734,14 +890,14 @@
   }
   function remainingTaskSeconds(){
     var s = 0;
-    state.tasks.forEach(function(t){
-      if(state.done[t.id]) return;
+    M().tasks.forEach(function(t){
+      if(M().done[t.id]) return;
       s += taskLeftSeconds(t);
     });
     return Math.round(s);
   }
   function targetParts(){
-    var p = String(state.settings.target).split(':');
+    var p = String(M().target).split(':');
     return { h: parseInt(p[0], 10) || 0, m: parseInt(p[1], 10) || 0 };
   }
 
@@ -805,15 +961,15 @@
 
   function renderGrid(){
     var grid = $('#grid');
-    if(!state.tasks.length){
+    if(!M().tasks.length){
       grid.innerHTML = '<div class="empty">아직 할 일이 없어요.<br>👩 엄마 설정에서 할 일을 추가해 주세요 🐣</div>';
       cards = new Map();
       return;
     }
-    var html = state.tasks.map(function(t, i){
+    var html = M().tasks.map(function(t, i){
       var bg = STEP_BG[i % STEP_BG.length];
       var ink = STEP_INK[i % STEP_INK.length];
-      var tm = state.timers[t.id] || { left: t.minutes*60, endAt: null };
+      var tm = M().timers[t.id] || { left: t.minutes*60, endAt: null };
       var Left = tm.endAt ? Math.max(0, (tm.endAt - Date.now())/1000) : Math.max(0, tm.left);
       return '' +
         '<article class="card" data-id="' + esc(t.id) + '">' +
@@ -853,15 +1009,15 @@
 
   function updateCards(){
     var first = null;
-    for(var i = 0; i < state.tasks.length; i++){
-      if(!state.done[state.tasks[i].id]){ first = state.tasks[i]; break; }
+    for(var i = 0; i < M().tasks.length; i++){
+      if(!M().done[M().tasks[i].id]){ first = M().tasks[i]; break; }
     }
-    state.tasks.forEach(function(t){
+    M().tasks.forEach(function(t){
       var el = cards.get(t.id);
       if(!el) return;
-      var tm = state.timers[t.id];
+      var tm = M().timers[t.id];
       var full = t.minutes * 60;
-      var isDone = !!state.done[t.id];
+      var isDone = !!M().done[t.id];
       var left = isDone ? 0 : taskLeftSeconds(t);
       var running = !!(tm && tm.endAt);
 
@@ -899,7 +1055,7 @@
   }
 
   function updateHero(){
-    var total = state.tasks.length;
+    var total = M().tasks.length;
     var n = doneCount();
     var pct = total ? Math.round(n / total * 100) : 0;
     setText($('#progPct'), pct + '%');
@@ -912,8 +1068,8 @@
     setText($('#streakCount'), String(state.stats.streak));
 
     var cur = null;
-    for(var i = 0; i < state.tasks.length; i++){
-      if(!state.done[state.tasks[i].id]){ cur = state.tasks[i]; break; }
+    for(var i = 0; i < M().tasks.length; i++){
+      if(!M().done[M().tasks[i].id]){ cur = M().tasks[i]; break; }
     }
     var nowTask = $('#nowTask');
     if(!total) setText(nowTask, '할 일을 추가해 주세요');
@@ -932,36 +1088,39 @@
     var taskLeft = remainingTaskSeconds();
     var buffer = remain - taskLeft;
 
-    var total = state.tasks.length;
+    var total = M().tasks.length;
     var n = doneCount();
     var allDone = total > 0 && n === total;
 
     var cls = 'calm', label = '', status = '';
-    var targetTxt = state.settings.target;
+    var targetTxt = M().target;
+    var cfg = MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'];
+    var isWeekend = cfg.key === 'weekend';
+    var untilTxt = cfg.targetName + '(' + targetTxt + ')';
 
     if(allDone){
       cls = 'done';
-      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
-      status = '🎉 미션 완료! 이제 가방만 들고 출발하면 돼요';
+      label = untilTxt + '까지 남은 시간';
+      status = isWeekend ? '🎉 주말 미션 완료! 오늘은 가방 없이 신나게 놀자' : '🎉 미션 완료! 이제 가방만 들고 출발하면 돼요';
     } else if(isNextDay){
       cls = 'calm';
-      label = '내일 등원 출발(' + targetTxt + ')까지 남은 시간';
+      label = '내일 ' + untilTxt + '까지 남은 시간';
       status = '🌙 오늘은 여기까지! 내일 아침에 다시 만나요';
     } else if(remain < 0){
       cls = 'behind';
-      label = '등원 출발(' + targetTxt + ')을 지났어요';
-      status = '😵 출발 시간이 지났어요! 남은 할 일 ' + Math.ceil(taskLeft/60) + '분, 끝까지 힘내자!';
+      label = untilTxt + '을 지났어요';
+      status = (isWeekend ? '😵 주말 미션 시간이 지났어요!' : '😵 출발 시간이 지났어요!') + ' 남은 할 일 ' + Math.ceil(taskLeft/60) + '분, 끝까지 힘내자!';
     } else if(buffer < 0){
       cls = 'behind';
-      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      label = untilTxt + '까지 남은 시간';
       status = '😵 ' + Math.ceil(-buffer/60) + '분이 모자라요! 지금 바로 서두르자!';
     } else if(buffer < 10*60){
       cls = 'tight';
-      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      label = untilTxt + '까지 남은 시간';
       status = '⏰ 아슬아슬! 여유가 ' + Math.max(0, Math.floor(buffer/60)) + '분뿐이에요';
     } else {
       cls = 'calm';
-      label = '등원 출발(' + targetTxt + ')까지 남은 시간';
+      label = untilTxt + '까지 남은 시간';
       status = '😊 여유 있어요! 목표보다 ' + Math.floor(buffer/60) + '분 넉넉해요';
     }
 
@@ -1000,7 +1159,7 @@
     if(sub){
       var subHtml;
       if(allDone){
-        subHtml = '<span>🎯 목표 ' + esc(targetTxt) + '</span><span>✅ 할 일 모두 완료</span><span>🚀 바로 출발!</span>';
+        subHtml = '<span>🎯 목표 ' + esc(targetTxt) + '</span><span>✅ ' + M().tasks.length + '개 미션 모두 완료</span><span>' + (isWeekend ? '🎈 이제 마음껏 놀자!' : '🚀 바로 출발!') + '</span>';
       } else if(isNextDay){
         subHtml = '<span>🎯 내일 목표 ' + esc(targetTxt) + '</span>' +
           '<span>⏳ 할 일 ' + Math.ceil(taskLeft/60) + '분</span>' +
@@ -1037,8 +1196,8 @@
 
   function pauseAll(){
     var now = Date.now();
-    Object.keys(state.timers).forEach(function(id){
-      var tm = state.timers[id];
+    Object.keys(M().timers).forEach(function(id){
+      var tm = M().timers[id];
       if(tm && tm.endAt){
         tm.left = Math.max(0, (tm.endAt - now) / 1000);
         tm.endAt = null;
@@ -1048,9 +1207,9 @@
   }
 
   function toggleTimer(id){
-    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
-    if(!t || state.done[id]) return;
-    var tm = state.timers[id];
+    var t = M().tasks.filter(function(x){ return x.id === id; })[0];
+    if(!t || M().done[id]) return;
+    var tm = M().timers[id];
     if(!tm) return;
     if(tm.endAt){
       tm.left = Math.max(0, (tm.endAt - Date.now()) / 1000);
@@ -1069,8 +1228,8 @@
   }
 
   function resetTimer(id){
-    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
-    var tm = state.timers[id];
+    var t = M().tasks.filter(function(x){ return x.id === id; })[0];
+    var tm = M().timers[id];
     if(!t || !tm) return;
     tm.endAt = null;
     tm.left = t.minutes * 60;
@@ -1080,13 +1239,13 @@
   }
 
   function toggleDone(id){
-    var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+    var t = M().tasks.filter(function(x){ return x.id === id; })[0];
     if(!t) return;
-    var tm = state.timers[id];
+    var tm = M().timers[id];
 
-    if(state.done[id]){
+    if(M().done[id]){
       if(doneLock[id] && Date.now() - doneLock[id] < 1200) return;
-      delete state.done[id];
+      delete M().done[id];
       if(tm){ tm.endAt = null; tm.left = t.minutes * 60; }
       if(state.runningId === id) state.runningId = null;
       chime('undo');
@@ -1095,7 +1254,7 @@
       return;
     }
 
-    state.done[id] = true;
+    M().done[id] = true;
     doneLock[id] = Date.now();
     if(tm && tm.endAt){
       tm.left = Math.max(0, (tm.endAt - Date.now()) / 1000);
@@ -1110,12 +1269,12 @@
   }
 
   function moveTask(id, dir){
-    var i = state.tasks.findIndex(function(t){ return t.id === id; });
+    var i = M().tasks.findIndex(function(t){ return t.id === id; });
     var j = i + dir;
-    if(i < 0 || j < 0 || j >= state.tasks.length) return;
-    var tmp = state.tasks[i];
-    state.tasks[i] = state.tasks[j];
-    state.tasks[j] = tmp;
+    if(i < 0 || j < 0 || j >= M().tasks.length) return;
+    var tmp = M().tasks[i];
+    M().tasks[i] = M().tasks[j];
+    M().tasks[j] = tmp;
     save();
     renderGrid();
     updateHero();
@@ -1124,9 +1283,9 @@
 
   function deleteTask(btn, id){
     if(btn.dataset.armed === '1'){
-      state.tasks = state.tasks.filter(function(t){ return t.id !== id; });
-      delete state.timers[id];
-      delete state.done[id];
+      M().tasks = M().tasks.filter(function(t){ return t.id !== id; });
+      delete M().timers[id];
+      delete M().done[id];
       if(state.runningId === id) state.runningId = null;
       save();
       renderGrid(); updateHero(); updateCountdown();
@@ -1147,8 +1306,8 @@
 
   function addTask(){
     var t = { id: newId(), emoji: '⭐', name: '새 할 일', minutes: 5 };
-    state.tasks.push(t);
-    state.timers[t.id] = { left: t.minutes*60, endAt: null };
+    M().tasks.push(t);
+    M().timers[t.id] = { left: t.minutes*60, endAt: null };
     save();
     renderGrid(); updateHero(); updateCountdown();
     var el = cards.get(t.id);
@@ -1160,30 +1319,35 @@
   }
 
   function resetToday(){
-    if(!window.confirm('오늘 체크한 내용과 타이머를 모두 지울까요?')) return;
-    state.done = {};
+    if(!window.confirm((state.mode === 'weekend' ? '주말 모드' : '평일 모드') + '에서 오늘 체크한 내용과 타이머를 모두 지울까요?')) return;
+    M().done = {};
     state.runningId = null;
     state.stats.celebrated = null;
     doneLock = {};
-    state.tasks.forEach(function(t){ state.timers[t.id] = { left: t.minutes*60, endAt: null }; });
+    M().tasks.forEach(function(t){ M().timers[t.id] = { left: t.minutes*60, endAt: null }; });
     save();
     renderGrid(); updateHero(); updateCountdown();
     toast('오늘 체크를 처음으로 되돌렸어요');
   }
 
+  /* 지금 모드의 목록·목표 시간만 기본값으로 되돌린다(다른 모드는 그대로). */
   function restoreDefaults(){
-    if(!window.confirm('할 일 목록과 목표 시간을 처음 상태로 되돌릴까요?')) return;
-    var fresh = freshState();
-    state.tasks = fresh.tasks;
-    state.timers = fresh.timers;
-    state.done = {};
+    var isWeekend = state.mode === 'weekend';
+    if(!window.confirm((isWeekend ? '주말 모드' : '평일 모드') + '의 할 일 목록과 목표 시간을 처음 상태로 되돌릴까요?')) return;
+    var fresh = isWeekend
+      ? freshMode(DEFAULT_WEEKEND_TASKS, 'w', DEFAULT_TARGET_WEEKEND)
+      : freshMode(DEFAULT_WEEKDAY_TASKS, 'd', DEFAULT_TARGET_WEEKDAY);
+    M().tasks = fresh.tasks;
+    M().timers = fresh.timers;
+    M().done = {};
+    M().target = fresh.target;
     state.runningId = null;
-    state.settings.target = DEFAULT_TARGET;
     state.stats.celebrated = null;
+    doneLock = {};
     var inp = $('#targetInput');
-    if(inp) inp.value = DEFAULT_TARGET;
+    if(inp) inp.value = fresh.target;
     save();
-    renderGrid(); updateHero(); updateCountdown();
+    renderGrid(); renderMode(); updateHero(); updateCountdown();
     toast('기본 목록으로 되돌렸어요');
   }
 
@@ -1200,15 +1364,68 @@
       setText(btn, parentMode ? '👩 설정 끝내기' : '👩 엄마 설정');
     }
     var tInp = $('#targetInput');
-    if(tInp) tInp.value = state.settings.target;
+    if(tInp) tInp.value = M().target;
     if(parentMode && panel){
       try { panel.scrollIntoView({ behavior:'smooth', block:'nearest' }); } catch(e){}
+    }
+    renderMode();
+  }
+
+  /* ================= mode (평일 / 주말) ================= */
+  function renderMode(){
+    var isWeekend = state.mode === 'weekend';
+    var cfg = MODES[isWeekend ? 'weekend' : 'weekday'];
+    var blk = M();
+    document.body.classList.toggle('weekend-mode', isWeekend);
+
+    var pill = $('#modePill');
+    if(pill){
+      pill.classList.toggle('weekend', isWeekend);
+      pill.setAttribute('aria-pressed', isWeekend ? 'true' : 'false');
+      var face = pill.querySelector('.mp-face');
+      if(face) setText(face, cfg.emoji);
+      var txt = pill.querySelector('.mp-text');
+      if(txt) setText(txt, cfg.label);
+      var cnt = pill.querySelector('.mp-count');
+      if(cnt) setText(cnt, blk.tasks.length + '단계');
+      pill.setAttribute('aria-label', '지금은 ' + cfg.label + ' 모드, ' + blk.tasks.length + '단계. 눌러서 ' + (isWeekend ? '평일' : '주말') + ' 모드로 바꾸기');
+      pill.title = '눌러서 ' + (isWeekend ? '평일' : '주말') + ' 모드로 바꾸기 (오늘 하루만 바뀌어요)';
+    }
+    var title = document.querySelector('.p-title');
+    if(title) setText(title, cfg.emoji + ' 오늘의 ' + cfg.label + ' 미션 진행률');
+
+    var tl = $('#targetFieldLabel');
+    if(tl) setText(tl, cfg.targetName + ' 목표 시간');
+    var note = $('#ppModeNote');
+    if(note){
+      note.innerHTML = '지금은 ' + cfg.emoji + ' <b>' + esc(cfg.label) + ' 모드</b>의 목록을 고치고 있어요 · ' +
+        blk.tasks.length + '단계 · 목표 ' + esc(blk.target) +
+        (state.modePref ? ' · 오늘은 손으로 바꾼 모드' : ' · 요일에 맞춰 자동');
+    }
+    var ti = $('#targetInput');
+    if(ti) ti.value = blk.target;
+  }
+
+  /* 손으로 모드 바꾸기: 그날 하루만 기억한다. */
+  function setMode(mode, manual){
+    if(mode !== 'weekday' && mode !== 'weekend') return;
+    if(state.mode === mode){ renderMode(); return; }
+    pauseAll();
+    state.mode = mode;
+    if(manual) state.modePref = { date: dateKey(new Date()), mode: mode };
+    lastSubHtml = '';
+    save();
+    renderMode(); renderGrid(); updateHero(); updateCountdown();
+    if(manual){
+      toast(mode === 'weekend'
+        ? '🌈 주말 모드! 가방 싸기 빼고 ' + M().tasks.length + '단계예요'
+        : '🎒 평일 모드! ' + M().tasks.length + '단계로 등원 준비해요');
     }
   }
 
   /* ================= celebration ================= */
   function checkAllDone(){
-    var total = state.tasks.length;
+    var total = M().tasks.length;
     if(!total) return;
     if(doneCount() < total) return;
     var today = dateKey(new Date());
@@ -1231,15 +1448,16 @@
     var target = new Date(now.getTime());
     target.setHours(tp.h, tp.m, 0, 0);
     var diff = Math.round((target - now) / 60000);
+    var tn = MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'].targetName;
     var msg;
-    if(diff > 0) msg = '등원 출발 ' + state.settings.target + '보다 ' + diff + '분 일찍 끝냈어요!';
-    else if(diff === 0) msg = '딱 등원 출발 시간에 맞춰 끝냈어요!';
-    else msg = '조금 늦었지만 ' + state.tasks.length + '개 미션을 모두 해냈어요!';
+    if(diff > 0) msg = tn + ' ' + M().target + '보다 ' + diff + '분 일찍 끝냈어요!';
+    else if(diff === 0) msg = '딱 ' + tn + ' 시간에 맞춰 끝냈어요!';
+    else msg = '조금 늦었지만 ' + M().tasks.length + '개 미션을 모두 해냈어요!';
 
     setText($('#celebrateMsg'), msg);
     var stars = $('#celebrateStars');
     if(stars){
-      var n = Math.min(20, state.tasks.length);
+      var n = Math.min(20, M().tasks.length);
       stars.textContent = new Array(n + 1).join('⭐');
     }
     var ov = $('#celebrate');
@@ -1321,8 +1539,8 @@
   /* ================= loop ================= */
   function tickTimers(now){
     var ended = [];
-    state.tasks.forEach(function(t){
-      var tm = state.timers[t.id];
+    M().tasks.forEach(function(t){
+      var tm = M().timers[t.id];
       if(!tm || !tm.endAt) return;
       if(tm.endAt - now <= 0){
         tm.left = 0;
@@ -1351,6 +1569,8 @@
   function loop(){
     var now = Date.now();
     if(rolloverIfNeeded()){
+      lastSubHtml = '';
+      renderMode();
       renderGrid();
       updateHero();
     }
@@ -1384,7 +1604,7 @@
       var cardEl = e.target.closest ? e.target.closest('.card') : null;
       if(!cardEl) return;
       var id = cardEl.dataset.id;
-      var t = state.tasks.filter(function(x){ return x.id === id; })[0];
+      var t = M().tasks.filter(function(x){ return x.id === id; })[0];
       if(!t) return;
       var el = e.target;
 
@@ -1397,7 +1617,7 @@
       } else if(el.classList.contains('e-min')){
         t.minutes = clampInt(el.value, 1, 120, t.minutes);
         el.value = t.minutes;
-        var tm = state.timers[id];
+        var tm = M().timers[id];
         if(tm && !tm.endAt) tm.left = t.minutes * 60;
         save();
         renderGrid(); updateHero(); updateCountdown();
@@ -1411,6 +1631,20 @@
     });
 
     $('#parentBtn').addEventListener('click', function(){ setParent(!parentMode); });
+
+    var pill = $('#modePill');
+    if(pill) pill.addEventListener('click', function(){
+      setMode(state.mode === 'weekend' ? 'weekday' : 'weekend', true);
+    });
+
+    var autoBtn = $('#autoModeBtn');
+    if(autoBtn) autoBtn.addEventListener('click', function(){
+      state.modePref = null;
+      setMode(autoMode(new Date()), false);
+      save();
+      renderMode();
+      toast('요일에 맞는 모드로 돌아왔어요');
+    });
 
     $('#soundBtn').addEventListener('click', function(){
       state.settings.sound = !state.settings.sound;
@@ -1430,12 +1664,13 @@
     $('#targetInput').addEventListener('change', function(){
       var v = this.value;
       if(/^([01]\d|2[0-3]):[0-5]\d$/.test(v)){
-        state.settings.target = v;
+        M().target = v;
         save();
+        renderMode();
         updateCountdown();
-        toast('목표 시간을 ' + v + '로 바꿨어요');
+        toast(MODES[state.mode === 'weekend' ? 'weekend' : 'weekday'].targetName + ' 시간을 ' + v + '로 바꿨어요');
       } else {
-        this.value = state.settings.target;
+        this.value = M().target;
         toast('시간을 다시 확인해 주세요');
       }
     });
@@ -1456,7 +1691,7 @@
 
     document.addEventListener('visibilitychange', function(){
       if(!document.hidden){
-        if(rolloverIfNeeded()){ renderGrid(); updateHero(); }
+        if(rolloverIfNeeded()){ lastSubHtml = ''; renderMode(); renderGrid(); updateHero(); }
         updateCards(); updateHero(); updateCountdown();
       } else {
         save();
@@ -1483,9 +1718,10 @@
       sb.setAttribute('aria-label', state.settings.sound ? '소리 끄기' : '소리 켜기');
     }
     var ti = $('#targetInput');
-    if(ti) ti.value = state.settings.target;
+    if(ti) ti.value = M().target;
 
     renderGrid();
+    renderMode();
     renderClock(new Date());
     updateHero();
     updateCountdown();
