@@ -113,8 +113,10 @@
     position:relative;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.24);
     font-size:11px;font-weight:900;padding:5px 10px;border-radius:999px;letter-spacing:.2px;
   }
-  .course-card h2{margin:9px 0 3px;font-size:21px;letter-spacing:-.6px;line-height:1.2;display:flex;align-items:center;gap:6px}
-  .course-card .desc{font-size:12.5px;font-weight:700;line-height:1.45;opacity:.95}
+  .course-card .title{
+    display:block;margin:9px 0 3px;font-size:21px;font-weight:900;letter-spacing:-.6px;line-height:1.2;
+  }
+  .course-card .desc{display:block;font-size:12.5px;font-weight:700;line-height:1.45;opacity:.95}
   .course-flow{display:flex;align-items:center;gap:5px;margin-top:13px;flex-wrap:wrap}
   .cf-step{
     display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.95);color:#4338ca;
@@ -421,14 +423,14 @@
     <button class="course-card" data-mode="course" id="courseCard">
       <span class="deco">🚀</span>
       <span class="ribbon">⭐ 추천 · 이렇게 하면 제일 잘 외워요</span>
-      <h2>🚀 한 단어 3단계 마스터 코스</h2>
-      <div class="desc">한 단어를 끝까지! 블록으로 만나고 → 빈칸으로 콕 찍고 → 내 손으로 써요</div>
-      <div class="course-flow">
+      <span class="title">🚀 한 단어 3단계 마스터 코스</span>
+      <span class="desc">한 단어를 끝까지! 블록으로 만나고 → 빈칸으로 콕 찍고 → 내 손으로 써요</span>
+      <span class="course-flow">
         <span class="cf-step">① 🧩 블록</span><span class="cf-arrow">→</span>
         <span class="cf-step">② 🎈 빈칸</span><span class="cf-arrow">→</span>
         <span class="cf-step">③ 🎤 직접 쓰기</span>
-      </div>
-      <div class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">12</b></div>
+      </span>
+      <span class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">12개</b></span>
     </button>
 
     <div class="sec-title">🔁 하나만 골라 연습하기 <i>· 따로따로 연습하고 싶을 때</i></div>
@@ -729,7 +731,7 @@
     $('masteredCount').textContent = masteredCount() + '/12';
     $('focusCount').textContent = FOCUS.length;
     var tc = $('courseTotal');
-    if(tc) tc.textContent = (G.filter === 'focus') ? FOCUS.length : WORDS.length;
+    if(tc) tc.textContent = ((G.filter === 'focus') ? FOCUS.length : WORDS.length) + '개';
   }
   function updateProgress(){
     var total = G.queue.length || 1;
@@ -749,6 +751,7 @@
       el.textContent = '🔥 ' + G.streak;
       el.classList.add('on');
     }else{
+      el.textContent = '🔥 0';
       el.classList.remove('on');
     }
   }
@@ -1167,7 +1170,7 @@
       $('pTip').textContent = w.tip;
       renderStep();
       setTimeout(function(){ if(rid === G.runId) speak(w.en); }, 280);
-    }, 1400);
+    }, 1700);
   }
 
   function wordDone(){
