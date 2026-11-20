@@ -99,6 +99,79 @@
   .book-btn b{font-size:13px;color:#8b5cf6;background:#fff;padding:3px 8px;border-radius:999px}
   .foot{text-align:center;font-size:11.5px;color:#94a3b8;font-weight:700;margin:18px 0 0}
 
+  /* ---------- home: 3-step master course ---------- */
+  .course-card{
+    position:relative;display:block;width:100%;border:none;font-family:inherit;text-align:left;
+    color:#fff;cursor:pointer;padding:19px 17px 17px;border-radius:26px;margin-bottom:6px;overflow:hidden;
+    background:linear-gradient(135deg,#3b82f6 0%,#6366f1 56%,#8b5cf6 100%);
+    box-shadow:0 6px 0 #4338ca,0 16px 30px rgba(67,56,202,.28);
+    transition:transform .12s,box-shadow .12s;
+  }
+  .course-card:active{transform:translateY(5px);box-shadow:0 1px 0 #4338ca,0 6px 14px rgba(67,56,202,.24)}
+  .course-card .deco{position:absolute;right:-14px;top:-16px;font-size:92px;opacity:.15;transform:rotate(-12deg);pointer-events:none}
+  .course-card .ribbon{
+    position:relative;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.24);
+    font-size:11px;font-weight:900;padding:5px 10px;border-radius:999px;letter-spacing:.2px;
+  }
+  .course-card h2{margin:9px 0 3px;font-size:21px;letter-spacing:-.6px;line-height:1.2;display:flex;align-items:center;gap:6px}
+  .course-card .desc{font-size:12.5px;font-weight:700;line-height:1.45;opacity:.95}
+  .course-flow{display:flex;align-items:center;gap:5px;margin-top:13px;flex-wrap:wrap}
+  .cf-step{
+    display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.95);color:#4338ca;
+    font-size:11.5px;font-weight:900;padding:6px 9px;border-radius:10px;white-space:nowrap;
+  }
+  .cf-arrow{color:rgba(255,255,255,.85);font-size:13px;font-weight:900}
+  .course-go{
+    margin-top:14px;display:flex;align-items:center;justify-content:center;gap:7px;
+    background:#fff;color:#4338ca;font-size:15.5px;font-weight:900;padding:13px;border-radius:16px;
+    box-shadow:0 4px 0 rgba(30,27,75,.3);
+  }
+  .course-go b{font-size:12px;font-weight:900;color:#7c3aed;background:#f5f3ff;padding:3px 8px;border-radius:999px}
+  .sec-title{display:flex;align-items:baseline;gap:7px;font-size:13px;font-weight:900;color:#475569;margin:18px 2px 9px}
+  .sec-title i{font-style:normal;font-size:11px;font-weight:800;color:#94a3b8}
+  .modes.practice .mode-card{padding:13px 14px;border-radius:18px;box-shadow:0 4px 0 #e4ecf8,0 8px 18px rgba(37,99,235,.07)}
+  .modes.practice .mode-emoji{width:44px;height:44px;border-radius:14px;font-size:24px}
+  .modes.practice .mode-txt b{font-size:15px}
+  .modes.practice .mode-txt i{font-size:11.5px}
+  .modes.practice .mode-level{font-size:10px;padding:4px 8px}
+
+  /* ---------- 3-step indicator (play) ---------- */
+  .stepper{
+    display:flex;align-items:stretch;gap:5px;margin-bottom:11px;background:#fff;border-radius:18px;
+    padding:7px;box-shadow:0 4px 0 #e6eefa,0 10px 22px rgba(37,99,235,.07);
+  }
+  .stepper[hidden]{display:none}
+  .stp{
+    flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;
+    padding:7px 2px;border-radius:12px;background:#f8fafc;color:#9aa8bd;text-align:center;
+    font-size:10.5px;font-weight:900;line-height:1.2;transition:.2s;
+  }
+  .stp .n{font-size:11px;font-weight:900;opacity:.8;line-height:1}
+  .stp .e{font-size:17px;line-height:1.15;filter:grayscale(.55);opacity:.75;transition:.2s}
+  .stp b{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .stp.now{background:#eff6ff;color:#1d4ed8;animation:stepglow 1.8s ease-in-out infinite}
+  .stp.now .e{filter:none;opacity:1;font-size:19px}
+  .stp.done{background:#f0fdf4;color:#15803d}
+  .stp.done .e{filter:none;opacity:1}
+  @keyframes stepglow{0%,100%{box-shadow:0 0 0 2px #bfdbfe inset}50%{box-shadow:0 0 0 3px #93c5fd inset}}
+
+  /* ---------- step transition banner ---------- */
+  .trans{position:fixed;inset:0;display:none;place-items:center;z-index:65;pointer-events:none;padding:22px}
+  .trans.on{display:grid}
+  .trans .box{
+    background:linear-gradient(165deg,#f0fdf4,#dcfce7);border:3px solid #86efac;border-radius:26px;
+    padding:22px 26px;text-align:center;max-width:330px;
+    box-shadow:0 18px 40px rgba(22,163,74,.28);animation:transIn .34s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes transIn{0%{transform:scale(.72);opacity:0}62%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+  .trans .e{font-size:44px;line-height:1.05;animation:bob 1.4s ease-in-out infinite}
+  .trans .t{font-size:20px;font-weight:900;color:#15803d;margin-top:5px;letter-spacing:-.4px}
+  .trans .s{font-size:14px;font-weight:800;color:#166534;margin-top:4px;line-height:1.45}
+  .trans .nx{
+    margin-top:12px;font-size:12px;font-weight:900;color:#15803d;background:#fff;
+    display:inline-block;padding:7px 13px;border-radius:999px;box-shadow:0 3px 0 #bbf7d0;
+  }
+
   /* ---------- play ---------- */
   .play-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .icon-btn{
@@ -345,7 +418,22 @@
       <button class="chip" data-filter="focus">✏️ 자주 틀리는 <span id="focusCount">8</span>개</button>
     </div>
 
-    <div class="modes">
+    <button class="course-card" data-mode="course" id="courseCard">
+      <span class="deco">🚀</span>
+      <span class="ribbon">⭐ 추천 · 이렇게 하면 제일 잘 외워요</span>
+      <h2>🚀 한 단어 3단계 마스터 코스</h2>
+      <div class="desc">한 단어를 끝까지! 블록으로 만나고 → 빈칸으로 콕 찍고 → 내 손으로 써요</div>
+      <div class="course-flow">
+        <span class="cf-step">① 🧩 블록</span><span class="cf-arrow">→</span>
+        <span class="cf-step">② 🎈 빈칸</span><span class="cf-arrow">→</span>
+        <span class="cf-step">③ 🎤 직접 쓰기</span>
+      </div>
+      <div class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">12</b></div>
+    </button>
+
+    <div class="sec-title">🔁 하나만 골라 연습하기 <i>· 따로따로 연습하고 싶을 때</i></div>
+
+    <div class="modes practice">
       <button class="mode-card" data-mode="blocks">
         <span class="mode-emoji">🧩</span>
         <span class="mode-txt"><b>블록 맞추기</b><i>글자를 하나씩 끼워서 완성해요</i></span>
@@ -376,6 +464,12 @@
         <span id="progText">1/12</span>
       </div>
       <div class="combo" id="combo">🔥 0</div>
+    </div>
+
+    <div class="stepper" id="stepper" hidden>
+      <div class="stp" data-step="0"><span class="n">①</span><span class="e">🧩</span><b>블록 맞추기</b></div>
+      <div class="stp" data-step="1"><span class="n">②</span><span class="e">🎈</span><b>빈칸 톡톡</b></div>
+      <div class="stp" data-step="2"><span class="n">③</span><span class="e">🎤</span><b>직접 쓰기</b></div>
     </div>
 
     <div class="card wordcard">
@@ -423,6 +517,15 @@
     <div class="st" id="flashStars">⭐⭐⭐</div>
     <div class="wd" id="flashWord">bus</div>
     <div class="msg" id="flashMsg">정답!</div>
+  </div>
+</div>
+
+<div class="trans" id="trans">
+  <div class="box">
+    <div class="e" id="transEmoji">🎉</div>
+    <div class="t" id="transTitle">잘했어요!</div>
+    <div class="s" id="transSub">이제 빈칸 톡톡!</div>
+    <div class="nx" id="transNext">다음 단계로 가요 →</div>
   </div>
 </div>
 
@@ -488,6 +591,11 @@
   var KEYS = ['qwertyuiop','asdfghjkl','zxcvbnm'];
   var MODE_NAME = {blocks:'🧩 블록 맞추기', fill:'🎈 빈칸 톡톡', type:'🎤 직접 써보기'};
   var MODE_TAG = {blocks:'블록 맞추기', fill:'빈칸 톡톡', type:'써보기'};
+  var STEPS = [
+    {key:'blocks', num:'①', emoji:'🧩', label:'블록 맞추기'},
+    {key:'fill', num:'②', emoji:'🎈', label:'빈칸 톡톡'},
+    {key:'type', num:'③', emoji:'🎤', label:'직접 쓰기'}
+  ];
   var STORE_KEY = 'spelling_transport_v1';
 
   /* ================= storage ================= */
@@ -602,8 +710,9 @@
   /* ================= state ================= */
   var G = {
     mode:'blocks', filter:'all',
-    queue:[], qi:0,
+    queue:[], qi:0, step:0, course:false,
     wrong:0, hint:false, locked:false,
+    wordWrong:0, wordHint:false,
     streak:0, round:[], runId:0
   };
 
@@ -619,12 +728,20 @@
     $('starTotal').textContent = totalStars();
     $('masteredCount').textContent = masteredCount() + '/12';
     $('focusCount').textContent = FOCUS.length;
+    var tc = $('courseTotal');
+    if(tc) tc.textContent = (G.filter === 'focus') ? FOCUS.length : WORDS.length;
   }
   function updateProgress(){
     var total = G.queue.length || 1;
-    var done = Math.min(G.qi, total);
-    $('progBar').style.width = Math.round(done / total * 100) + '%';
-    $('progText').textContent = Math.min(G.qi + 1, total) + '/' + total;
+    var frac;
+    if(G.course){
+      frac = (G.qi + G.step / STEPS.length) / total;
+      $('progText').textContent = '단어 ' + Math.min(G.qi + 1, total) + ' / ' + total;
+    }else{
+      frac = Math.min(G.qi, total) / total;
+      $('progText').textContent = Math.min(G.qi + 1, total) + '/' + total;
+    }
+    $('progBar').style.width = Math.round(frac * 100) + '%';
   }
   function updateCombo(){
     var el = $('combo');
@@ -640,16 +757,21 @@
   function startGame(mode){
     unlockAudio();
     G.mode = mode;
+    G.course = (mode === 'course');
     G.runId++;
     $('flash').classList.remove('on');
+    hideTrans();
     var list = (G.filter === 'focus') ? FOCUS : WORDS;
     G.queue = shuffle(list);
     G.qi = 0;
+    G.step = 0;
     G.streak = 0;
     G.round = [];
+    G.wordWrong = 0;
+    G.wordHint = false;
     prog.plays = (prog.plays || 0) + 1;
     saveProg();
-    $('modeTag').textContent = MODE_TAG[mode];
+    $('stepper').hidden = !G.course;
     showScreen('play');
     updateCombo();
     loadWord();
@@ -659,6 +781,7 @@
     if(G.qi >= G.queue.length){ finishRound(); return; }
     var w = G.queue[G.qi];
     G.wrong = 0; G.hint = false; G.locked = false;
+    if(G.course){ G.step = 0; G.wordWrong = 0; G.wordHint = false; }
     $('pEmoji').textContent = w.emoji;
     $('pKo').textContent = w.ko;
     $('pTip').hidden = true;
@@ -667,16 +790,40 @@
     pa.style.animation = 'none';
     void pa.offsetWidth;
     pa.style.animation = '';
-    updateProgress();
-    renderMode(w);
+    renderStep();
     setTimeout(function(){ speak(w.en); }, 230);
   }
 
-  function renderMode(w){
+  function renderStepper(){
+    var el = $('stepper');
+    if(!G.course){ el.hidden = true; return; }
+    el.hidden = false;
+    for(var i = 0; i < el.children.length; i++){
+      var s = el.children[i];
+      s.classList.toggle('now', i === G.step);
+      s.classList.toggle('done', i < G.step);
+      var n = s.querySelector('.n');
+      if(n) n.textContent = (i < G.step) ? '✓' : STEPS[i].num;
+    }
+  }
+
+  function renderStep(){
+    var w = G.queue[G.qi];
+    var mode = G.course ? STEPS[G.step].key : G.mode;
+    $('modeTag').textContent = G.course
+      ? (STEPS[G.step].num + ' ' + STEPS[G.step].label + ' · ' + (G.step + 1) + '/3')
+      : MODE_TAG[mode];
+    renderStepper();
+    updateProgress();
+    renderMode(w, mode);
+  }
+
+  function renderMode(w, mode){
     var area = $('playarea');
     area.innerHTML = '';
-    if(G.mode === 'blocks') buildBlocks(w, area);
-    else if(G.mode === 'fill') buildFill(w, area);
+    var m = mode || G.mode;
+    if(m === 'blocks') buildBlocks(w, area);
+    else if(m === 'fill') buildFill(w, area);
     else buildType(w, area);
   }
 
@@ -986,12 +1133,57 @@
   }
 
   /* ================= word complete ================= */
+  function showTrans(o){
+    $('transEmoji').textContent = o.emoji || '🎉';
+    $('transTitle').textContent = o.title || '잘했어요!';
+    $('transSub').textContent = o.sub || '';
+    $('transNext').textContent = o.next || '';
+    $('trans').classList.add('on');
+  }
+  function hideTrans(){
+    $('trans').classList.remove('on');
+  }
+
+  /* one step finished inside the 3-step course */
+  function stepDone(rid, w){
+    G.wordWrong += G.wrong;
+    if(G.hint) G.wordHint = true;
+    sfx('good');
+    speak(w.en, 0.78);
+    var doneStep = G.step;
+    if(doneStep === 0){
+      showTrans({emoji:'🧩✨', title:'블록 완성!', sub:'잘했어요! 이제 빈칸 톡톡!', next:'② 빈칸 톡톡으로 →'});
+    }else{
+      showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub:'좋아! 이제 안 보고 직접 써볼까?', next:'③ 직접 쓰기로 →'});
+    }
+    setTimeout(function(){
+      if(rid !== G.runId) return;
+      hideTrans();
+      G.step = doneStep + 1;
+      G.wrong = 0;
+      G.hint = false;
+      G.locked = false;
+      $('pTip').hidden = true;
+      $('pTip').textContent = w.tip;
+      renderStep();
+      setTimeout(function(){ if(rid === G.runId) speak(w.en); }, 280);
+    }, 1400);
+  }
+
   function wordDone(){
     if(G.locked) return;
     G.locked = true;
     var rid = G.runId;
     var w = G.queue[G.qi];
-    var earned = (G.wrong === 0 && !G.hint) ? 3 : (G.wrong <= 2 ? 2 : 1);
+
+    if(G.course && G.step < STEPS.length - 1){
+      stepDone(rid, w);
+      return;
+    }
+
+    var wrong = G.course ? (G.wordWrong + G.wrong) : G.wrong;
+    var hinted = G.course ? (G.wordHint || G.hint) : G.hint;
+    var earned = (wrong === 0 && !hinted) ? 3 : (wrong <= 2 ? 2 : 1);
     var prev = starOf(w.en);
     if(earned > prev){ prog.stars[w.en] = earned; }
     var perfect = (earned === 3);
@@ -1010,11 +1202,13 @@
 
     $('flashStars').textContent = stars(earned);
     $('flashWord').textContent = w.en;
-    $('flashMsg').textContent = perfect ? '완벽해요! 실수 없이 통과 🎉'
-      : (earned === 2 ? '정답! 조금만 더!' : '정답이에요!');
+    $('flashMsg').textContent = G.course
+      ? (perfect ? '3단계 모두 통과! 완벽해요 🎉' : '한 단어 완성! 다음 단어로!')
+      : (perfect ? '완벽해요! 실수 없이 통과 🎉'
+        : (earned === 2 ? '정답! 조금만 더!' : '정답이에요!'));
     $('flash').classList.add('on');
     flyStar(earned);
-    if(perfect && G.streak >= 3) confetti(26);
+    if(perfect && (G.course || G.streak >= 3)) confetti(G.course ? 30 : 26);
 
     setTimeout(function(){
       $('flash').classList.remove('on');
@@ -1022,7 +1216,7 @@
         G.qi++;
         loadWord();
       }
-    }, perfect ? 1350 : 1150);
+    }, G.course ? (perfect ? 1500 : 1250) : (perfect ? 1350 : 1150));
   }
 
   function finishRound(){
@@ -1033,8 +1227,10 @@
     G.round.forEach(function(r){ sum += r.stars; if(r.stars === 3) perfects++; });
     $('resStars').textContent = sum;
     $('resEmoji').textContent = (perfects === G.round.length && G.round.length > 0) ? '🏆' : '🎉';
-    $('resTitle').textContent = (perfects === G.round.length && G.round.length > 0) ? '완벽해요!' : '잘했어요!';
-    $('resSub').textContent = G.round.length + '개 중 ' + perfects + '개를 완벽하게 맞혔어요';
+    $('resTitle').textContent = (perfects === G.round.length && G.round.length > 0)
+      ? '완벽해요!' : (G.course ? '코스 완주!' : '잘했어요!');
+    $('resSub').textContent = (G.course ? '한 단어 3단계 코스 · ' : '') +
+      G.round.length + '개 중 ' + perfects + '개를 완벽하게 맞혔어요';
 
     var list = $('resList');
     list.innerHTML = '';
@@ -1135,9 +1331,10 @@
         c.classList.add('on');
         G.filter = c.dataset.filter;
         unlockAudio(); sfx('tap');
+        updateScore();
       });
     });
-    document.querySelectorAll('.mode-card').forEach(function(c){
+    document.querySelectorAll('.mode-card, .course-card').forEach(function(c){
       c.addEventListener('click', function(){
         sfx('tap');
         startGame(c.dataset.mode);
@@ -1155,6 +1352,8 @@
       sfx('tap');
       G.runId++;
       G.locked = true;
+      hideTrans();
+      $('flash').classList.remove('on');
       showScreen('home');
       updateScore();
     });
