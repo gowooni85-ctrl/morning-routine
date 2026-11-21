@@ -70,9 +70,9 @@
   .brand h1{font-size:1.16rem;margin:0;font-weight:900;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.25}
   #dateLabel{margin:1px 0 0;font-size:.76rem;color:#8493ab;font-weight:800}
   .now-box{display:flex;align-items:baseline;gap:1px;font-variant-numeric:tabular-nums;flex:none}
-  .now-label{font-size:.72rem;color:#93a0b6;font-weight:800;margin-right:6px;letter-spacing:.02em}
-  .now-time{font-size:1.66rem;font-weight:900;letter-spacing:-.02em;line-height:1}
-  .now-sec{font-size:.92rem;font-weight:800;color:#93a0b6;min-width:1.5em}
+  .now-label{font-size:clamp(.78rem,1.3vw,.9rem);color:#93a0b6;font-weight:800;margin-right:6px;letter-spacing:.02em}
+  .now-time{font-size:clamp(1.7rem,3vw,2.3rem);font-weight:900;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+  .now-sec{font-size:clamp(.95rem,1.7vw,1.2rem);font-weight:800;color:#93a0b6;min-width:1.5em;font-variant-numeric:tabular-nums}
   .top-actions{display:flex;gap:8px;align-items:center;flex:none}
   .icon-btn{
     border:1px solid #e3eaf5;background:#fff;border-radius:14px;padding:10px 12px;
@@ -111,17 +111,16 @@
   }
 
   /* ---------- layout ---------- */
-  .wrap{max-width:1260px;margin:0 auto;padding:14px clamp(14px,3vw,28px) 40px}
+  .wrap{max-width:860px;margin:0 auto;padding:14px clamp(14px,3vw,28px) 40px}
 
   /* ---------- hero ---------- */
-  .hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:14px;align-items:stretch}
-  @media (max-width:880px){ .hero{grid-template-columns:1fr} }
+  .hero{display:block}
 
   .cd-card{
     --accent:#2f6fe4; --accent-soft:#e9f1ff; --accent-deep:#1e4fb8;
     position:relative;overflow:hidden;
     background:#fff;border:1px solid #ecf2fb;border-radius:28px;
-    padding:18px clamp(16px,3vw,26px) 16px;
+    padding:20px clamp(18px,3vw,30px) 18px;
     box-shadow:var(--shadow);
   }
   .cd-card::after{
@@ -139,57 +138,47 @@
   .cd-card.done{--accent:#2f6fe4;--accent-soft:#e8f1ff;--accent-deep:#1e4fb8}
 
   .cd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  .cd-label{font-size:.95rem;font-weight:900;color:var(--accent-deep);letter-spacing:-.01em;transition:color .4s}
+  .cd-label{font-size:clamp(1.02rem,1.9vw,1.4rem);font-weight:900;color:var(--accent-deep);letter-spacing:-.01em;transition:color .4s}
   .target-chip{
     display:inline-flex;align-items:center;gap:6px;
     border:1px solid #e6edf9;background:#f7faff;color:#3d4f6d;
-    border-radius:99px;padding:6px 12px;font-size:.8rem;font-weight:800;cursor:pointer;
+    border-radius:99px;padding:8px 16px;font-size:clamp(.92rem,1.8vw,1.12rem);font-weight:800;cursor:pointer;
     touch-action:manipulation;transition:border-color .15s,background .15s;
   }
   .target-chip:hover{border-color:#c9d9f5;background:#eef4ff}
-  .target-chip b{font-variant-numeric:tabular-nums;font-size:.86rem;color:#22314e}
+  .target-chip b{font-variant-numeric:tabular-nums;font-size:clamp(1rem,2vw,1.22rem);color:#22314e}
   .cd-time{
-    font-size:clamp(46px,9vw,66px);line-height:1.02;font-weight:900;letter-spacing:-.035em;
-    font-variant-numeric:tabular-nums;color:var(--accent);margin:4px 0 2px;
+    font-size:clamp(2.4rem,7vw,4.4rem);line-height:1.02;font-weight:900;letter-spacing:-.035em;
+    font-variant-numeric:tabular-nums;color:var(--accent);margin:6px 0 4px;
     transition:color .4s;
     display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
   }
   .cd-time small{font-size:.3em;font-weight:900;letter-spacing:0;color:var(--accent-deep);opacity:.75}
-  .cd-time.long{font-size:clamp(30px,6.4vw,42px);letter-spacing:-.02em}
+  .cd-time.long{font-size:clamp(2.6rem,9vw,5.6rem);letter-spacing:-.025em}
   .cd-card.behind .cd-time{animation:pulse 1.6s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
   .cd-status{
-    display:inline-block;margin-top:2px;
+    display:inline-block;margin-top:4px;
     background:var(--accent-soft);color:var(--accent-deep);
-    border-radius:12px;padding:7px 12px;font-size:.92rem;font-weight:800;line-height:1.35;
+    border-radius:14px;padding:9px 15px;font-size:clamp(.98rem,1.8vw,1.18rem);font-weight:800;line-height:1.35;
     transition:background .4s,color .4s;
   }
-  .cd-track{height:11px;border-radius:99px;background:#eef2f9;overflow:hidden;margin:12px 0 8px}
+  .cd-track{height:14px;border-radius:99px;background:#eef2f9;overflow:hidden;margin:14px 0 10px}
   .cd-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s linear,background .4s}
-  .cd-sub{font-size:.8rem;font-weight:700;color:#7d8ba4;display:flex;gap:6px 14px;flex-wrap:wrap}
+  .cd-sub{font-size:clamp(.84rem,1.5vw,.98rem);font-weight:700;color:#7d8ba4;display:flex;gap:6px 16px;flex-wrap:wrap}
   .cd-sub span{white-space:nowrap}
 
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:stretch}
-  .stat{
-    background:#fff;border:1px solid #eef3fb;border-radius:22px;padding:12px 10px;
-    box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;
-  }
-  .stat .ic{font-size:1.5rem;line-height:1}
-  .stat b{font-size:1.5rem;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
-  .stat small{font-size:.7rem;font-weight:800;color:#8b98ae}
-  @media (max-width:880px){
-    .stat{padding:10px 6px;border-radius:18px}
-    .stat b{font-size:1.28rem}
-  }
   @media (max-width:560px){
     .topbar{padding:8px 14px;gap:8px 10px}
     .brand{flex:1 1 100%}
     .now-box{flex:1 1 auto}
-    .now-time{font-size:1.5rem}
+    .now-time{font-size:1.62rem}
+    .now-sec{font-size:.9rem}
     .icon-btn{padding:9px 11px;font-size:.84rem}
     .logo{width:40px;height:40px;font-size:22px;border-radius:13px}
     .brand h1{font-size:1.05rem}
-    .cd-card{border-radius:24px}
+    .cd-card{border-radius:24px;padding:16px 16px 14px}
+    .cd-time.long{font-size:clamp(2.1rem,10vw,3rem)}
     .progress-card{padding:13px 15px}
   }
   .noscript{max-width:640px;margin:24px auto;padding:16px 20px;background:#fff3f3;border:1px solid #ffd6d6;border-radius:16px;font-weight:800;color:#a8242c;text-align:center}
@@ -286,9 +275,9 @@
   /* ---------- task grid ---------- */
   .grid{
     display:grid;gap:16px;margin-top:22px;padding-top:6px;
-    grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+    grid-template-columns:1fr;   /* 한 줄에 할 일 하나씩 (패드/넓은 화면에서도 1열) */
   }
-  @media (max-width:520px){ .grid{grid-template-columns:1fr;gap:14px} }
+  @media (max-width:520px){ .grid{gap:14px} }
 
   .card{
     position:relative;display:flex;flex-direction:column;gap:11px;
@@ -415,6 +404,22 @@
   .e-btns button.danger{background:#fff3f3;border-color:#ffd6d6;color:#c23a3a}
   .e-btns button.armed{background:#ffe1e1;border-color:#ff9e9e;font-size:.86rem;font-weight:900}
 
+  /* 넓은 화면(패드 가로 등): 1열 카드를 넓게 펼쳐 글자·버튼을 크게 */
+  @media (min-width:700px){
+    .card{padding:18px 20px;border-radius:24px;gap:12px}
+    .card-head{gap:12px}
+    .step{width:34px;height:34px;font-size:1rem;border-radius:11px}
+    .card-head .emoji{font-size:1.9rem}
+    .name{font-size:clamp(1.2rem,2vw,1.42rem)}
+    .mins{font-size:.88rem;padding:5px 12px}
+    .timer-time{font-size:clamp(2rem,3vw,2.5rem);min-width:124px}
+    .timer-time.wide{font-size:clamp(1.6rem,2.4vw,1.9rem);min-width:156px}
+    .card.done .timer-time{font-size:1.7rem}
+    .timer-bar{height:16px}
+    .btn{padding:16px 10px;font-size:1.14rem;border-radius:17px}
+    .btn-reset{flex:0 0 62px;font-size:1.3rem}
+  }
+
   .empty{
     grid-column:1/-1;text-align:center;padding:44px 16px;color:#8493ab;font-weight:800;
     background:#fff;border:2px dashed #dfe8f6;border-radius:24px;line-height:1.7;
@@ -503,12 +508,6 @@
       <div class="cd-status" id="cdStatus">⏳ 시간을 계산하고 있어요</div>
       <div class="cd-track" aria-hidden="true"><div class="cd-fill" id="cdFill"></div></div>
       <div class="cd-sub" id="cdSub"></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat"><span class="ic" aria-hidden="true">⭐</span><b id="starCount">0</b><small>모은 별</small></div>
-      <div class="stat"><span class="ic" aria-hidden="true">🔥</span><b id="streakCount">0</b><small>연속 완료</small></div>
-      <div class="stat"><span class="ic" aria-hidden="true">✅</span><b id="doneCount">0/0</b><small>오늘 완료</small></div>
     </div>
   </section>
 
@@ -1400,9 +1399,6 @@
     var track = $('#progTrack');
     if(track) track.setAttribute('aria-valuenow', String(pct));
     setText($('#pCount'), n + ' / ' + total + ' 완료');
-    setText($('#doneCount'), n + '/' + total);
-    setText($('#starCount'), String(totalStars()));
-    setText($('#streakCount'), String(state.stats.streak));
 
     var cur = null;
     for(var i = 0; i < M().tasks.length; i++){
