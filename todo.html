@@ -1251,12 +1251,23 @@
     var turnedOff = at >= 0;
     if (turnedOff) item.days.splice(at, 1);
     else item.days.push(day);
-    // 오늘 요일을 껐으면 오늘 목록에서도 빼요
-    if (turnedOff && day === dowNow()) dropTodayTask(item.text);
+    // 오늘 요일을 껐다 켰다 하면 오늘 목록에도 바로 반영해요
+    if (day === dowNow()) {
+      if (turnedOff) dropTodayTask(item.text);
+      else addTodayTask(item.text);
+    }
     save();
     renderDaily();
     render();
     showToast('‘' + item.text + '’ ' + daysText(item.days), null);
+  }
+
+  // 오늘 목록에 자동 숙제로 넣기
+  function addTodayTask(text) {
+    var v = cleanText(text).slice(0, 80);
+    if (!v || findDuplicate(v)) return false;
+    state.tasks.push({ id: uid(), text: v, emoji: dailyEmoji(v), daily: true });
+    return true;
   }
 
   // 자동으로 들어온 오늘 숙제를 목록에서 빼요 (직접 추가한 숙제는 건드리지 않아요)
