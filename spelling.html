@@ -825,21 +825,22 @@
     if(need > L - 1) need = Math.max(1, L - 1);
     var VOW = 'aeiouy';
     function isV(i){ return VOW.indexOf(chars[i].toLowerCase()) >= 0; }
+    /* 첫 글자는 보여 주고, 모음을 우선으로 고르게 빈칸을 만든다 */
     var c1 = idx.filter(function(i){ return i !== idx[0] && isV(i); });
     var c2 = idx.filter(function(i){ return i !== idx[0] && !isV(i); });
-    var c3 = idx.filter(function(i){ return i === idx[0]; });
-    var cands = c1.concat(c2).concat(c3);
     var picks = [];
-    for(var k = 0; k < need && cands.length; k++){
-      var pos = Math.floor(k * (cands.length - 1) / Math.max(1, need - 1));
-      var pick = cands[Math.min(cands.length - 1, pos)];
-      if(picks.indexOf(pick) >= 0){
-        for(var j = 0; j < cands.length; j++){
-          if(picks.indexOf(cands[j]) < 0){ pick = cands[j]; break; }
-        }
+    function spread(list, n){
+      for(var k = 0; k < n && list.length; k++){
+        var at = Math.floor(k * (list.length - 1) / Math.max(1, n - 1));
+        var c = list[Math.min(list.length - 1, at)];
+        if(picks.indexOf(c) < 0) picks.push(c);
       }
-      if(picks.indexOf(pick) < 0) picks.push(pick);
     }
+    spread(c1, Math.min(need, c1.length));
+    if(picks.length < need){
+      spread(c2.filter(function(i){ return picks.indexOf(i) < 0; }), need - picks.length);
+    }
+    if(!picks.length) picks.push(idx[0]);
     var pattern = chars.map(function(c, i){
       return (c === ' ') ? ' ' : (picks.indexOf(i) >= 0 ? '?' : c);
     }).join('');
