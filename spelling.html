@@ -390,6 +390,111 @@
     padding:14px;border-radius:16px;background:#eff6ff;color:#2563eb;cursor:pointer;
   }
 
+  /* ---------- word settings (엄마 설정) ---------- */
+  .wordset-btn{
+    display:flex;align-items:center;gap:12px;width:100%;border:none;font-family:inherit;text-align:left;
+    background:#fff;color:var(--ink);cursor:pointer;padding:13px 14px;border-radius:20px;margin-bottom:13px;
+    box-shadow:0 4px 0 #e6dcfb,0 10px 22px rgba(139,92,246,.12);transition:transform .12s,box-shadow .12s;
+  }
+  .wordset-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #e6dcfb}
+  .wordset-btn .ws-ico{
+    flex:0 0 auto;width:46px;height:46px;border-radius:15px;display:grid;place-items:center;
+    font-size:24px;background:#f5f3ff;
+  }
+  .wordset-btn .ws-txt{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+  .wordset-btn .ws-txt b{font-size:15.5px;font-weight:900;letter-spacing:-.3px}
+  .wordset-btn .ws-txt i{
+    font-style:normal;font-size:11.5px;font-weight:700;color:var(--muted);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .wordset-btn .ws-txt i b{display:inline;font-size:12px;font-weight:900;color:#7c3aed}
+  .wordset-btn .ws-go{
+    flex:0 0 auto;font-size:12px;font-weight:900;color:#7c3aed;background:#f5f3ff;
+    padding:7px 11px;border-radius:999px;white-space:nowrap;
+  }
+
+  .modal.sheet-modal{place-items:end center;padding:0}
+  .modal.sheet-modal .sheet.big{
+    max-width:520px;width:100%;text-align:left;border-radius:26px 26px 0 0;
+    padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);
+    max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    animation:sheetUp .28s cubic-bezier(.34,1.4,.64,1);
+  }
+  @keyframes sheetUp{from{transform:translateY(34px);opacity:.5}to{transform:none;opacity:1}}
+  .ws-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:13px}
+  .ws-head .icon-btn{width:38px;height:38px;font-size:16px;background:#f1f5f9;box-shadow:0 2px 0 #e2e8f0}
+  .ws-title{font-size:19px;font-weight:900;letter-spacing:-.5px}
+  .ws-sub{font-size:12px;font-weight:700;color:var(--muted);margin-top:3px;line-height:1.35}
+  .ws-presets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+  .preset{
+    border:none;font-family:inherit;font-size:12px;font-weight:900;color:#4338ca;cursor:pointer;
+    background:#eef2ff;padding:11px 3px;border-radius:13px;box-shadow:0 3px 0 #ddd6fe;line-height:1.25;
+    transition:transform .1s,box-shadow .1s;
+  }
+  .preset:active{transform:translateY(3px);box-shadow:none}
+  .preset[data-preset="easy"]{background:#dcfce7;color:#15803d;box-shadow:0 3px 0 #bbf7d0}
+  .preset[data-preset="mid"]{background:#dbeafe;color:#1d4ed8;box-shadow:0 3px 0 #bfdbfe}
+  .ws-count{font-size:12px;font-weight:900;color:#7c3aed;margin:14px 2px 8px;transition:color .15s}
+  .ws-count.bad{color:#dc2626}
+  .ws-list{display:flex;flex-direction:column;gap:7px}
+  .wrow{
+    display:flex;align-items:center;gap:9px;background:#f8fafc;border-radius:16px;padding:8px 9px;
+    border:2px solid transparent;
+  }
+  .wrow.on{background:#f0f7ff;border-color:#bfdbfe}
+  .wr-e{flex:0 0 auto;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:21px;background:#fff}
+  .wr-main{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+  .wr-w{font-size:14.5px;font-weight:900;color:#1e293b;font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;word-break:break-word;line-height:1.25}
+  .wr-w em{font-style:normal;font-size:10px;font-weight:900;color:#64748b;background:#e2e8f0;padding:2px 6px;border-radius:999px;vertical-align:2px;margin-left:3px;white-space:nowrap}
+  .wr-k{font-size:11px;font-weight:700;color:var(--muted);word-break:break-word}
+  .wr-del{
+    flex:0 0 auto;border:none;background:#fee2e2;color:#b91c1c;font-family:inherit;font-size:11px;
+    font-weight:900;padding:8px 9px;border-radius:10px;cursor:pointer;line-height:1;
+  }
+  .wr-del.arm{background:#dc2626;color:#fff}
+  .sw{
+    flex:0 0 auto;width:52px;height:30px;border-radius:999px;border:none;background:#cbd5e1;
+    position:relative;cursor:pointer;transition:background .18s;padding:0;
+  }
+  .sw i{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .sw.on{background:#22c55e}
+  .sw.on i{transform:translateX(22px)}
+  .add-toggle{
+    width:100%;margin-top:12px;border:2px dashed #c7d2fe;background:#fff;color:#4338ca;font-family:inherit;
+    font-size:13.5px;font-weight:900;padding:12px;border-radius:14px;cursor:pointer;
+  }
+  .add-toggle:active{transform:translateY(2px)}
+  .add-form{margin-top:10px;background:#f8fafc;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+  .add-form[hidden]{display:none}
+  .add-row{display:flex;gap:7px;align-items:flex-end}
+  .add-field{display:flex;flex-direction:column;gap:4px;flex:1 1 0;min-width:0}
+  .add-field.ko{flex:0 0 88px}
+  .add-field.emo{flex:0 0 60px}
+  .add-field label{font-size:10.5px;font-weight:900;color:#64748b;white-space:nowrap}
+  .add-field input{
+    width:100%;border:2px solid #dbe6f5;border-radius:11px;padding:10px 10px;font-family:inherit;
+    font-size:16px;font-weight:800;color:#1e293b;background:#fff;outline:none;
+    -webkit-user-select:text;user-select:text;
+  }
+  .add-field input:focus{border-color:#93c5fd}
+  .add-field.emo input{text-align:center;font-size:19px;padding:9px 4px}
+  .add-save{
+    border:none;font-family:inherit;font-size:14px;font-weight:900;color:#fff;cursor:pointer;
+    background:linear-gradient(180deg,#60a5fa,#2563eb);padding:12px;border-radius:12px;box-shadow:0 3px 0 #1d4ed8;
+  }
+  .add-save:active{transform:translateY(3px);box-shadow:none}
+  .add-msg{font-size:11.5px;font-weight:800;color:#dc2626;min-height:15px;line-height:1.3}
+  .add-msg.ok{color:#15803d}
+  .ws-done{
+    width:100%;margin-top:14px;border:none;font-family:inherit;font-size:15.5px;font-weight:900;color:#fff;
+    cursor:pointer;background:linear-gradient(180deg,#4ade80,#16a34a);padding:15px;border-radius:16px;
+    box-shadow:0 4px 0 #15803d;
+  }
+  .ws-done:active{transform:translateY(4px);box-shadow:none}
+  .wc.resting{background:#f1f5f9;opacity:.6}
+  .wc.resting .w{color:#8494ab}
+  .wc .rest{font-size:9px;font-weight:900;color:#94a3b8;background:#e2e8f0;padding:1px 6px;border-radius:999px;margin-top:3px}
+
   /* confetti */
   #confetti{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
   .cf{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;will-change:transform;animation:fall linear forwards}
@@ -407,7 +512,7 @@
       <span class="logo">🚌</span>
       <div>
         <h1>탈것 스펠링 모험</h1>
-        <p>영어 단어 12개를 정복하자!</p>
+        <p id="brandSub">연습 단어 6개를 정복하자!</p>
       </div>
     </div>
     <div class="score">⭐ <b id="starTotal">0</b></div>
@@ -415,10 +520,14 @@
 
   <!-- HOME -->
   <section class="screen on" id="screen-home">
-    <div class="filters" id="filters">
-      <button class="chip on" data-filter="all">전체 12개</button>
-      <button class="chip" data-filter="focus">✏️ 자주 틀리는 <span id="focusCount">8</span>개</button>
-    </div>
+    <button class="wordset-btn" id="btnWordset">
+      <span class="ws-ico">👩</span>
+      <span class="ws-txt">
+        <b>⚙️ 엄마 설정 · 연습 단어</b>
+        <i><b id="activeCount">6</b>개 선택 · <span id="activePreview">🚗 car · 🚌 bus · 🚕 taxi</span></i>
+      </span>
+      <span class="ws-go">고르기 ›</span>
+    </button>
 
     <button class="course-card" data-mode="course" id="courseCard">
       <span class="deco">🚀</span>
@@ -430,7 +539,7 @@
         <span class="cf-step">② 🎈 빈칸</span><span class="cf-arrow">→</span>
         <span class="cf-step">③ 🎤 직접 쓰기</span>
       </span>
-      <span class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">12개</b></span>
+      <span class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">6개</b></span>
     </button>
 
     <div class="sec-title">🔁 하나만 골라 연습하기 <i>· 따로따로 연습하고 싶을 때</i></div>
@@ -453,7 +562,7 @@
       </button>
     </div>
 
-    <button class="book-btn" id="btnBook">📖 내 단어 도감 <b id="masteredCount">0/12</b></button>
+    <button class="book-btn" id="btnBook">📖 내 단어 도감 <b id="masteredCount">0/6</b></button>
     <p class="foot">소리를 켜고 하면 더 재미있어요 🔊</p>
   </section>
 
@@ -542,6 +651,49 @@
   </div>
 </div>
 
+<div class="modal sheet-modal" id="wsModal">
+  <div class="sheet big">
+    <div class="ws-head">
+      <div>
+        <div class="ws-title">👩 엄마 설정 · 연습 단어</div>
+        <div class="ws-sub">켜 둔 단어만 게임에 나와요. 끄면 잠시 쉬어요.</div>
+      </div>
+      <button class="icon-btn" id="wsClose" aria-label="닫기">✕</button>
+    </div>
+
+    <div class="ws-presets">
+      <button class="preset" data-preset="easy">🌱 쉬운 6개</button>
+      <button class="preset" data-preset="mid">🚀 중간까지 9개</button>
+      <button class="preset" data-preset="all">🌟 전체 12개</button>
+    </div>
+
+    <div class="ws-count" id="wsCount">현재 6개 선택됨</div>
+    <div class="ws-list" id="wsList"></div>
+
+    <button class="add-toggle" id="btnAddToggle">＋ 새 단어 추가</button>
+    <div class="add-form" id="addForm" hidden>
+      <div class="add-row">
+        <div class="add-field">
+          <label for="addEn">영어 단어 (필수)</label>
+          <input id="addEn" type="text" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" placeholder="apple">
+        </div>
+        <div class="add-field ko">
+          <label for="addKo">한국어 뜻</label>
+          <input id="addKo" type="text" placeholder="사과">
+        </div>
+        <div class="add-field emo">
+          <label for="addEm">그림</label>
+          <input id="addEm" type="text" maxlength="4" placeholder="🔤">
+        </div>
+      </div>
+      <div class="add-msg" id="addMsg"></div>
+      <button class="add-save" id="btnAddSave">추가하기</button>
+    </div>
+
+    <button class="ws-done" id="wsDone">✔ 다 골랐어요</button>
+  </div>
+</div>
+
 <div id="confetti"></div>
 
 <script>
@@ -587,9 +739,32 @@
       tip:'space(우주) + ship(배)! c는 "스", 끝 e는 조용 🚀',
       fill:{pattern:'sp?c?sh?p', pool:['a','e','i','o','u']}}
   ];
-  var BY_EN = {};
-  WORDS.forEach(function(w){ BY_EN[w.en] = w; });
-  var FOCUS = WORDS.filter(function(w){ return w.focus; });
+  var EASY6 = ['car','bus','taxi','bike','boat','train'];
+  var MID9 = EASY6.concat(['on foot','subway','airplane']);
+  var FULL12 = MID9.concat(['spaceship','helicopter','motorcycle']);
+  var CUSTOM_KEY = 'spelling_custom_v1';
+  var ACTIVE_KEY = 'spelling_active_v1';
+  var customWords = [];
+  var active = {};
+  function rankOf(en){ var i = FULL12.indexOf(en); return i < 0 ? 99 : i; }
+  function allWords(){
+    var a = WORDS.concat(customWords);
+    a.sort(function(x, y){
+      var rx = rankOf(x.en), ry = rankOf(y.en);
+      if(rx !== ry) return rx - ry;
+      return x.en < y.en ? -1 : (x.en > y.en ? 1 : 0);
+    });
+    return a;
+  }
+  function wordByEn(en){
+    var i;
+    for(i = 0; i < WORDS.length; i++){ if(WORDS[i].en === en) return WORDS[i]; }
+    for(i = 0; i < customWords.length; i++){ if(customWords[i].en === en) return customWords[i]; }
+    return null;
+  }
+  function activeWords(){
+    return allWords().filter(function(w){ return !!active[w.en]; });
+  }
   var KEYS = ['qwertyuiop','asdfghjkl','zxcvbnm'];
   var MODE_NAME = {blocks:'🧩 블록 맞추기', fill:'🎈 빈칸 톡톡', type:'🎤 직접 써보기'};
   var MODE_TAG = {blocks:'블록 맞추기', fill:'빈칸 톡톡', type:'써보기'};
@@ -622,13 +797,268 @@
   function starOf(en){ return prog.stars[en] || 0; }
   function totalStars(){
     var n = 0;
-    WORDS.forEach(function(w){ n += starOf(w.en); });
+    allWords().forEach(function(w){ n += starOf(w.en); });
     return n;
   }
   function masteredCount(){
     var n = 0;
-    WORDS.forEach(function(w){ if(starOf(w.en) >= 1) n++; });
+    activeWords().forEach(function(w){ if(starOf(w.en) >= 1) n++; });
     return n;
+  }
+
+  /* ================= word settings (엄마 설정) ================= */
+  function lettersOf(en){ return en.replace(/ /g, '').length; }
+  function mk(tag, cls, txt){
+    var d = document.createElement(tag);
+    if(cls) d.className = cls;
+    if(txt != null) d.textContent = txt;
+    return d;
+  }
+
+  /* auto step-2 blanks: hide 1-3 vowels/key letters, spread out */
+  function makeFill(en){
+    var chars = en.split('');
+    var idx = [];
+    chars.forEach(function(c, i){ if(c !== ' ') idx.push(i); });
+    var L = idx.length;
+    var need = (L <= 3) ? 1 : (L <= 6 ? 2 : 3);
+    if(need > L - 1) need = Math.max(1, L - 1);
+    var VOW = 'aeiouy';
+    function isV(i){ return VOW.indexOf(chars[i].toLowerCase()) >= 0; }
+    var c1 = idx.filter(function(i){ return i !== idx[0] && isV(i); });
+    var c2 = idx.filter(function(i){ return i !== idx[0] && !isV(i); });
+    var c3 = idx.filter(function(i){ return i === idx[0]; });
+    var cands = c1.concat(c2).concat(c3);
+    var picks = [];
+    for(var k = 0; k < need && cands.length; k++){
+      var pos = Math.floor(k * (cands.length - 1) / Math.max(1, need - 1));
+      var pick = cands[Math.min(cands.length - 1, pos)];
+      if(picks.indexOf(pick) >= 0){
+        for(var j = 0; j < cands.length; j++){
+          if(picks.indexOf(cands[j]) < 0){ pick = cands[j]; break; }
+        }
+      }
+      if(picks.indexOf(pick) < 0) picks.push(pick);
+    }
+    var pattern = chars.map(function(c, i){
+      return (c === ' ') ? ' ' : (picks.indexOf(i) >= 0 ? '?' : c);
+    }).join('');
+    var pool = [];
+    picks.forEach(function(i){
+      var ch = chars[i];
+      if(pool.indexOf(ch) < 0) pool.push(ch);
+    });
+    var alphabet = shuffle('abcdefghijklmnopqrstuvwxyz'.split('')).filter(function(c){
+      return pool.indexOf(c) < 0 && en.indexOf(c) < 0;
+    });
+    var want = Math.max(4, pool.length + 2);
+    for(var m = 0; pool.length < want && m < alphabet.length; m++){ pool.push(alphabet[m]); }
+    return {pattern:pattern, pool:pool};
+  }
+  function makeCustom(en, ko, emoji){
+    var L = lettersOf(en);
+    var tip = en + '는 ' + L + '글자! ' + (ko ? ko + '. ' : '') + '한 글자씩 소리 내어 읽어 보세요.';
+    return {en:en, ko:ko || '', emoji:emoji || '🔤', tip:tip, custom:true, focus:false, fill:makeFill(en)};
+  }
+  function sanitizeWord(o){
+    if(!o || typeof o !== 'object') return null;
+    var en = String(o.en || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    if(!/^[a-z]+( [a-z]+)*$/.test(en)) return null;
+    if(lettersOf(en) > 18) return null;
+    return makeCustom(en, String(o.ko || '').trim().slice(0, 20), String(o.emoji || '').trim().slice(0, 8));
+  }
+
+  function loadSettings(){
+    try{
+      var rawC = localStorage.getItem(CUSTOM_KEY);
+      if(rawC){
+        var arr = JSON.parse(rawC);
+        if(Array.isArray(arr)){
+          arr.forEach(function(o){
+            var w = sanitizeWord(o);
+            if(!w) return;
+            if(customWords.some(function(c){ return c.en === w.en; })) return;
+            if(WORDS.some(function(b){ return b.en === w.en; })) return;
+            customWords.push(w);
+          });
+        }
+      }
+    }catch(e){}
+    var saved = null;
+    try{
+      var rawA = localStorage.getItem(ACTIVE_KEY);
+      if(rawA){
+        var oo = JSON.parse(rawA);
+        if(oo && Array.isArray(oo.words)) saved = oo.words;
+      }
+    }catch(e){}
+    if(saved && saved.length){
+      var exist = {};
+      allWords().forEach(function(w){ exist[w.en] = 1; });
+      saved.forEach(function(en){ if(exist[en]) active[en] = true; });
+    }
+    if(!Object.keys(active).length){
+      EASY6.forEach(function(en2){ if(wordByEn(en2)) active[en2] = true; });
+    }
+    /* 첫 실행·마이그레이션 결과를 바로 저장해 둔다 */
+    saveSettings();
+  }
+  function saveSettings(){
+    try{
+      localStorage.setItem(CUSTOM_KEY, JSON.stringify(customWords.map(function(w){
+        return {en:w.en, ko:w.ko, emoji:w.emoji};
+      })));
+    }catch(e){}
+    try{
+      localStorage.setItem(ACTIVE_KEY, JSON.stringify({
+        v:1, words: activeWords().map(function(w){ return w.en; })
+      }));
+    }catch(e){}
+  }
+
+  function warnMin(){
+    var c = $('wsCount');
+    c.textContent = '단어는 최소 1개는 골라야 해요!';
+    c.classList.add('bad');
+    setTimeout(function(){
+      if(c.classList.contains('bad')){
+        c.classList.remove('bad');
+        c.textContent = '현재 ' + activeWords().length + '개 선택됨';
+      }
+    }, 2200);
+    sfx('bad');
+  }
+  function toggleWord(en){
+    if(active[en]){
+      if(activeWords().length <= 1){ warnMin(); return; }
+      delete active[en];
+    }else{
+      active[en] = true;
+    }
+    saveSettings();
+    renderSettings();
+    updateScore();
+    sfx('tap');
+  }
+  function applyPreset(kind){
+    var set = (kind === 'easy') ? EASY6 : (kind === 'mid' ? MID9 : FULL12);
+    var keep = {};
+    customWords.forEach(function(w){ if(active[w.en]) keep[w.en] = true; });
+    active = {};
+    set.forEach(function(en){ if(wordByEn(en)) active[en] = true; });
+    Object.keys(keep).forEach(function(en){ active[en] = true; });
+    saveSettings();
+    renderSettings();
+    updateScore();
+    sfx('tap');
+  }
+  function renderSettings(){
+    var box = $('wsList');
+    box.innerHTML = '';
+    allWords().forEach(function(w){
+      var on = !!active[w.en];
+      var row = mk('div', 'wrow' + (on ? ' on' : ''));
+      row.appendChild(mk('span', 'wr-e', w.emoji));
+      var main = mk('span', 'wr-main');
+      var wl = mk('span', 'wr-w');
+      wl.appendChild(document.createTextNode(w.en + ' '));
+      wl.appendChild(mk('em', null, lettersOf(w.en) + '글자'));
+      main.appendChild(wl);
+      main.appendChild(mk('span', 'wr-k', (w.ko || '—') + (w.custom ? ' · 내가 추가한 단어' : '')));
+      row.appendChild(main);
+      if(w.custom){
+        var del = mk('button', 'wr-del', '🗑');
+        del.type = 'button';
+        del.setAttribute('aria-label', w.en + ' 삭제');
+        var armed = false, tmr = null;
+        del.addEventListener('click', function(e){
+          if(e && e.stopPropagation) e.stopPropagation();
+          if(!armed){
+            armed = true;
+            del.textContent = '삭제?';
+            del.classList.add('arm');
+            tmr = setTimeout(function(){
+              armed = false;
+              del.textContent = '🗑';
+              del.classList.remove('arm');
+            }, 2600);
+            return;
+          }
+          clearTimeout(tmr);
+          deleteCustom(w.en);
+        });
+        row.appendChild(del);
+      }
+      var sw = mk('button', 'sw' + (on ? ' on' : ''));
+      sw.type = 'button';
+      sw.setAttribute('role', 'switch');
+      sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      sw.setAttribute('aria-label', w.en + ' 연습 ' + (on ? '켜짐' : '꺼짐'));
+      sw.appendChild(document.createElement('i'));
+      sw.addEventListener('click', function(){ toggleWord(w.en); });
+      row.appendChild(sw);
+      box.appendChild(row);
+    });
+    var c = $('wsCount');
+    c.classList.remove('bad');
+    c.textContent = '현재 ' + activeWords().length + '개 선택됨';
+  }
+  function deleteCustom(en){
+    customWords = customWords.filter(function(w){ return w.en !== en; });
+    delete active[en];
+    delete prog.stars[en];
+    saveProg();
+    if(!activeWords().length){
+      EASY6.forEach(function(x){ if(wordByEn(x)) active[x] = true; });
+    }
+    saveSettings();
+    renderSettings();
+    updateScore();
+    sfx('tap');
+  }
+  function saveNewWord(){
+    var msg = $('addMsg');
+    msg.classList.remove('ok');
+    var en = String($('addEn').value || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    var ko = String($('addKo').value || '').trim().slice(0, 20);
+    var em = String($('addEm').value || '').trim().slice(0, 8);
+    if(!en){ msg.textContent = '영어 단어를 넣어 주세요.'; return; }
+    if(!/^[a-z]+( [a-z]+)*$/.test(en)){
+      msg.textContent = '영어 알파벳과 띄어쓰기만 넣을 수 있어요. (예: apple)';
+      return;
+    }
+    if(lettersOf(en) > 18){ msg.textContent = '18글자까지만 넣을 수 있어요.'; return; }
+    if(wordByEn(en)){ msg.textContent = '이미 목록에 있는 단어예요.'; return; }
+    var w = makeCustom(en, ko, em || '🔤');
+    customWords.push(w);
+    active[w.en] = true;
+    saveSettings();
+    renderSettings();
+    updateScore();
+    $('addEn').value = '';
+    $('addKo').value = '';
+    $('addEm').value = '';
+    msg.classList.add('ok');
+    msg.textContent = '✅ ' + w.en + ' 추가 완료! 이제 게임에 나와요.';
+    var list = $('wsList');
+    if(list.lastElementChild && list.lastElementChild.scrollIntoView){
+      try{ list.lastElementChild.scrollIntoView({block:'center'}); }catch(e){}
+    }
+    sfx('good');
+  }
+  function openSettings(){
+    renderSettings();
+    $('addForm').hidden = true;
+    $('btnAddToggle').textContent = '＋ 새 단어 추가';
+    $('addMsg').textContent = '';
+    $('addMsg').classList.remove('ok');
+    $('wsModal').classList.add('on');
+  }
+  function closeSettings(){
+    $('wsModal').classList.remove('on');
+    saveSettings();
+    updateScore();
+    sfx('tap');
   }
 
   /* ================= sound ================= */
@@ -728,10 +1158,21 @@
 
   function updateScore(){
     $('starTotal').textContent = totalStars();
-    $('masteredCount').textContent = masteredCount() + '/12';
-    $('focusCount').textContent = FOCUS.length;
+    var list = activeWords();
+    $('masteredCount').textContent = masteredCount() + '/' + list.length;
+    var ac = $('activeCount');
+    if(ac) ac.textContent = list.length;
     var tc = $('courseTotal');
-    if(tc) tc.textContent = ((G.filter === 'focus') ? FOCUS.length : WORDS.length) + '개';
+    if(tc) tc.textContent = list.length + '개';
+    var pv = $('activePreview');
+    if(pv){
+      var names = list.map(function(w){ return w.emoji + ' ' + w.en; });
+      pv.textContent = names.length > 5
+        ? names.slice(0, 5).join(' · ') + ' 외 ' + (names.length - 5) + '개'
+        : names.join(' · ');
+    }
+    var bs = $('brandSub');
+    if(bs) bs.textContent = '연습 단어 ' + list.length + '개를 정복하자!';
   }
   function updateProgress(){
     var total = G.queue.length || 1;
@@ -764,7 +1205,10 @@
     G.runId++;
     $('flash').classList.remove('on');
     hideTrans();
-    var list = (G.filter === 'focus') ? FOCUS : WORDS;
+    var list = activeWords();
+    if(!list.length){
+      list = EASY6.map(function(en){ return wordByEn(en); }).filter(Boolean);
+    }
     G.queue = shuffle(list);
     G.qi = 0;
     G.step = 0;
@@ -1238,7 +1682,7 @@
     var list = $('resList');
     list.innerHTML = '';
     G.round.forEach(function(r){
-      var w = BY_EN[r.en];
+      var w = wordByEn(r.en);
       var d = document.createElement('div');
       d.className = 'rl';
       d.innerHTML = '<div class="e">' + w.emoji + '</div>' +
@@ -1304,14 +1748,18 @@
   function renderBook(){
     var grid = $('bookGrid');
     grid.innerHTML = '';
-    WORDS.forEach(function(w){
+    allWords().forEach(function(w){
       var n = starOf(w.en);
+      var on = !!active[w.en];
       var b = document.createElement('button');
-      b.className = 'wc' + (n === 0 ? ' locked' : '');
-      b.innerHTML = '<div class="e">' + w.emoji + '</div>' +
-                    '<div class="w">' + w.en + '</div>' +
-                    '<div class="k">' + w.ko + '</div>' +
-                    '<div class="s" style="color:#f59e0b">' + (n === 0 ? '☆☆☆' : stars(n)) + '</div>';
+      b.className = 'wc' + (n === 0 ? ' locked' : '') + (on ? '' : ' resting');
+      b.appendChild(mk('div', 'e', w.emoji));
+      b.appendChild(mk('div', 'w', w.en));
+      b.appendChild(mk('div', 'k', w.ko || '—'));
+      var ss = mk('div', 's', n === 0 ? '☆☆☆' : stars(n));
+      ss.style.color = '#f59e0b';
+      b.appendChild(ss);
+      if(!on) b.appendChild(mk('div', 'rest', '쉬는 중'));
       b.addEventListener('click', function(){ openWord(w); });
       grid.appendChild(b);
     });
@@ -1320,7 +1768,7 @@
   function openWord(w){
     $('mEmoji').textContent = w.emoji;
     $('mWord').textContent = w.en;
-    $('mKo').textContent = w.ko;
+    $('mKo').textContent = w.ko || '—';
     $('mTip').textContent = w.tip;
     $('modal').classList.add('on');
     speak(w.en);
@@ -1328,14 +1776,30 @@
 
   /* ================= events ================= */
   function bind(){
-    document.querySelectorAll('.chip').forEach(function(c){
-      c.addEventListener('click', function(){
-        document.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); });
-        c.classList.add('on');
-        G.filter = c.dataset.filter;
-        unlockAudio(); sfx('tap');
-        updateScore();
-      });
+    $('btnWordset').addEventListener('click', function(){ unlockAudio(); sfx('tap'); openSettings(); });
+    $('wsClose').addEventListener('click', closeSettings);
+    $('wsDone').addEventListener('click', closeSettings);
+    $('wsModal').addEventListener('click', function(e){
+      if(e.target === $('wsModal')) closeSettings();
+    });
+    document.querySelectorAll('.preset').forEach(function(b){
+      b.addEventListener('click', function(){ applyPreset(b.dataset.preset); });
+    });
+    $('btnAddToggle').addEventListener('click', function(){
+      var f = $('addForm');
+      f.hidden = !f.hidden;
+      $('btnAddToggle').textContent = f.hidden ? '＋ 새 단어 추가' : '− 새 단어 추가 닫기';
+      $('addMsg').textContent = '';
+      $('addMsg').classList.remove('ok');
+      if(!f.hidden) setTimeout(function(){ try{ $('addEn').focus(); }catch(e){} }, 60);
+      sfx('tap');
+    });
+    $('btnAddSave').addEventListener('click', saveNewWord);
+    $('addEn').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); saveNewWord(); }
+    });
+    $('addKo').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); saveNewWord(); }
     });
     document.querySelectorAll('.mode-card, .course-card').forEach(function(c){
       c.addEventListener('click', function(){
@@ -1393,11 +1857,12 @@
 
   /* ================= boot ================= */
   loadProg();
+  loadSettings();
   updateScore();
   bind();
 
   // sanity check of data (dev safety, silent)
-  WORDS.forEach(function(w){
+  allWords().forEach(function(w){
     if(w.fill.pattern.length !== w.en.length){
       console.warn('pattern length mismatch:', w.en, w.fill.pattern);
     }
