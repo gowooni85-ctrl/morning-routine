@@ -423,15 +423,8 @@
     .btn{padding:10px 6px;font-size:.94rem;border-radius:13px;gap:4px}
     .btn-reset{flex:0 0 42px;font-size:1.05rem}
     .btn-done .ck{font-size:1rem}
-  }
-  /* 패드 가로(1024×768 등): 4열 + 위쪽 남은 시간 카드를 낮게 → 스크롤 없이 한 화면 */
-  @media (min-width:960px){
-    body{padding-bottom:0}
-    .wrap{max-width:1280px;padding-top:10px;padding-bottom:10px}
-    .topbar{padding-top:7px;padding-bottom:7px}
-    .logo{width:42px;height:42px;font-size:23px;border-radius:13px}
-    .brand h1{font-size:1.08rem}
-    .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+    .ribbon{top:-13px;left:12px;font-size:.64rem;padding:2px 8px;border-radius:8px}
+    /* 위쪽 남은 시간 카드를 낮게: 시간과 상태를 한 줄에, 막대·잔여 정보는 아래에 */
     .cd-card{
       padding:12px clamp(16px,2vw,24px) 10px;border-radius:22px;
       display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;row-gap:4px;
@@ -452,6 +445,15 @@
     .p-pct{font-size:1.2rem}
     .progress-track{height:10px;margin:5px 0}
     .p-foot{font-size:.76rem}
+  }
+  /* 패드 가로(1024×768 등): 4열로 → 스크롤 없이 한 화면 */
+  @media (min-width:960px){
+    body{padding-bottom:0}
+    .wrap{max-width:1280px;padding-top:10px;padding-bottom:10px}
+    .topbar{padding-top:7px;padding-bottom:7px}
+    .logo{width:42px;height:42px;font-size:23px;border-radius:13px}
+    .brand h1{font-size:1.08rem}
+    .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
   }
 
   .empty{
