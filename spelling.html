@@ -1139,7 +1139,8 @@
     queue:[], qi:0, step:0, course:false,
     wrong:0, hint:false, locked:false,
     wordWrong:0, wordHint:false,
-    streak:0, round:[], runId:0
+    streak:0, round:[], runId:0,
+    lap:1, laps:1, missed:[], retryPass:false
   };
 
   function showScreen(name){
@@ -1170,15 +1171,22 @@
   }
   function updateProgress(){
     var total = G.queue.length || 1;
-    var frac;
+    var frac, txt;
     if(G.course){
       frac = (G.qi + G.step / STEPS.length) / total;
-      $('progText').textContent = '단어 ' + Math.min(G.qi + 1, total) + ' / ' + total;
+      txt = (G.retryPass ? '복습 단어 ' : '단어 ') + Math.min(G.qi + 1, total) + ' / ' + total;
+    }else if(G.laps > 1 && !G.retryPass){
+      frac = ((G.lap - 1) * total + G.qi) / (G.laps * total);
+      txt = G.lap + '바퀴 · ' + Math.min(G.qi + 1, total) + '/' + total;
+    }else if(G.retryPass){
+      frac = G.qi / total;
+      txt = '복습 · ' + Math.min(G.qi + 1, total) + '/' + total;
     }else{
-      frac = Math.min(G.qi, total) / total;
-      $('progText').textContent = Math.min(G.qi + 1, total) + '/' + total;
+      frac = G.qi / total;
+      txt = Math.min(G.qi + 1, total) + '/' + total;
     }
     $('progBar').style.width = Math.round(frac * 100) + '%';
+    $('progText').textContent = txt;
   }
   function updateCombo(){
     var el = $('combo');
@@ -1210,6 +1218,11 @@
     G.round = [];
     G.wordWrong = 0;
     G.wordHint = false;
+    /* 🎈 빈칸만은 두 바퀴, 코스는 한 바퀴 + 틀린 단어 복습 */
+    G.laps = (mode === 'fill') ? 2 : 1;
+    G.lap = 1;
+    G.missed = [];
+    G.retryPass = false;
     prog.plays = (prog.plays || 0) + 1;
     saveProg();
     $('stepper').hidden = !G.course;
@@ -1252,8 +1265,8 @@
     var w = G.queue[G.qi];
     var mode = G.course ? STEPS[G.step].key : G.mode;
     $('modeTag').textContent = G.course
-      ? (STEPS[G.step].num + ' ' + STEPS[G.step].label + ' · ' + (G.step + 1) + '/' + STEPS.length)
-      : MODE_TAG[mode];
+      ? (STEPS[G.step].num + ' ' + STEPS[G.step].label + ' · ' + (G.step + 1) + '/' + STEPS.length + (G.retryPass ? ' · 복습' : ''))
+      : (MODE_TAG[mode] || '') + (G.retryPass ? ' · 복습' : (G.laps > 1 ? ' · ' + G.lap + '바퀴' : ''));
     renderStepper();
     updateProgress();
     renderMode(w, mode);
@@ -1328,6 +1341,7 @@
         if(pos === seq.length) setTimeout(wordDone, 220);
       }else{
         G.wrong++;
+        markMissed();
         b.classList.add('shake');
         setTimeout(function(){ b.classList.remove('shake'); }, 430);
         sfx('bad');
@@ -1424,6 +1438,7 @@
         if(pos === blanks.length) setTimeout(wordDone, 220);
       }else{
         G.wrong++;
+        markMissed();
         b.classList.add('shake');
         setTimeout(function(){ b.classList.remove('shake'); }, 430);
         sfx('bad');
@@ -1511,6 +1526,7 @@
     function check(){
       if(typed === en){ wordDone(); return; }
       G.wrong++;
+      markMissed();
       sfx('bad');
       var wrongIdx = [];
       for(var i = 0; i < en.length; i++){
@@ -1585,7 +1601,7 @@
     $('trans').classList.remove('on');
   }
 
-  /* one step finished inside the 3-step course */
+  /* one step finished inside the 2-step course */
   function stepDone(rid, w){
     G.wordWrong += G.wrong;
     if(G.hint) G.wordHint = true;
@@ -1630,7 +1646,7 @@
     }else{
       G.streak = 0;
     }
-    G.round.push({en:w.en, stars:earned});
+    recordRound(w.en, earned);
     saveProg();
     updateScore();
     updateCombo();
@@ -1639,10 +1655,12 @@
 
     $('flashStars').textContent = stars(earned);
     $('flashWord').textContent = w.en;
-    $('flashMsg').textContent = G.course
-      ? (perfect ? '2단계 모두 통과! 완벽해요 🎉' : '한 단어 완성! 다음 단어로!')
-      : (perfect ? '완벽해요! 실수 없이 통과 🎉'
-        : (earned === 2 ? '정답! 조금만 더!' : '정답이에요!'));
+    $('flashMsg').textContent = G.retryPass
+      ? (perfect ? '복습까지 완벽해요! 🎉' : '복습 완료! 이제 기억했어요 👍')
+      : G.course
+        ? (perfect ? '2단계 모두 통과! 완벽해요 🎉' : '한 단어 완성! 다음 단어로!')
+        : (perfect ? '완벽해요! 실수 없이 통과 🎉'
+          : (earned === 2 ? '정답! 조금만 더!' : '정답이에요!'));
     $('flash').classList.add('on');
     flyStar(earned);
     if(perfect && (G.course || G.streak >= 3)) confetti(G.course ? 30 : 26);
@@ -1650,10 +1668,85 @@
     setTimeout(function(){
       $('flash').classList.remove('on');
       if(rid === G.runId && G.locked){
-        G.qi++;
-        loadWord();
+        advance();
       }
     }, G.course ? (perfect ? 1500 : 1250) : (perfect ? 1350 : 1150));
+  }
+
+  /* 한 단어를 마쳤을 때: 다음 단어 → 다음 바퀴 → 틀린 단어 복습 → 결과 */
+  function advance(){
+    G.qi++;
+    if(G.qi < G.queue.length){ loadWord(); return; }
+
+    /* 🎈 빈칸만: 1바퀴를 마치면 2바퀴를 섞어서 한 번 더 */
+    if(!G.course && G.mode === 'fill' && !G.retryPass && G.lap < G.laps){
+      startLap(G.lap + 1);
+      return;
+    }
+    /* 틀린 단어는 한 번만 더 */
+    if(!G.retryPass && G.missed.length){
+      startRetry();
+      return;
+    }
+    finishRound();
+  }
+
+  function startLap(n){
+    var rid = G.runId;
+    showTrans({emoji:'🎈', title:(n - 1) + '바퀴 끝!', sub:'한 번 더! ' + n + '바퀴 출발~', next:n + '바퀴 시작!'});
+    sfx('combo');
+    G.locked = true;
+    setTimeout(function(){
+      if(rid !== G.runId) return;
+      hideTrans();
+      G.lap = n;
+      G.queue = shuffle(G.queue.slice());
+      G.qi = 0;
+      loadWord();
+    }, 1900);
+  }
+
+  function startRetry(){
+    var rid = G.runId;
+    var words = G.missed.map(wordByEn).filter(Boolean);
+    if(!words.length){ finishRound(); return; }
+    showTrans({
+      emoji:'🔁',
+      title:'아까 틀렸던 단어 ' + words.length + '개',
+      sub:'한 번 더 해볼까?',
+      next:'복습 시작!' + (G.course ? ' (한 단어 2단계)' : '')
+    });
+    sfx('combo');
+    G.locked = true;
+    setTimeout(function(){
+      if(rid !== G.runId) return;
+      hideTrans();
+      G.retryPass = true;
+      G.queue = shuffle(words);
+      G.qi = 0;
+      G.step = 0;
+      G.wordWrong = 0;
+      G.wordHint = false;
+      loadWord();
+    }, 2100);
+  }
+
+  /* 틀린 단어 기록: 복습은 한 번만 */
+  function markMissed(){
+    var w = G.queue[G.qi];
+    if(!w) return;
+    if(G.missed.indexOf(w.en) < 0) G.missed.push(w.en);
+  }
+
+  /* 결과 목록: 단어별 최고 별 하나씩 */
+  function recordRound(en, earned){
+    for(var i = 0; i < G.round.length; i++){
+      if(G.round[i].en === en){
+        if(earned > G.round[i].stars) G.round[i].stars = earned;
+        return;
+      }
+    }
+    G.round.push({en:en, stars:earned});
   }
 
   function finishRound(){
@@ -1666,7 +1759,7 @@
     $('resEmoji').textContent = (perfects === G.round.length && G.round.length > 0) ? '🏆' : '🎉';
     $('resTitle').textContent = (perfects === G.round.length && G.round.length > 0)
       ? '완벽해요!' : (G.course ? '코스 완주!' : '잘했어요!');
-    $('resSub').textContent = (G.course ? '한 단어 2단계 코스 · ' : '') +
+    $('resSub').textContent = (G.course ? '한 단어 2단계 코스 · ' : (G.laps > 1 ? '빈칸 ' + G.laps + '바퀴 · ' : '')) +
       G.round.length + '개 중 ' + perfects + '개를 완벽하게 맞혔어요';
 
     var list = $('resList');
