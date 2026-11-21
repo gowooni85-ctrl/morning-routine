@@ -5,6 +5,9 @@
   · 시간·타이머·목표 시각은 없어요. 숙제만 크게 보이고, 다 하면 체크해서 목록에서 사라져요.
   · 체크하면 가볍게 팝 애니메이션·작은 종소리와 함께 사라지고, 3.5초 동안 '되돌리기'가 떠요(잘못 눌렀을 때).
   · 숙제와 오늘 끝낸 개수는 이 브라우저의 localStorage(simple_todo_v1)에만 저장돼요. 서버로 보내지 않아요.
+  · '요일별 숙제'는 그 요일이 되면 오늘 목록에 자동으로 들어가요.
+    (월·수·토·일: 수학숙제·눈높이 국어 3쪽·영어 스펠링 퀴즈 / 화·목: 수학숙제·눈높이 국어 3쪽·하상영어 / 금: 숙제 쉬는 날)
+    상단 🔁 버튼에서 숙제마다 들어갈 요일을 보고·고치고·지울 수 있어요.
   · 외부 CDN·이미지·폰트 파일 없이 혼자서 동작해요.
 -->
 <html lang="ko">
@@ -144,6 +147,14 @@
   .quick-chip:hover{background:#f5f9ff;border-color:#d3e2ff;color:#2c5fd0}
   .quick-chip.added{background:#f2fbf7;border-color:#cdeee0;color:#12805b}
 
+  /* ---------- 매일 표시 ---------- */
+  .body .daily-badge{
+    display:inline-flex;align-items:center;gap:3px;flex:none;
+    padding:2px 8px;border-radius:99px;
+    background:#eef4ff;border:1px solid #dbe6fa;color:#4a6cad;
+    font-size:.66rem;font-weight:900;letter-spacing:.01em;white-space:nowrap;
+  }
+
   /* ---------- 목록 ---------- */
   .list{list-style:none;margin:15px 0 0;padding:0}
   .task{
@@ -271,6 +282,98 @@
   .toast .t-undo:hover{background:rgba(255,255,255,.26)}
   .toast .t-undo:active{transform:scale(.95)}
 
+  /* ---------- 매일 숙제 설정 시트 ---------- */
+  .sheet{position:fixed;inset:0;z-index:90;display:flex;align-items:flex-end;justify-content:center}
+  .sheet-backdrop{
+    position:absolute;inset:0;background:rgba(24,38,64,.38);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+    animation:fadeIn .18s ease;
+  }
+  .sheet-panel{
+    position:relative;width:100%;max-width:620px;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    background:#fff;border-radius:24px 24px 0 0;
+    padding:16px clamp(14px,4vw,20px) calc(18px + var(--safe-b));
+    box-shadow:0 -12px 40px rgba(24,38,64,.24);
+    animation:sheetUp .3s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes sheetUp{from{transform:translateY(24px);opacity:.55}to{transform:none;opacity:1}}
+  @media (min-width:620px){ .sheet{align-items:center;padding:16px} .sheet-panel{border-radius:24px;max-height:82vh} }
+  .sheet-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+  .sheet-head h2{margin:0;font-size:1.08rem;font-weight:900;letter-spacing:-.02em}
+  .sheet-head p{margin:4px 0 0;font-size:.78rem;font-weight:800;color:var(--ink-faint);line-height:1.45}
+  .sheet-close{
+    margin-left:auto;width:40px;height:40px;flex:none;border:1px solid #e6ecf6;background:#fbfdff;
+    border-radius:12px;font-size:15px;font-weight:900;color:#8794ab;cursor:pointer;touch-action:manipulation;
+  }
+  .sheet-close:active{transform:scale(.94)}
+  .daily-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+  .daily-row{
+    display:flex;flex-direction:column;gap:8px;
+    padding:10px;border:1px solid #e8eef8;border-radius:16px;background:#fbfdff;
+  }
+  .daily-top{display:flex;align-items:center;gap:8px}
+  .daily-input{
+    flex:1 1 0;min-width:0;border:1px solid #e3eaf5;border-radius:12px;background:#fff;
+    font-family:inherit;font-size:16px;font-weight:800;color:var(--ink);padding:10px 12px;line-height:1.3;
+  }
+  .daily-input:focus{outline:none;border-color:#9dc0ff;background:#fff}
+  .daily-input.shake{animation:shake .32s ease}
+  .daily-del{
+    flex:none;width:44px;height:44px;border:1px solid #f1e3e4;background:#fffafa;border-radius:12px;
+    font-size:16px;cursor:pointer;touch-action:manipulation;
+  }
+  .daily-del:active{transform:scale(.94)}
+
+  /* 요일 칩 */
+  .day-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .day-chip{
+    flex:1 1 0;min-width:34px;height:36px;border-radius:11px;
+    border:1px solid #e3eaf5;background:#fff;color:#9aa7bd;
+    font-family:inherit;font-size:.84rem;font-weight:900;letter-spacing:-.01em;
+    cursor:pointer;touch-action:manipulation;
+    transition:background .14s,border-color .14s,color .14s,transform .12s;
+  }
+  .day-chip:active{transform:scale(.94)}
+  .day-chip.on{background:#3f7cf6;border-color:#3f7cf6;color:#fff;box-shadow:0 3px 8px rgba(63,124,246,.26)}
+  .day-chip.on.sun{background:#e2464e;border-color:#e2464e;box-shadow:0 3px 8px rgba(226,70,78,.24)}
+  .day-chip.on.sat{background:#2c7be5;border-color:#2c7be5}
+  .day-chip.today{box-shadow:0 0 0 2px #ffd479}
+  .daily-row.off-day .daily-input{opacity:.55}
+  .day-sum{margin:0 1px;font-size:.7rem;font-weight:800;color:#a6b2c6;letter-spacing:-.01em}
+  .daily-empty{
+    margin:0 0 10px;padding:14px;border-radius:14px;background:#f8fafd;
+    color:var(--ink-faint);font-size:.84rem;font-weight:800;text-align:center;line-height:1.5;
+  }
+  .daily-add{display:flex;gap:7px;margin-top:12px}
+  #dailyInput{
+    flex:1 1 0;min-width:0;border:1px solid #e3eaf5;border-radius:13px;background:#fff;
+    font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);padding:12px;line-height:1.3;
+  }
+  #dailyInput:focus{outline:none;border-color:#9dc0ff}
+  #dailyInput::placeholder{color:#aab5c7;font-weight:700;font-size:14px}
+  #dailyInput.shake{animation:shake .32s ease}
+  .daily-add button{
+    flex:none;border:0;border-radius:13px;padding:0 16px;height:46px;
+    background:linear-gradient(135deg,#4e89ff,#2c5fd0);color:#fff;font-size:.9rem;font-weight:900;
+    cursor:pointer;box-shadow:0 6px 14px rgba(44,95,208,.24);touch-action:manipulation;
+  }
+  .daily-add button:active{transform:scale(.96)}
+  .daily-fill{
+    width:100%;margin-top:12px;min-height:48px;border:1px solid #d9e6ff;background:#f4f9ff;color:#2c5fd0;
+    border-radius:14px;font-size:.9rem;font-weight:900;cursor:pointer;touch-action:manipulation;
+  }
+  .daily-fill:active{transform:scale(.98)}
+  .sheet-hint{margin:10px 2px 0;font-size:.74rem;font-weight:700;color:#b3bdcd;line-height:1.6}
+
+  /* ---------- 오늘 안내 ---------- */
+  .today-note{
+    margin:8px 2px 0;text-align:center;
+    font-size:.78rem;font-weight:900;color:#5c7ba8;letter-spacing:-.01em;
+  }
+  .today-note b{color:#2c5fd0}
+  .today-note.rest{color:#b07214}
+  .today-note.rest b{color:#b07214}
+
   /* ---------- 완료 반짝임 ---------- */
   .spark{
     position:fixed;z-index:80;pointer-events:none;line-height:1;
@@ -304,6 +407,7 @@
         <p id="dateLabel"></p>
       </div>
     </div>
+    <button id="dailyBtn" class="icon-btn" type="button" aria-label="요일별 숙제 관리" aria-haspopup="dialog">🔁</button>
     <button id="soundBtn" class="icon-btn" type="button" aria-label="완료 소리 끄기" aria-pressed="true">🔔</button>
     <div class="counts" aria-live="polite">
       <span class="chip" id="leftChip">남은 숙제 <b id="leftCount">0</b>개</span>
@@ -313,6 +417,7 @@
 
   <main>
     <p class="subtitle">해야 할 숙제만 보고, 다 하면 바로 지워져요!</p>
+    <p class="today-note" id="todayNote"></p>
 
     <div class="add-wrap">
       <form class="add-bar" id="addForm" autocomplete="off">
@@ -342,6 +447,27 @@
   </main>
 </div>
 
+<div class="sheet" id="dailySheet" hidden>
+  <div class="sheet-backdrop" id="dailyBackdrop" aria-hidden="true"></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="dailyTitle">
+    <div class="sheet-head">
+      <div>
+        <h2 id="dailyTitle">🔁 요일별 숙제</h2>
+        <p>숙제마다 들어갈 요일을 골라두세요</p>
+      </div>
+      <button class="sheet-close" id="dailyClose" type="button" aria-label="닫기">✕</button>
+    </div>
+    <ul class="daily-list" id="dailyList"></ul>
+    <form class="daily-add" id="dailyAddForm" autocomplete="off">
+      <input id="dailyInput" type="text" enterkeyhint="done" maxlength="80"
+             placeholder="숙제 이름 (예: 일기 쓰기)" aria-label="요일별 숙제 추가">
+      <button type="submit">추가</button>
+    </form>
+    <button class="daily-fill" id="dailyFill" type="button">지금 오늘 목록에 바로 채우기</button>
+    <p class="sheet-hint">고른 요일에만 오늘 목록에 자동으로 들어가요. 금요일은 지금 아무 숙제도 넣지 않아서 숙제 쉬는 날이에요. 체크해서 지운 숙제는 다음 그 요일에 다시 나와요.</p>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite" hidden>
   <span class="t-msg" id="toastMsg">완료!</span>
   <button class="t-undo" id="toastUndo" type="button">되돌리기</button>
@@ -354,9 +480,24 @@
   var KEY = 'simple_todo_v1';
   var QUICK = [
     { emoji: '📚', text: '리딩게이트' },
-    { emoji: '🔤', text: '영어 스펠링' },
     { emoji: '📖', text: '책 읽기' },
-    { emoji: '🔢', text: '수학 풀기' }
+    { emoji: '✏️', text: '받아쓰기' }
+  ];
+  var DAILY_MAX = 12;
+  var SCHEDULE_VERSION = 2;
+  // 화면에는 월→일 순서로 보여요 (JS getDay(): 일=0, 월=1 … 토=6)
+  var DAY_CHIPS = [
+    { v: 1, l: '월' }, { v: 2, l: '화' }, { v: 3, l: '수' }, { v: 4, l: '목' },
+    { v: 5, l: '금' }, { v: 6, l: '토' }, { v: 0, l: '일' }
+  ];
+  var DAY_NAMES = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  var WORK_DAYS = [1, 2, 3, 4, 6, 0];   // 금요일만 빼고
+  // 정식 요일표 (처음 쓸 때·예전 저장값을 올릴 때 한 번 맞춰요)
+  var CANON = [
+    { text: '수학숙제', days: [1, 2, 3, 4, 6, 0] },
+    { text: '눈높이 국어 3쪽', days: [1, 2, 3, 4, 6, 0] },
+    { text: '영어 스펠링 퀴즈', days: [1, 3, 6, 0] },
+    { text: '하상영어', days: [2, 4] }
   ];
   var TOAST_MS = 3500;
 
@@ -365,7 +506,9 @@
       formEl = $('addForm'), quickRowEl = $('quickRow'),
       leftCountEl = $('leftCount'), doneCountEl = $('doneCount'),
       leftChipEl = $('leftChip'), doneChipEl = $('doneChip'),
-      clearBtn = $('clearAll'), soundBtn = $('soundBtn'),
+      clearBtn = $('clearAll'), soundBtn = $('soundBtn'), dailyBtn = $('dailyBtn'),
+      sheetEl = $('dailySheet'), dailyListEl = $('dailyList'), dailyInputEl = $('dailyInput'),
+      dailyAddFormEl = $('dailyAddForm'), dailyFillEl = $('dailyFill'),
       toastEl = $('toast'), toastMsgEl = $('toastMsg'), toastUndoEl = $('toastUndo');
 
   /* ---------- 저장 ---------- */
@@ -377,7 +520,12 @@
   function uid() {
     return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
+  function cleanText(v) {
+    return String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+  }
 
+  var scheduleUpgraded = false;
+  var scheduleNewTexts = [];
   var state = load();
 
   function load() {
@@ -389,17 +537,146 @@
     s.tasks = s.tasks.filter(function (t) {
       return t && typeof t.text === 'string' && t.text.trim();
     }).map(function (t) {
-      return { id: t.id || uid(), text: String(t.text).slice(0, 80), emoji: t.emoji || '' };
+      return { id: t.id || uid(), text: String(t.text).slice(0, 80), emoji: t.emoji || '', daily: !!t.daily };
     });
     s.cleared = Number(s.cleared) || 0;
     s.clearedDate = s.clearedDate || '';
     s.sound = s.sound !== false;
+    s.dailyItems = normalizeSchedule(s);
+    s.lastDailySeedDate = typeof s.lastDailySeedDate === 'string' ? s.lastDailySeedDate : '';
     if (s.clearedDate !== todayStr()) { s.cleared = 0; s.clearedDate = todayStr(); }
     return s;
   }
 
+  /* ---------- 요일표 저장값 다듬기 ---------- */
+  function canonDays(text) {
+    for (var i = 0; i < CANON.length; i++) if (CANON[i].text === text) return CANON[i].days.slice();
+    return null;
+  }
+  function canonIndex(text) {
+    for (var i = 0; i < CANON.length; i++) if (CANON[i].text === text) return i;
+    return -1;
+  }
+  function normDays(arr) {
+    var out = [];
+    if (!Array.isArray(arr)) return WORK_DAYS.slice();
+    arr.forEach(function (d) {
+      d = Number(d);
+      if (d >= 0 && d <= 6 && Math.floor(d) === d && out.indexOf(d) < 0) out.push(d);
+    });
+    return out;
+  }
+
+  function normalizeSchedule(s) {
+    var raw = Array.isArray(s.dailyItems) ? s.dailyItems : null;
+    var items = [];
+    var hadDefault = false;
+    if (raw) {
+      raw.forEach(function (it) {
+        var text = cleanText(typeof it === 'string' ? it : (it && it.text)).slice(0, 80);
+        if (!text) return;
+        if (items.some(function (x) { return x.text === text; })) return;
+        if (canonIndex(text) >= 0) hadDefault = true;
+        var days = (it && typeof it === 'object' && Array.isArray(it.days)) ? normDays(it.days) : null;
+        items.push({ text: text, days: days });
+      });
+    }
+
+    if (s.scheduleVersion !== SCHEDULE_VERSION) {
+      // 예전 저장값(요일 구분 없음)은 정식 요일표로 옮겨요.
+      items = items.map(function (it) {
+        var cd = canonDays(it.text);
+        if (cd) return { text: it.text, days: cd };
+        return { text: it.text, days: it.days && it.days.length ? it.days : WORK_DAYS.slice() };
+      });
+      // 처음 쓰거나 기본 숙제를 그대로 쓰던 분만 정식 4개를 채워요. (전부 지워둔 분은 빈 상태 그대로)
+      if (!raw || hadDefault) {
+        CANON.forEach(function (c) {
+          if (!items.some(function (it) { return it.text === c.text; })) {
+            items.push({ text: c.text, days: c.days.slice() });
+            scheduleNewTexts.push(c.text);
+          }
+        });
+      }
+      // 정식 순서 → 그 밖의 숙제
+      var ordered = [];
+      CANON.forEach(function (c) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].text === c.text) { ordered.push(items.splice(i, 1)[0]); break; }
+        }
+      });
+      items = ordered.concat(items);
+      scheduleUpgraded = true;
+      s.scheduleVersion = SCHEDULE_VERSION;
+    }
+    return items.slice(0, DAILY_MAX);
+  }
+
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* 저장 공간이 막혀도 화면은 계속 동작 */ }
+  }
+
+  /* ---------- 요일별 숙제 (그 요일이 되면 자동으로 오늘 목록에) ---------- */
+  function dailyEmoji(text) {
+    if (/수학|연산|계산/.test(text)) return '🔢';
+    if (/영어|스펠링|단어|리딩|파닉스|하상/.test(text)) return '🔤';
+    if (/국어|독서|책|받아쓰기|일기|눈높이/.test(text)) return '📖';
+    if (/준비물|가방/.test(text)) return '🎒';
+    return '🔁';
+  }
+
+  function dowNow() { return new Date().getDay(); }
+
+  function dailyItemFor(text) {
+    for (var i = 0; i < state.dailyItems.length; i++) {
+      if (state.dailyItems[i].text === text) return state.dailyItems[i];
+    }
+    return null;
+  }
+
+  function todaySchedule() {
+    var dow = dowNow();
+    return state.dailyItems.filter(function (it) { return it.days.indexOf(dow) >= 0; });
+  }
+
+  // 오늘 아직 채우지 않았으면, 오늘 요일에 해당하는 숙제 중 목록에 없는 것만 넣어요.
+  function seedDaily(force) {
+    var today = todayStr();
+    if (!force && state.lastDailySeedDate === today) return 0;
+    var added = 0;
+    todaySchedule().forEach(function (it) {
+      if (findDuplicate(it.text)) return;
+      state.tasks.push({ id: uid(), text: it.text, emoji: dailyEmoji(it.text), daily: true });
+      added += 1;
+    });
+    state.lastDailySeedDate = today;
+    save();
+    return added;
+  }
+
+  // 요일표가 바뀌었을 때, 오늘 목록에 이미 들어간 숙제 중 오늘 안 하는 것만 걸러요.
+  function pruneToday() {
+    var dow = dowNow();
+    var before = state.tasks.length;
+    state.tasks = state.tasks.filter(function (t) {
+      if (!t.daily) return true;
+      var it = dailyItemFor(t.text);
+      return it ? it.days.indexOf(dow) >= 0 : true;
+    });
+    return state.tasks.length !== before;
+  }
+
+  // 예전 저장값을 요일표로 바꾸면서 새로 생긴 숙제(하상영어 등)는 오늘이 그 요일이면 넣어둬요.
+  function seedNewScheduleItems() {
+    var dow = dowNow();
+    var added = 0;
+    scheduleNewTexts.forEach(function (text) {
+      var it = dailyItemFor(text);
+      if (!it || it.days.indexOf(dow) < 0 || findDuplicate(text)) return;
+      state.tasks.push({ id: uid(), text: text, emoji: dailyEmoji(text), daily: true });
+      added += 1;
+    });
+    return added;
   }
 
   /* ---------- 소리 ---------- */
@@ -456,6 +733,7 @@
     updateEmpty();
     clearBtn.hidden = state.tasks.length === 0;
     syncQuick();
+    updateTodayNote();
   }
 
   function buildCard(task, index) {
@@ -487,6 +765,13 @@
     text.className = 'text';
     text.textContent = task.text;
     body.appendChild(text);
+    if (task.daily) {
+      var badge = document.createElement('span');
+      badge.className = 'daily-badge';
+      badge.textContent = '🔁 자동';
+      badge.setAttribute('aria-label', '요일별로 자동으로 들어오는 숙제');
+      body.appendChild(badge);
+    }
 
     var more = document.createElement('button');
     more.type = 'button';
@@ -579,6 +864,13 @@
     var empty = state.tasks.length === 0 && !animating;
     emptyEl.hidden = !empty;
     if (!empty) return;
+    var rest = dowNow() === 5 && state.cleared === 0 && todaySchedule().length === 0;
+    if (rest) {
+      $('emptyEmoji').textContent = '🎉';
+      $('emptyTitle').textContent = '금요일은 숙제 쉬는 날!';
+      $('emptySub').innerHTML = '오늘은 자동으로 들어오는 숙제가 없어요.<br>하고 싶은 숙제가 있으면 위에서 추가하면 돼요.';
+      return;
+    }
     var finished = state.cleared > 0;
     $('emptyEmoji').textContent = finished ? '🎉' : '📝';
     $('emptyTitle').textContent = finished ? '오늘 숙제 모두 끝!' : '아직 숙제가 없어요';
@@ -709,7 +1001,13 @@
     toastEl.style.animation = 'none';
     void toastEl.offsetWidth;
     toastEl.style.animation = '';
-    toastUndoEl.onclick = function () { undoFn(); hideToast(); };
+    if (typeof undoFn === 'function') {
+      toastUndoEl.hidden = false;
+      toastUndoEl.onclick = function () { undoFn(); hideToast(); };
+    } else {
+      toastUndoEl.hidden = true;
+      toastUndoEl.onclick = null;
+    }
     clearTimeout(toastTimer);
     toastTimer = setTimeout(hideToast, TOAST_MS);
   }
@@ -858,6 +1156,189 @@
     clearBtn.textContent = '전체 비우기';
   }
 
+  /* ---------- 요일별 숙제 관리 (🔁) ---------- */
+  function openSheet() {
+    renderDaily();
+    closeAllMenus(null);
+    sheetEl.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet() {
+    sheetEl.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function daysText(days) {
+    if (!days.length) return '들어가지 않음';
+    var labels = [];
+    DAY_CHIPS.forEach(function (c) { if (days.indexOf(c.v) >= 0) labels.push(c.l); });
+    if (labels.length === 7) return '매일';
+    return labels.join('·') + '요일';
+  }
+
+  function renderDaily() {
+    var dow = dowNow();
+    dailyListEl.innerHTML = '';
+    if (!state.dailyItems.length) {
+      var note = document.createElement('li');
+      note.className = 'daily-empty';
+      note.textContent = '아직 요일별 숙제가 없어요. 아래에서 추가해 보세요.';
+      dailyListEl.appendChild(note);
+    }
+    state.dailyItems.forEach(function (item, i) {
+      var li = document.createElement('li');
+      li.className = 'daily-row';
+      if (item.days.indexOf(dow) < 0) li.classList.add('off-day');
+
+      var top = document.createElement('div');
+      top.className = 'daily-top';
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'daily-input';
+      input.maxLength = 80;
+      input.value = item.text;
+      input.setAttribute('aria-label', '요일별 숙제 ' + (i + 1) + '번째 이름');
+      input.addEventListener('change', function () { commitDailyRename(i, input); });
+      input.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+      });
+
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'daily-del';
+      del.textContent = '🗑';
+      del.setAttribute('aria-label', item.text + ' 요일별 목록에서 빼기');
+      del.addEventListener('click', function () { removeDailyItem(i); });
+
+      top.appendChild(input);
+      top.appendChild(del);
+
+      var chips = document.createElement('div');
+      chips.className = 'day-chips';
+      chips.setAttribute('role', 'group');
+      chips.setAttribute('aria-label', item.text + ' 들어갈 요일');
+      DAY_CHIPS.forEach(function (c) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'day-chip' + (c.v === 0 ? ' sun' : c.v === 6 ? ' sat' : '');
+        b.dataset.day = String(c.v);
+        b.textContent = c.l;
+        var on = item.days.indexOf(c.v) >= 0;
+        if (on) b.classList.add('on');
+        if (c.v === dow) b.classList.add('today');
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.setAttribute('aria-label', item.text + ' ' + DAY_NAMES[c.v] + (on ? ' 넣기 끄기' : ' 넣기'));
+        b.addEventListener('click', function () { toggleDay(i, c.v); });
+        chips.appendChild(b);
+      });
+
+      li.appendChild(top);
+      li.appendChild(chips);
+      dailyListEl.appendChild(li);
+    });
+  }
+
+  function toggleDay(i, day) {
+    var item = state.dailyItems[i];
+    if (!item) return;
+    var at = item.days.indexOf(day);
+    var turnedOff = at >= 0;
+    if (turnedOff) item.days.splice(at, 1);
+    else item.days.push(day);
+    // 오늘 요일을 껐으면 오늘 목록에서도 빼요
+    if (turnedOff && day === dowNow()) dropTodayTask(item.text);
+    save();
+    renderDaily();
+    render();
+    showToast('‘' + item.text + '’ ' + daysText(item.days), null);
+  }
+
+  // 자동으로 들어온 오늘 숙제를 목록에서 빼요 (직접 추가한 숙제는 건드리지 않아요)
+  function dropTodayTask(text) {
+    var id = null;
+    state.tasks.forEach(function (t) {
+      if (!id && t.daily && t.text === text) id = t.id;
+    });
+    if (!id) return false;
+    state.tasks = state.tasks.filter(function (t) { return t.id !== id; });
+    return true;
+  }
+
+  function commitDailyRename(i, input) {
+    var item = state.dailyItems[i];
+    if (!item) { renderDaily(); return; }
+    var old = item.text;
+    var v = cleanText(input.value).slice(0, 80);
+    var clash = v && state.dailyItems.some(function (t, j) { return j !== i && t.text === v; });
+    if (!v || clash) {
+      input.value = old;
+      input.classList.remove('shake');
+      void input.offsetWidth;
+      input.classList.add('shake');
+      if (clash) showToast('이미 요일별 목록에 있어요', null);
+      return;
+    }
+    if (v === old) return;
+    item.text = v;
+    // 오늘 목록에 이미 들어가 있는 같은 숙제는 이름을 같이 바꿔요
+    state.tasks.forEach(function (t) {
+      if (t.daily && t.text === old) { t.text = v; t.emoji = dailyEmoji(v); }
+    });
+    save();
+    renderDaily();
+    render();
+  }
+
+  function removeDailyItem(i) {
+    var item = state.dailyItems[i];
+    if (!item) return;
+    var removed = state.dailyItems.splice(i, 1)[0];
+    dropTodayTask(removed.text);
+    save();
+    renderDaily();
+    render();
+    showToast('‘' + removed.text + '’ 요일별 목록에서 뺐어요', null);
+  }
+
+  dailyAddFormEl.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var v = cleanText(dailyInputEl.value).slice(0, 80);
+    var dup = v && state.dailyItems.some(function (t) { return t.text === v; });
+    if (!v || dup || state.dailyItems.length >= DAILY_MAX) {
+      dailyInputEl.classList.remove('shake');
+      void dailyInputEl.offsetWidth;
+      dailyInputEl.classList.add('shake');
+      if (dup) showToast('이미 요일별 목록에 있어요', null);
+      else if (state.dailyItems.length >= DAILY_MAX) showToast('요일별 숙제는 ' + DAILY_MAX + '개까지 넣을 수 있어요', null);
+      dailyInputEl.focus();
+      return;
+    }
+    state.dailyItems.push({ text: v, days: WORK_DAYS.slice() });
+    save();
+    dailyInputEl.value = '';
+    renderDaily();
+    updateTodayNote();
+    dailyInputEl.focus();
+  });
+
+  dailyFillEl.addEventListener('click', function () {
+    var want = todaySchedule().length;
+    var added = seedDaily(true);
+    render();
+    closeSheet();
+    if (!want) showToast(dowNow() === 5 ? '오늘은 숙제 쉬는 날이에요' : '오늘 넣을 자동 숙제가 없어요', null);
+    else showToast(added ? added + '개를 오늘 목록에 넣었어요' : '오늘 목록에 이미 다 있어요', null);
+  });
+
+  dailyBtn.addEventListener('click', openSheet);
+  $('dailyClose').addEventListener('click', closeSheet);
+  $('dailyBackdrop').addEventListener('click', closeSheet);
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !sheetEl.hidden) closeSheet();
+  });
+
   /* ---------- 소리 켜기/끄기 ---------- */
   function syncSound() {
     soundBtn.textContent = state.sound ? '🔔' : '🔕';
@@ -872,29 +1353,60 @@
     if (state.sound) ding();
   });
 
-  /* ---------- 날짜 ---------- */
+  /* ---------- 날짜 · 오늘 안내 ---------- */
   var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
   function syncDate() {
     var d = new Date();
     $('dateLabel').textContent = (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + DAYS[d.getDay()] + '요일';
+    updateTodayNote();
   }
 
-  /* ---------- 날짜가 바뀌면 오늘 끝낸 개수 초기화 ---------- */
-  function checkRollover() {
-    if (state.clearedDate !== todayStr()) {
-      state.cleared = 0;
-      state.clearedDate = todayStr();
-      save();
-      updateCounts('done');
-      updateEmpty();
+  function updateTodayNote() {
+    var el = $('todayNote');
+    if (!el) return;
+    var dow = dowNow();
+    var n = todaySchedule().length;
+    if (dow === 5 && n === 0) {
+      el.className = 'today-note rest';
+      el.innerHTML = '오늘: <b>금요일</b> · 🎉 숙제 쉬는 날';
+    } else if (n === 0) {
+      el.className = 'today-note';
+      el.innerHTML = '오늘: <b>' + DAY_NAMES[dow] + '</b> · 자동 숙제 없음';
+    } else {
+      el.className = 'today-note';
+      el.innerHTML = '오늘: <b>' + DAY_NAMES[dow] + '</b> · 자동 숙제 <b>' + n + '개</b>';
     }
+  }
+
+  /* ---------- 날짜가 바뀌면 오늘 끝낸 개수·요일별 숙제 다시 채우기 ---------- */
+  function checkRollover() {
+    var redraw = false;
+    var today = todayStr();
+    if (state.clearedDate !== today) {
+      state.cleared = 0;
+      state.clearedDate = today;
+      save();
+      redraw = true;
+    }
+    // 앱을 켜둔 채로 자정이 지나도: 그날 하지 않는 자동 숙제는 빼고, 그날 숙제를 채워요
+    if (state.lastDailySeedDate !== today) {
+      if (pruneToday()) redraw = true;
+      if (seedDaily()) redraw = true;
+    }
+    if (redraw) render();
     syncDate();
   }
 
   /* ---------- 시작 ---------- */
   buildQuick();
   syncSound();
+  if (scheduleUpgraded) {
+    pruneToday();
+    seedNewScheduleItems();
+    save();
+  }
   syncDate();
+  seedDaily();
   render();
   checkRollover();
 
