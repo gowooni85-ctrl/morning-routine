@@ -273,9 +273,10 @@
   @keyframes tgRing{0%,100%{box-shadow:0 0 0 0 rgba(243,166,60,0)}50%{box-shadow:0 0 0 6px rgba(243,166,60,.30)}}
 
   /* ---------- task grid ---------- */
+  /* 아이폰(좁은 화면): 한 줄에 할 일 하나씩 */
   .grid{
     display:grid;gap:16px;margin-top:22px;padding-top:6px;
-    grid-template-columns:1fr;   /* 한 줄에 할 일 하나씩 (패드/넓은 화면에서도 1열) */
+    grid-template-columns:1fr;
   }
   @media (max-width:520px){ .grid{gap:14px} }
 
@@ -404,20 +405,53 @@
   .e-btns button.danger{background:#fff3f3;border-color:#ffd6d6;color:#c23a3a}
   .e-btns button.armed{background:#ffe1e1;border-color:#ff9e9e;font-size:.86rem;font-weight:900}
 
-  /* 넓은 화면(패드 가로 등): 1열 카드를 넓게 펼쳐 글자·버튼을 크게 */
+  /* 넓은 화면: 카드를 여러 열로 펼쳐 한 화면에 다 보이게 (패드 세로·작은 노트북 3열) */
   @media (min-width:700px){
-    .card{padding:18px 20px;border-radius:24px;gap:12px}
-    .card-head{gap:12px}
-    .step{width:34px;height:34px;font-size:1rem;border-radius:11px}
-    .card-head .emoji{font-size:1.9rem}
-    .name{font-size:clamp(1.2rem,2vw,1.42rem)}
-    .mins{font-size:.88rem;padding:5px 12px}
-    .timer-time{font-size:clamp(2rem,3vw,2.5rem);min-width:124px}
-    .timer-time.wide{font-size:clamp(1.6rem,2.4vw,1.9rem);min-width:156px}
-    .card.done .timer-time{font-size:1.7rem}
-    .timer-bar{height:16px}
-    .btn{padding:16px 10px;font-size:1.14rem;border-radius:17px}
-    .btn-reset{flex:0 0 62px;font-size:1.3rem}
+    .wrap{max-width:1280px}
+    .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px;padding-top:0}
+    .card{padding:12px 14px;border-radius:20px;gap:8px}
+    .card-head{gap:8px;align-items:center;flex-wrap:wrap}
+    .step{width:26px;height:26px;font-size:.8rem;border-radius:9px;order:1}
+    .card-head .emoji{font-size:1.32rem;order:2}
+    .mins{font-size:.72rem;padding:3px 8px;margin-left:auto;order:3}
+    .name{order:4;flex:1 1 100%;font-size:1.04rem;line-height:1.28}
+    .timer{gap:8px}
+    .timer-time{font-size:1.6rem;min-width:88px}
+    .timer-time.wide{font-size:1.15rem;min-width:104px;letter-spacing:-.02em}
+    .card.done .timer-time{font-size:1.2rem}
+    .timer-bar{height:10px}
+    .btn{padding:10px 6px;font-size:.94rem;border-radius:13px;gap:4px}
+    .btn-reset{flex:0 0 42px;font-size:1.05rem}
+    .btn-done .ck{font-size:1rem}
+  }
+  /* 패드 가로(1024×768 등): 4열 + 위쪽 남은 시간 카드를 낮게 → 스크롤 없이 한 화면 */
+  @media (min-width:960px){
+    body{padding-bottom:0}
+    .wrap{max-width:1280px;padding-top:10px;padding-bottom:10px}
+    .topbar{padding-top:7px;padding-bottom:7px}
+    .logo{width:42px;height:42px;font-size:23px;border-radius:13px}
+    .brand h1{font-size:1.08rem}
+    .grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+    .cd-card{
+      padding:12px clamp(16px,2vw,24px) 10px;border-radius:22px;
+      display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;row-gap:4px;
+      grid-template-areas:"head head" "time status" "track track" "sub sub";
+      align-items:center;
+    }
+    .cd-head{grid-area:head}
+    .cd-label{font-size:1.02rem}
+    .target-chip{padding:5px 12px;font-size:.86rem}
+    .target-chip b{font-size:.98rem}
+    .cd-time{grid-area:time;font-size:clamp(2.5rem,4.4vw,3.2rem);margin:0}
+    .cd-time.long{font-size:clamp(2.1rem,3.6vw,2.6rem)}
+    .cd-status{grid-area:status;margin:0;padding:6px 11px;font-size:.9rem;border-radius:11px;justify-self:start;align-self:center}
+    .cd-track{grid-area:track;margin:4px 0 0;height:10px}
+    .cd-sub{grid-area:sub;font-size:.78rem;gap:4px 14px}
+    .progress-card{padding:10px 16px;border-radius:20px;margin-top:10px}
+    .p-title{font-size:.92rem}
+    .p-pct{font-size:1.2rem}
+    .progress-track{height:10px;margin:5px 0}
+    .p-foot{font-size:.76rem}
   }
 
   .empty{
@@ -1651,6 +1685,15 @@
     return null;
   }
 
+  /* 지금 차례인 할 일인가 (아직 안 끝난 것 중 맨 앞) */
+  function isCurrentTask(id){
+    var list = M().tasks;
+    for(var i = 0; i < list.length; i++){
+      if(!M().done[list[i].id]) return list[i].id === id;
+    }
+    return false;
+  }
+
   /* 하나가 끝나면 다음 할 일 타이머를 저절로 이어서 시작한다. */
   function autoAdvanceFrom(id){
     var next = nextUncompletedAfter(id);
@@ -1687,8 +1730,11 @@
       return;
     }
 
-    /* 타이머가 돌고 있던 할 일을 직접 '완료'했으면 다음 할 일도 이어서 시작한다. */
+    /* 타이머가 돌고 있던 할 일이거나 '지금 차례'인 할 일을 직접 '완료'했으면
+       다음 할 일 타이머도 저절로 이어서 시작한다. */
     var wasRunning = !!(tm && tm.endAt);
+    var runningBefore = state.runningId;
+    var wasCurrent = isCurrentTask(id);
     M().done[id] = true;
     doneLock[id] = Date.now();
     if(tm && tm.endAt){
@@ -1699,7 +1745,9 @@
     chime('pop');
     pulseCard(id);
     ensureAudio();
-    var next = wasRunning ? autoAdvanceFrom(id) : null;
+    /* 돌고 있는 타이머가 따로 있으면 그건 건드리지 않는다. */
+    var chain = wasRunning || (!runningBefore && wasCurrent);
+    var next = chain ? autoAdvanceFrom(id) : null;
     save();
     updateCards(); updateHero(); updateCountdown();
     if(next){
