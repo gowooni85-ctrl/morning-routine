@@ -2,7 +2,7 @@
 <!--
   아침 루틴 미션 · 7세 아침 루틴 대시보드 (단일 HTML 파일)
   · 사용법: 파일을 브라우저(사파리·크롬)로 열고, 아이패드/아이폰은 '홈 화면에 추가'하면 앱처럼 쓸 수 있어요.
-  · 토·일은 저절로 '🌈 주말 모드'(가방 싸기 빼고 7단계)로, 월~금은 '🎒 평일 모드'(8단계)로 열려요.
+  · 토·일은 저절로 '🌈 주말 모드'(가방 싸기 빼고 8단계)로, 월~금은 '🎒 평일 모드'(8단계)로 열려요.
     머리말의 모드 버튼으로 그날만 바꿀 수도 있어요.
   · 목표 시간은 요일마다 달라요: 월~목 08:00 · 금 08:35 · 토 08:30 · 일 08:20.
   · 할 일 타이머가 00:00이 되면 종료 알림음이 울려요(아이폰·아이패드는 '👩 엄마 설정 → 🔔 소리 테스트'로 미리 확인).
@@ -605,8 +605,9 @@
   const OLD_TARGET_WEEKEND = '10:00';
   /* 저장 형식 버전: v4부터 평일/주말 모드의 목록·오늘 체크를 따로 저장하고,
      v5부터 마지막에 '🎲 놀기'(목표 시간에서 남는 시간 자동 계산) 단계가 붙고,
-     v6부터 목표 시간을 요일 묶음(월~목 / 금 / 토 / 일)별로 저장한다. */
-  const SCHEMA_V = 6;
+     v6부터 목표 시간을 요일 묶음(월~목 / 금 / 토 / 일)별로 저장하고,
+     v7부터 주말 목록의 '리딩게이트 하기' 다음에 '눈높이 국어'(10분)가 들어간다. */
+  const SCHEMA_V = 7;
   /* 마지막 단계 '놀기': 시간을 정하지 않고 목표 시간까지 남는 시간이 저절로 계산된다. */
   const PLAY_TASK = { emoji:'🎲', name:'놀기', autoRemaining:true };
   /* 평일 모드 기본 목록의 고정 할 일 (7단계 · 75분) */
@@ -619,15 +620,18 @@
     { emoji:'🎒', name:'가방 싸기', minutes:5 },
     { emoji:'📚', name:'리딩게이트 하기', minutes:15 }
   ];
-  /* 주말 모드 기본 목록의 고정 할 일 (6단계 · 80분 · 가방 싸기 없음 · 리딩게이트 25분) */
+  /* 주말 모드 기본 목록의 고정 할 일 (7단계 · 90분 · 가방 싸기 없음 · 리딩게이트 25분 · 눈높이 국어 10분) */
   const BASE_WEEKEND_TASKS = [
     { emoji:'💊', name:'일어나서 약 먹기', minutes:5 },
     { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:15 },
     { emoji:'🍽️', name:'아침상 차리기 · 아침 식사', minutes:25 },
     { emoji:'💊', name:'식후 약 먹기', minutes:5 },
     { emoji:'🪥', name:'이 닦기', minutes:5 },
-    { emoji:'📚', name:'리딩게이트 하기', minutes:25 }
+    { emoji:'📚', name:'리딩게이트 하기', minutes:25 },
+    { emoji:'✏️', name:'눈높이 국어', minutes:10 }
   ];
+  /* v7에서 주말 목록에 새로 들어간 할 일 — 이미 저장해 둔 주말 목록에도 이어 붙인다. */
+  const KOREAN_TASK = { emoji:'✏️', name:'눈높이 국어', minutes:10 };
   /* v3 시절 기본 목록(그때의 시간 그대로) — 저장값이 이와 똑같을 때만 '그때 기본값'으로 알아본다. */
   const V3_DEFAULT_TASKS = [
     { name:'일어나서 약 먹기', minutes:2 },
@@ -638,7 +642,7 @@
     { name:'가방 싸기', minutes:5 },
     { name:'리딩게이트 하기', minutes:15 }
   ];
-  /* 지금 기본 목록: 맨 끝에 '🎲 놀기'가 붙는다. (평일 8단계 · 주말 7단계) */
+  /* 지금 기본 목록: 맨 끝에 '🎲 놀기'가 붙는다. (평일 8단계 · 주말 8단계) */
   const DEFAULT_WEEKDAY_TASKS = BASE_WEEKDAY_TASKS.concat([PLAY_TASK]);
   const DEFAULT_WEEKEND_TASKS = BASE_WEEKEND_TASKS.concat([PLAY_TASK]);
   const MODES = {
@@ -1006,6 +1010,29 @@
     block.tasks.forEach(function(x){ if(!block.timers[x.id]) block.timers[x.id] = freshTimer(x); });
   }
 
+  /* v7: 주말 목록의 '리딩게이트 하기' 바로 다음에 '눈높이 국어'(10분)를 넣는다.
+     손수 고친 주말 목록·오늘 체크·타이머는 그대로 두고, 이미 '눈높이 국어'가 있으면 건드리지 않는다.
+     (리딩게이트가 없으면 고정 할 일 끝, 즉 맨 마지막 '🎲 놀기' 앞에 넣는다.) */
+  function ensureKoreanTask(block){
+    if(!block || !Array.isArray(block.tasks)) return;
+    if(!block.timers || typeof block.timers !== 'object') block.timers = {};
+    var exists = block.tasks.some(function(t){ return normName(t && t.name).indexOf('눈높이국어') >= 0; });
+    if(exists) return;
+    var task = { id: newId('w'), emoji: KOREAN_TASK.emoji, name: KOREAN_TASK.name, minutes: KOREAN_TASK.minutes };
+    var at = -1;
+    for(var i = 0; i < block.tasks.length; i++){
+      if(normName(block.tasks[i] && block.tasks[i].name).indexOf('리딩게이트') >= 0){ at = i + 1; break; }
+    }
+    if(at < 0){
+      for(var j = 0; j < block.tasks.length; j++){
+        if(isAuto(block.tasks[j])){ at = j; break; }
+      }
+    }
+    if(at < 0) at = block.tasks.length;
+    block.tasks.splice(at, 0, task);
+    block.timers[task.id] = freshTimer(task);
+  }
+
   /* v4까지의 기본 시간 → 지금 기본 시간.
      저장된 시간이 '그때 기본값'과 똑같을 때만 바꾸고, 직접 고친 시간은 그대로 둔다. */
   const V4_MINUTES_FIX = {
@@ -1066,6 +1093,11 @@
     delete s.tasks;
     delete s.done;
     delete s.timers;
+    /* v7: 이미 저장해 둔 주말 목록에도 '리딩게이트 하기' 다음에 '눈높이 국어'를 넣는다.
+       (평일 목록은 그대로 두고, 오늘/내일 체크와 타이머도 건드리지 않는다.) */
+    if(fromV < 7){
+      ensureKoreanTask(s.modes.weekend);
+    }
     /* v6: 목표 시간은 요일 묶음별로 따로 보관한다. */
     s.targets = normalizeTargets(s.targets, legacy);
     s.settings = Object.assign({}, (s.settings && typeof s.settings === 'object') ? s.settings : {});
