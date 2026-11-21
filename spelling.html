@@ -99,7 +99,7 @@
   .book-btn b{font-size:13px;color:#8b5cf6;background:#fff;padding:3px 8px;border-radius:999px}
   .foot{text-align:center;font-size:11.5px;color:#94a3b8;font-weight:700;margin:18px 0 0}
 
-  /* ---------- home: 3-step master course ---------- */
+  /* ---------- home: 2-step master course ---------- */
   .course-card{
     position:relative;display:block;width:100%;border:none;font-family:inherit;text-align:left;
     color:#fff;cursor:pointer;padding:19px 17px 17px;border-radius:26px;margin-bottom:6px;overflow:hidden;
@@ -532,32 +532,26 @@
     <button class="course-card" data-mode="course" id="courseCard">
       <span class="deco">🚀</span>
       <span class="ribbon">⭐ 추천 · 이렇게 하면 제일 잘 외워요</span>
-      <span class="title">🚀 한 단어 3단계 마스터 코스</span>
-      <span class="desc">한 단어를 끝까지! 블록으로 만나고 → 빈칸으로 콕 찍고 → 내 손으로 써요</span>
+      <span class="title">🚀 한 단어 2단계 마스터 코스</span>
+      <span class="desc">한 단어를 끝까지! 빈칸으로 콕 찍고 → 블록으로 완성해요</span>
       <span class="course-flow">
-        <span class="cf-step">① 🧩 블록</span><span class="cf-arrow">→</span>
-        <span class="cf-step">② 🎈 빈칸</span><span class="cf-arrow">→</span>
-        <span class="cf-step">③ 🎤 직접 쓰기</span>
+        <span class="cf-step">① 🎈 빈칸 톡톡</span><span class="cf-arrow">→</span>
+        <span class="cf-step">② 🧩 블록 맞추기</span>
       </span>
-      <span class="course-go">🚀 3단계 코스 시작! <b id="courseTotal">6개</b></span>
+      <span class="course-go">🚀 2단계 코스 시작! <b id="courseTotal">6개</b></span>
     </button>
 
     <div class="sec-title">🔁 하나만 골라 연습하기 <i>· 따로따로 연습하고 싶을 때</i></div>
 
     <div class="modes practice">
-      <button class="mode-card" data-mode="blocks">
-        <span class="mode-emoji">🧩</span>
-        <span class="mode-txt"><b>블록 맞추기</b><i>글자를 하나씩 끼워서 완성해요</i></span>
-        <span class="mode-level">쉬움</span>
-      </button>
       <button class="mode-card" data-mode="fill">
         <span class="mode-emoji">🎈</span>
-        <span class="mode-txt"><b>빈칸 톡톡</b><i>어려운 부분만 콕! 알파벳 방울을 눌러요</i></span>
-        <span class="mode-level">핵심</span>
+        <span class="mode-txt"><b>🎈 빈칸만</b><i>어려운 부분만 콕! 알파벳 방울을 눌러요</i></span>
+        <span class="mode-level">쉬움</span>
       </button>
-      <button class="mode-card" data-mode="type">
-        <span class="mode-emoji">🎤</span>
-        <span class="mode-txt"><b>직접 써보기</b><i>듣고 내가 직접 타이핑!</i></span>
+      <button class="mode-card" data-mode="blocks">
+        <span class="mode-emoji">🧩</span>
+        <span class="mode-txt"><b>🧩 블록만</b><i>글자를 하나씩 끼워서 완성해요</i></span>
         <span class="mode-level">도전</span>
       </button>
     </div>
@@ -578,9 +572,8 @@
     </div>
 
     <div class="stepper" id="stepper" hidden>
-      <div class="stp" data-step="0"><span class="n">①</span><span class="e">🧩</span><b>블록 맞추기</b></div>
-      <div class="stp" data-step="1"><span class="n">②</span><span class="e">🎈</span><b>빈칸 톡톡</b></div>
-      <div class="stp" data-step="2"><span class="n">③</span><span class="e">🎤</span><b>직접 쓰기</b></div>
+      <div class="stp" data-step="0"><span class="n">①</span><span class="e">🎈</span><b>빈칸 톡톡</b></div>
+      <div class="stp" data-step="1"><span class="n">②</span><span class="e">🧩</span><b>블록 맞추기</b></div>
     </div>
 
     <div class="card wordcard">
@@ -766,12 +759,12 @@
     return allWords().filter(function(w){ return !!active[w.en]; });
   }
   var KEYS = ['qwertyuiop','asdfghjkl','zxcvbnm'];
-  var MODE_NAME = {blocks:'🧩 블록 맞추기', fill:'🎈 빈칸 톡톡', type:'🎤 직접 써보기'};
-  var MODE_TAG = {blocks:'블록 맞추기', fill:'빈칸 톡톡', type:'써보기'};
+  var MODE_NAME = {blocks:'🧩 블록 맞추기', fill:'🎈 빈칸 톡톡'};
+  var MODE_TAG = {blocks:'블록 맞추기', fill:'빈칸 톡톡'};
+  /* 2단계 코스: ① 빈칸 톡톡 → ② 블록 맞추기 */
   var STEPS = [
-    {key:'blocks', num:'①', emoji:'🧩', label:'블록 맞추기'},
-    {key:'fill', num:'②', emoji:'🎈', label:'빈칸 톡톡'},
-    {key:'type', num:'③', emoji:'🎤', label:'직접 쓰기'}
+    {key:'fill', num:'①', emoji:'🎈', label:'빈칸 톡톡'},
+    {key:'blocks', num:'②', emoji:'🧩', label:'블록 맞추기'}
   ];
   var STORE_KEY = 'spelling_transport_v1';
 
@@ -1259,7 +1252,7 @@
     var w = G.queue[G.qi];
     var mode = G.course ? STEPS[G.step].key : G.mode;
     $('modeTag').textContent = G.course
-      ? (STEPS[G.step].num + ' ' + STEPS[G.step].label + ' · ' + (G.step + 1) + '/3')
+      ? (STEPS[G.step].num + ' ' + STEPS[G.step].label + ' · ' + (G.step + 1) + '/' + STEPS.length)
       : MODE_TAG[mode];
     renderStepper();
     updateProgress();
@@ -1466,7 +1459,7 @@
     };
   }
 
-  /* ---------- mode 3: type it ---------- */
+  /* ---------- (숨김) 직접 써보기: 지금은 화면에 내보내지 않는다. 되살릴 때 type 카드와 STEPS를 함께 복원 ---------- */
   function buildType(w, area){
     var en = w.en;
     var boxesEl = document.createElement('div');
@@ -1599,11 +1592,7 @@
     sfx('good');
     speak(w.en, 0.78);
     var doneStep = G.step;
-    if(doneStep === 0){
-      showTrans({emoji:'🧩✨', title:'블록 완성!', sub:'잘했어요! 이제 빈칸 톡톡!', next:'② 빈칸 톡톡으로 →'});
-    }else{
-      showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub:'좋아! 이제 안 보고 직접 써볼까?', next:'③ 직접 쓰기로 →'});
-    }
+    showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub:'잘했어요! 이제 블록을 맞춰볼까?', next:'② 블록 맞추기로 →'});
     setTimeout(function(){
       if(rid !== G.runId) return;
       hideTrans();
@@ -1651,7 +1640,7 @@
     $('flashStars').textContent = stars(earned);
     $('flashWord').textContent = w.en;
     $('flashMsg').textContent = G.course
-      ? (perfect ? '3단계 모두 통과! 완벽해요 🎉' : '한 단어 완성! 다음 단어로!')
+      ? (perfect ? '2단계 모두 통과! 완벽해요 🎉' : '한 단어 완성! 다음 단어로!')
       : (perfect ? '완벽해요! 실수 없이 통과 🎉'
         : (earned === 2 ? '정답! 조금만 더!' : '정답이에요!'));
     $('flash').classList.add('on');
@@ -1677,7 +1666,7 @@
     $('resEmoji').textContent = (perfects === G.round.length && G.round.length > 0) ? '🏆' : '🎉';
     $('resTitle').textContent = (perfects === G.round.length && G.round.length > 0)
       ? '완벽해요!' : (G.course ? '코스 완주!' : '잘했어요!');
-    $('resSub').textContent = (G.course ? '한 단어 3단계 코스 · ' : '') +
+    $('resSub').textContent = (G.course ? '한 단어 2단계 코스 · ' : '') +
       G.round.length + '개 중 ' + perfects + '개를 완벽하게 맞혔어요';
 
     var list = $('resList');
