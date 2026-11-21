@@ -337,7 +337,11 @@
   .day-chip.on{background:#3f7cf6;border-color:#3f7cf6;color:#fff;box-shadow:0 3px 8px rgba(63,124,246,.26)}
   .day-chip.on.sun{background:#e2464e;border-color:#e2464e;box-shadow:0 3px 8px rgba(226,70,78,.24)}
   .day-chip.on.sat{background:#2c7be5;border-color:#2c7be5}
-  .day-chip.today{box-shadow:0 0 0 2px #ffd479}
+  .day-chip.today{position:relative}
+  .day-chip.today::after{
+    content:'';position:absolute;left:50%;bottom:4px;width:4px;height:4px;border-radius:50%;
+    background:currentColor;opacity:.55;transform:translateX(-50%);
+  }
   .daily-row.off-day .daily-input{opacity:.55}
   .day-sum{margin:0 1px;font-size:.7rem;font-weight:800;color:#a6b2c6;letter-spacing:-.01em}
   .daily-empty{
