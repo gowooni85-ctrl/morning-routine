@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>connect band</title>
+<style>
+  html { zoom: 2; }
+  body { margin: 0; padding: 0; background: #e6f3ff; }
+  #clip { position: relative; width: 376px; height: 620px; overflow: hidden; background: #e6f3ff; }
+  #frame { position: absolute; left: 0; top: 0; width: 376px; height: 1900px; border: 0; }
+</style>
+</head>
+<body>
+<div id="clip"><iframe id="frame" src="./connect.html?v=5" title="connect band"></iframe></div>
+<script>
+  var y = Number((location.search.match(/[?&]y=(\d+)/) || [0, 0])[1]) || 0;
+  document.getElementById('frame').style.top = (-y) + 'px';
+</script>
+</body>
+</html>
