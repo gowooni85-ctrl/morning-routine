@@ -354,7 +354,7 @@
   }
   function paintTime(cur, total){
     if (total != null) durMs = total;
-    var t = durMs ? mmss(cur || 0) + ' / ' + mmss(durMs / 1000) : '—:— / —:—';
+    var t = durMs ? mmss((cur || 0) / 1000) + ' / ' + mmss(durMs / 1000) : '—:— / —:—';
     $('scTime').textContent = t;
   }
 
