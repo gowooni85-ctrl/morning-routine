@@ -229,6 +229,47 @@
     background:linear-gradient(180deg,#60a5fa,#2563eb);box-shadow:0 4px 0 #1d4ed8,0 8px 18px rgba(37,99,235,.3);
   }
   .speak:active{transform:translateY(4px);box-shadow:0 1px 0 #1d4ed8}
+  .speak-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .speak-row .speak{margin-top:0;font-size:14.5px;padding:11px 15px}
+  .speak-row .speak.ghost{
+    background:linear-gradient(180deg,#ffffff,#eaf2ff);color:#2563eb;
+    box-shadow:0 4px 0 #bfdbfe,0 6px 14px rgba(37,99,235,.14);
+  }
+  .speak-row .speak.ghost:active{box-shadow:none}
+
+  /* 파닉스 조각 칩 (빈칸 모드) */
+  .phonics{
+    display:flex;align-items:center;justify-content:center;gap:5px;flex-wrap:wrap;
+    margin-top:10px;animation:fade .26s ease;
+  }
+  .phonics[hidden]{display:none}
+  .phonics .ph{
+    display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#4338ca;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;font-size:15px;font-weight:900;
+    letter-spacing:.3px;transition:transform .12s,background .12s,color .12s;
+  }
+  .phonics .ph.now{
+    background:linear-gradient(180deg,#fbbf24,#f59e0b);color:#fff;transform:scale(1.14);
+    box-shadow:0 3px 8px rgba(245,158,11,.4);
+  }
+  .phonics .phdot{color:#c7d2fe;font-weight:900;font-size:13px}
+
+  /* 틀렸을 때 Try again! */
+  .tryagain{
+    position:absolute;left:50%;top:8px;transform:translateX(-50%) scale(.7);opacity:0;
+    display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:999px;
+    background:linear-gradient(180deg,#fb923c,#ea580c);color:#fff;white-space:nowrap;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;font-size:16px;font-weight:900;
+    letter-spacing:.2px;box-shadow:0 8px 20px rgba(234,88,12,.32);pointer-events:none;z-index:6;
+    transition:opacity .16s,transform .2s;
+  }
+  .tryagain .em{font-size:16px;line-height:1}
+  .tryagain.on{opacity:1;transform:translateX(-50%) scale(1);animation:taPop .36s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes taPop{
+    0%{transform:translateX(-50%) scale(.6) rotate(-5deg)}
+    60%{transform:translateX(-50%) scale(1.1) rotate(2deg)}
+    100%{transform:translateX(-50%) scale(1) rotate(0)}
+  }
   .tipbar{
     margin-top:12px;background:#fffbeb;border:2px dashed #fcd34d;border-radius:14px;
     padding:10px 13px;font-size:13.5px;font-weight:700;color:#92400e;text-align:left;line-height:1.4;
@@ -346,6 +387,14 @@
     font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;letter-spacing:.5px;
   }
   .flash .msg{font-size:13px;font-weight:800;color:#16a34a;margin-top:2px}
+  .flash .praise{
+    display:flex;align-items:center;justify-content:center;gap:6px;margin-top:7px;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;font-size:23px;font-weight:900;
+    letter-spacing:-.4px;line-height:1.15;color:#16a34a;
+    animation:praisePop .42s cubic-bezier(.34,1.56,.64,1);
+  }
+  .flash .praise .em{font-size:22px;line-height:1}
+  @keyframes praisePop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.09)}100%{transform:scale(1);opacity:1}}
 
   /* ---------- result ---------- */
   .result-head{text-align:center;padding:6px 0 14px}
@@ -654,8 +703,13 @@
     <div class="card wordcard">
       <div class="emoji" id="pEmoji">🚌</div>
       <div class="ko" id="pKo">버스</div>
-      <button class="speak" id="btnSpeak">🔊 듣기</button>
+      <div class="speak-row">
+        <button class="speak" id="btnSpeak">🔊 듣기</button>
+        <button class="speak ghost" id="btnSpeakWord" hidden>🔊 단어만</button>
+      </div>
+      <div class="phonics" id="pPhonics" hidden></div>
       <div class="tipbar" id="pTip" hidden></div>
+      <div class="tryagain" id="tryAgain" aria-live="polite"><span class="em">💪</span><span class="tt">Try again!</span></div>
     </div>
 
     <div class="card playarea" id="playarea"></div>
@@ -695,6 +749,7 @@
   <div class="box">
     <div class="st" id="flashStars">⭐⭐⭐</div>
     <div class="wd" id="flashWord">bus</div>
+    <div class="praise" id="flashPraise"><span class="em" id="flashPraiseEmoji">👍</span><span class="pt" id="flashPraiseText">Good!</span></div>
     <div class="msg" id="flashMsg">정답!</div>
   </div>
 </div>
@@ -775,43 +830,71 @@
     /* ---- School Words ---- */
     {en:'art', ko:'미술', emoji:'🎨', focus:false,
       tip:'ar은 "아~" 소리! a·r·t = 아트 — It’s time for art. 🎨',
+      phonics:[{label:'ar', say:'ar'}, {label:'t', say:'tuh'}],
       fill:{pattern:'?rt', pool:['a','e','o','u']}},
     {en:'math', ko:'수학', emoji:'🔢', focus:false,
       tip:'끝 th는 혀를 살짝 물고 "쓰"! m·a·th — It’s time for math. 🔢',
+      phonics:[{label:'m', say:'muh'}, {label:'a', say:'aah'}, {label:'th', say:'thuh'}],
       fill:{pattern:'ma?h', pool:['t','d','s','c']}},
     {en:'music', ko:'음악', emoji:'🎵', focus:false,
       tip:'mu는 "뮤", si는 "지"! m·u·s·i·c — It’s time for music. 🎵',
+      phonics:[{label:'myu', say:'myoo'}, {label:'sic', say:'zik'}],
       fill:{pattern:'m?sic', pool:['u','a','e','o']}},
     {en:'read', ko:'읽다', emoji:'📖', focus:true, say:'reed',
       tip:'ea는 짝꿍 모음 "이~"! r·ea·d — You read a book. 📖',
+      phonics:[{label:'r', say:'ruh'}, {label:'ea', say:'ee'}, {label:'d', say:'duh'}],
       fill:{pattern:'r??d', pool:['e','a','i','o','u']}},
     {en:'eat', ko:'먹다', emoji:'🍎', focus:false,
       tip:'ea는 "이~" 소리! e·a·t — You eat lunch. 🍎',
+      phonics:[{label:'ea', say:'ee'}, {label:'t', say:'tuh'}],
       fill:{pattern:'e?t', pool:['a','e','i','o']}},
     {en:'draw', ko:'그리다', emoji:'🖍️', focus:true,
       tip:'aw는 "어~" 한 덩어리! d·r·aw — You draw a picture. 🖍️',
+      phonics:[{label:'dr', say:'druh'}, {label:'aw', say:'aw'}],
       fill:{pattern:'dr??', pool:['a','w','o','e']}},
     /* ---- Key Verbs ---- */
     {en:'write', ko:'쓰다', emoji:'✏️', focus:true,
       tip:'끝의 마법의 e는 소리가 없어요! w·r·i·t·e — You write with a pencil. ✏️',
+      phonics:[{label:'wr', say:'ruh'}, {label:'i', say:'eye'}, {label:'te', say:'tuh'}],
       fill:{pattern:'writ?', pool:['e','a','i','o']}},
     {en:'count', ko:'세다', emoji:'🔢', focus:true,
       tip:'ou는 "아우"! c·ou·n·t — You count 1, 2, 3… 🔢',
+      phonics:[{label:'c', say:'kuh'}, {label:'ou', say:'ow'}, {label:'nt', say:'ntuh'}],
       fill:{pattern:'c??nt', pool:['o','u','a','e']}},
     {en:'paint', ko:'칠하다', emoji:'🎨', focus:true,
       tip:'ai는 짝꿍 모음 "에이"! p·ai·n·t — You paint with a paintbrush. 🎨',
+      phonics:[{label:'p', say:'puh'}, {label:'ai', say:'ay'}, {label:'nt', say:'ntuh'}],
       fill:{pattern:'p??nt', pool:['a','i','e','o']}},
     /* ---- 긴 School Words ---- */
     {en:'reading', ko:'읽기 시간', emoji:'📖', focus:true,
       tip:'ea는 "이~", 그다음 ding! r·ea·ding — It’s time for reading. 📖',
+      phonics:[{label:'read', say:'reed'}, {label:'ing', say:'ing'}],
       fill:{pattern:'r??ding', pool:['e','a','i','o','u']}},
     {en:'writing', ko:'쓰기 시간', emoji:'✏️', focus:true,
       tip:'w는 조용, wr은 "r" 소리! w·r·i·t·i·n·g — It’s time for writing. ✏️',
+      phonics:[{label:'writ', say:'rite'}, {label:'ing', say:'ing'}],
       fill:{pattern:'?riting', pool:['w','m','v','k']}},
     {en:'recess', ko:'쉬는 시간', emoji:'🛝', focus:true, say:'REE-sess',
       tip:'끝에 s가 두 개! re·cess, 앞 강세 REE-sess — It’s time for recess. 🛝',
+      phonics:[{label:'re', say:'ree'}, {label:'cess', say:'sess'}],
       fill:{pattern:'rece??', pool:['s','c','z','t']}}
   ];
+
+  /* 정답 칭찬 문구 — 맞힐 때마다 Good! → Well done! → Excellent! → Perfect! → Great job! → Awesome! 순서로 돌아간다 */
+  var PRAISE = [
+    {en:'Good!', em:'👍', color:'#16a34a'},
+    {en:'Well done!', em:'✨', color:'#0284c7'},
+    {en:'Excellent!', em:'🌟', color:'#d97706'},
+    {en:'Perfect!', em:'🏆', color:'#7c3aed'},
+    {en:'Great job!', em:'🎉', color:'#db2777'},
+    {en:'Awesome!', em:'🔥', color:'#ea580c'}
+  ];
+  var praiseIdx = 0;
+  function nextPraise(){
+    var p = PRAISE[praiseIdx % PRAISE.length];
+    praiseIdx = (praiseIdx + 1) % PRAISE.length;
+    return p;
+  }
   var EASY6 = ['art','math','music','read','eat','draw'];
   var MID9 = EASY6.concat(['write','count','paint']);
   var FULL12 = MID9.concat(['reading','writing','recess']);
@@ -1220,6 +1303,15 @@
     loadVoices();
     try{ window.speechSynthesis.addEventListener('voiceschanged', loadVoices); }catch(e){}
   }
+  function pickVoice(){
+    var pref = null, i;
+    for(i = 0; i < voices.length; i++){
+      if(/^en[-_]US/i.test(voices[i].lang) && /samantha|google|aria|zira|jenny/i.test(voices[i].name)){ pref = voices[i]; break; }
+    }
+    if(!pref){ for(i = 0; i < voices.length; i++){ if(/^en[-_]US/i.test(voices[i].lang)){ pref = voices[i]; break; } } }
+    if(!pref){ for(i = 0; i < voices.length; i++){ if(/^en/i.test(voices[i].lang)){ pref = voices[i]; break; } } }
+    return pref;
+  }
   function speak(text, rate){
     if(!('speechSynthesis' in window)) return;
     unlockAudio();
@@ -1230,12 +1322,7 @@
       u.rate = rate || 0.8;
       u.pitch = 1.05;
       u.volume = 1;
-      var pref = null, i;
-      for(i = 0; i < voices.length; i++){
-        if(/^en[-_]US/i.test(voices[i].lang) && /samantha|google|aria|zira|jenny/i.test(voices[i].name)){ pref = voices[i]; break; }
-      }
-      if(!pref){ for(i = 0; i < voices.length; i++){ if(/^en[-_]US/i.test(voices[i].lang)){ pref = voices[i]; break; } } }
-      if(!pref){ for(i = 0; i < voices.length; i++){ if(/^en/i.test(voices[i].lang)){ pref = voices[i]; break; } } }
+      var pref = pickVoice();
       if(pref) u.voice = pref;
       window.speechSynthesis.speak(u);
     }catch(e){}
@@ -1325,12 +1412,155 @@
     }
   }
 
+  /* ================= 파닉스 끊어 읽기 (빈칸 모드) =================
+     조각 → 조각 → … → 단어 전체. 다음 단어로 넘어가거나 다른 버튼을 누르면
+     phSeq 토큰이 바뀌어 예전 타이머·예전 발화는 절대 울리지 않는다. */
+  var PH_GAP = 420;      /* 조각 사이 쉼(ms) */
+  var PH_WORD_GAP = 480; /* 마지막 조각 → 단어 전체 사이 쉼(ms) */
+  var phSeq = 0;
+  var phTimers = [];
+  function phClearTimers(){
+    for(var i = 0; i < phTimers.length; i++){ clearTimeout(phTimers[i]); }
+    phTimers = [];
+  }
+  function phStop(){
+    phSeq++;
+    phClearTimers();
+    setPhonicsNow(-1);
+    try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  }
+  /* 한 조각 읽기 — 끝나면(또는 1.5초 안전장치) onDone 한 번만 */
+  function phSayOne(text, rate, token, onDone){
+    var done = false;
+    var guard = setTimeout(function(){ finish(); }, 1500);
+    phTimers.push(guard);
+    function finish(){
+      if(done) return;
+      done = true;
+      clearTimeout(guard);
+      if(onDone) onDone();
+    }
+    if(!('speechSynthesis' in window)){ finish(); return; }
+    if(token !== phSeq){ finish(); return; }
+    try{
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate || 0.82;
+      u.pitch = 1.05;
+      u.volume = 1;
+      var pref = pickVoice();
+      if(pref) u.voice = pref;
+      u.onend = finish;
+      u.onerror = finish;
+      window.speechSynthesis.speak(u);
+    }catch(e){ finish(); }
+  }
+  function speakPhonics(w){
+    if(!w) return;
+    var chunks = w.phonics;
+    phStop();
+    unlockAudio();
+    var token = phSeq;
+    if(!chunks || !chunks.length){
+      /* 엄마가 새로 넣은 단어처럼 파닉스 정보가 없으면 통째로 읽기 */
+      speak(sayAs(w), 0.78);
+      return;
+    }
+    var i = 0;
+    function next(){
+      if(token !== phSeq) return;
+      if(i >= chunks.length){
+        setPhonicsNow(-1);
+        phTimers.push(setTimeout(function(){
+          if(token !== phSeq) return;
+          speak(sayAs(w), 0.74);
+        }, PH_WORD_GAP));
+        return;
+      }
+      var idx = i++;
+      setPhonicsNow(idx);
+      phSayOne(chunks[idx].say, 0.82, token, function(){
+        if(token !== phSeq) return;
+        if(i >= chunks.length){
+          setPhonicsNow(-1);
+          phTimers.push(setTimeout(function(){
+            if(token !== phSeq) return;
+            speak(sayAs(w), 0.74);
+          }, PH_WORD_GAP));
+        }else{
+          phTimers.push(setTimeout(next, PH_GAP));
+        }
+      });
+    }
+    next();
+  }
+
+  /* 파닉스 칩 표시·하이라이트 */
+  function renderPhonicsChips(w, show){
+    var box = $('pPhonics');
+    if(!box) return;
+    box.innerHTML = '';
+    if(!show || !w || !w.phonics || !w.phonics.length){ box.hidden = true; return; }
+    w.phonics.forEach(function(c, i){
+      if(i){
+        var dot = mk('span', 'phdot', '·');
+        box.appendChild(dot);
+      }
+      var s = mk('span', 'ph', c.label);
+      s.dataset.i = String(i);
+      box.appendChild(s);
+    });
+    box.hidden = false;
+  }
+  function setPhonicsNow(i){
+    var box = $('pPhonics');
+    if(!box || !box.querySelectorAll) return;
+    var kids = box.querySelectorAll('.ph');
+    for(var k = 0; k < kids.length; k++){
+      kids[k].classList.toggle('now', String(i) === kids[k].dataset.i);
+    }
+  }
+  /* 빈칸 단계인가? (빈칸 모드 · 테스트 ①빈칸) */
+  function isFillPhase(){
+    return G.course ? (G.step === 0) : (G.mode === 'fill');
+  }
+  /* 듣기 버튼·파닉스 칩을 현재 모드에 맞춤 */
+  function syncSpeakUI(w, mode){
+    var fill = (mode === 'fill');
+    var hasPh = !!(w && w.phonics && w.phonics.length);
+    var b = $('btnSpeak'), bw = $('btnSpeakWord');
+    if(b) b.textContent = (fill && hasPh) ? '🔊 파닉스 듣기' : '🔊 듣기';
+    if(bw) bw.hidden = !(fill && hasPh);
+    renderPhonicsChips(w, fill && hasPh);
+  }
+
+  /* 틀렸을 때: 💪 Try again! */
+  var taTimer = 0, taToken = 0;
+  function showTryAgain(){
+    var el = $('tryAgain');
+    if(!el) return;
+    var t = ++taToken;
+    el.classList.remove('on');
+    void el.offsetWidth;
+    el.classList.add('on');
+    clearTimeout(taTimer);
+    taTimer = setTimeout(function(){ if(t === taToken) el.classList.remove('on'); }, 1300);
+  }
+  function hideTryAgain(){
+    var el = $('tryAgain');
+    taToken++;
+    clearTimeout(taTimer);
+    if(el) el.classList.remove('on');
+  }
+
   /* ================= game flow ================= */
   function startGame(mode){
     unlockAudio();
     G.mode = mode;
     G.course = (mode === 'course');
     G.runId++;
+    phStop();
+    hideTryAgain();
     $('flash').classList.remove('on');
     hideTrans();
     var list = activeWords();
@@ -1362,6 +1592,8 @@
     var w = G.queue[G.qi];
     G.wrong = 0; G.hint = false; G.locked = false;
     if(G.course){ G.step = 0; G.wordWrong = 0; G.wordHint = false; }
+    phStop();
+    hideTryAgain();
     $('pEmoji').textContent = w.emoji;
     $('pKo').textContent = w.ko;
     $('pTip').hidden = true;
@@ -1371,7 +1603,12 @@
     void pa.offsetWidth;
     pa.style.animation = '';
     renderStep();
-    setTimeout(function(){ speak(sayAs(w)); }, 230);
+    var rid0 = G.runId;
+    setTimeout(function(){
+      if(rid0 !== G.runId) return;
+      if(isFillPhase()) speakPhonics(w);
+      else speak(sayAs(w), 0.78);
+    }, 230);
   }
 
   function renderStepper(){
@@ -1397,6 +1634,7 @@
     renderStepper();
     updateProgress();
     renderMode(w, mode);
+    syncSpeakUI(w, mode);
   }
 
   function renderMode(w, mode){
@@ -1472,6 +1710,7 @@
         b.classList.add('shake');
         setTimeout(function(){ b.classList.remove('shake'); }, 430);
         sfx('bad');
+        showTryAgain();
         if(!$('pTip').hidden) return;
         $('pTip').hidden = false;
         $('pTip').textContent = '지금 차례에는 다른 글자가 와요. 다시 골라볼까요? 🙂';
@@ -1569,6 +1808,7 @@
         b.classList.add('shake');
         setTimeout(function(){ b.classList.remove('shake'); }, 430);
         sfx('bad');
+        showTryAgain();
         $('pTip').hidden = false;
         $('pTip').textContent = '그 글자가 아니에요. 소리를 다시 들어보고 골라요!';
         setTimeout(function(){
@@ -1655,6 +1895,7 @@
       G.wrong++;
       markMissed();
       sfx('bad');
+      showTryAgain();
       var wrongIdx = [];
       for(var i = 0; i < en.length; i++){
         if(en.charAt(i) === ' ') continue;
@@ -1732,10 +1973,13 @@
   function stepDone(rid, w){
     G.wordWrong += G.wrong;
     if(G.hint) G.wordHint = true;
+    phStop();
+    hideTryAgain();
     sfx('good');
     speak(sayAs(w), 0.78);
     var doneStep = G.step;
-    showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub:'잘했어요! 이제 블록을 맞춰볼까?', next:'② 블록으로 →'});
+    var pr = nextPraise();
+    showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub: pr.em + ' ' + pr.en + ' 이제 블록을 맞춰볼까?', next:'② 블록으로 →'});
     setTimeout(function(){
       if(rid !== G.runId) return;
       hideTrans();
@@ -1755,6 +1999,8 @@
     G.locked = true;
     var rid = G.runId;
     var w = G.queue[G.qi];
+    phStop();
+    hideTryAgain();
 
     if(G.course && G.step < STEPS.length - 1){
       stepDone(rid, w);
@@ -1782,6 +2028,10 @@
 
     $('flashStars').textContent = stars(earned);
     $('flashWord').textContent = w.en;
+    var pr = nextPraise();
+    $('flashPraiseEmoji').textContent = pr.em;
+    $('flashPraiseText').textContent = pr.en;
+    $('flashPraise').style.color = pr.color;
     $('flashMsg').textContent = G.retryPass
       ? (perfect ? '복습까지 완벽해요! 🎉' : '복습 완료! 이제 기억했어요 👍')
       : G.course
@@ -1879,6 +2129,8 @@
 
   function finishRound(){
     G.locked = true;
+    phStop();
+    hideTryAgain();
     sfx('win');
     confetti(90);
     var sum = 0, perfects = 0;
@@ -2022,7 +2274,17 @@
       });
     });
     $('btnSpeak').addEventListener('click', function(){
-      if(G.queue[G.qi]) speak(sayAs(G.queue[G.qi]));
+      var w = G.queue[G.qi];
+      if(!w){ sfx('tap'); return; }
+      if(isFillPhase() && w.phonics && w.phonics.length) speakPhonics(w);
+      else speak(sayAs(w), 0.82);
+      sfx('tap');
+    });
+    $('btnSpeakWord').addEventListener('click', function(){
+      var w = G.queue[G.qi];
+      if(!w){ sfx('tap'); return; }
+      phStop();
+      speak(sayAs(w), 0.78);
       sfx('tap');
     });
     $('btnHint').addEventListener('click', function(){
@@ -2033,6 +2295,8 @@
       sfx('tap');
       G.runId++;
       G.locked = true;
+      phStop();
+      hideTryAgain();
       hideTrans();
       $('flash').classList.remove('on');
       showScreen('home');
