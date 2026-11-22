@@ -287,6 +287,11 @@
     background:#fff;border:2px solid #e2e8f0;border-radius:16px;
     transition:border-color .16s,background .16s,transform .12s;
   }
+  .wcard .tip{
+    margin-top:3px;padding:1px 4px;border-radius:6px;text-align:center;
+    font-size:9px;font-weight:900;color:#b45309;line-height:1.25;letter-spacing:-.2px;
+    background:#fffbeb;border:1px solid #fde68a;
+  }
   .wcard .em{font-size:23px;line-height:1.1}
   .wcard .w{font-size:15.5px;font-weight:900;color:#1f2a44;letter-spacing:-.3px;line-height:1.15}
   .wcard .ko{font-size:10.5px;font-weight:800;color:var(--muted)}
@@ -1026,7 +1031,7 @@
      ===================================================================== */
   var speechOK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
   var enVoice = null, voicesTried = 0;
-  var speakToken = 0, speaking = false;
+  var speakToken = 0, speaking = false, lastSaid = '';
 
   function pickVoice(){
     if (!speechOK) return null;
@@ -1088,6 +1093,7 @@
 
   /* 한 단어·한 문장 읽기 */
   function say(text, el, rate){
+    lastSaid = text;
     if (!speechOK) return Promise.resolve(false);
     if (isPlaying) softPause();
     var my = ++speakToken;
@@ -1548,7 +1554,7 @@
     { w:'reading', ko:'읽기 시간', e:'📖' },
     { w:'math',    ko:'수학',      e:'🔢' },
     { w:'writing', ko:'쓰기 시간', e:'✏️' },
-    { w:'recess',  ko:'쉬는 시간', e:'🛝' },
+    { w:'recess',  ko:'쉬는 시간', e:'🛝', say:"It’s time for recess.", tip:'발음: 리-세스 (앞 강세!)' },
     { w:'art',     ko:'미술',      e:'🎨' },
     { w:'music',   ko:'음악',      e:'🎵' }
   ];
@@ -1569,6 +1575,10 @@
   var sayNoteEl = $('vocabNote');
   function vnote(msg){ if (sayNoteEl) sayNoteEl.textContent = msg || ''; }
 
+  /* recess 는 그냥 읽으면 뒤에 강세(re-CESS)로 들리기 쉬워서, 동사·명사가 다 맞는 문장째 읽어 준다 */
+  var SAY_AS = { recess: 'It’s time for recess.' };
+  function wordSpeech(w){ return SAY_AS[w] || w; }
+
   function buildVocab(){
     var grid = $('gridSchool');
     grid.innerHTML = '';
@@ -1579,10 +1589,12 @@
       b.setAttribute('data-word', it.w);
       b.innerHTML = '<span class="em">' + it.e + '</span>' +
                     '<span class="w">' + it.w + '</span>' +
-                    '<span class="ko">' + it.ko + '</span>';
+                    '<span class="ko">' + it.ko + '</span>' +
+                    (it.tip ? '<span class="tip">' + it.tip + '</span>' : '');
       b.addEventListener('click', function(){
-        vnote('🔊 ' + it.w + ' · ' + it.ko);
-        say(it.w, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
+        var spoken = it.say || wordSpeech(it.w);
+        vnote('🔊 ' + spoken + ' · ' + it.ko);
+        say(spoken, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
         vibrate(8);
       });
       grid.appendChild(b);
@@ -1686,7 +1698,7 @@
     });
 
     quizMsg('🔊 어떤 단어일까요?');
-    setTimeout(function(){ if (quiz.on) say(t, null, RATE); }, 220);
+    setTimeout(function(){ if (quiz.on) say(wordSpeech(t), null, RATE); }, 220);
   }
 
   function quizStart(){
@@ -1713,7 +1725,7 @@
       if (right) right.classList.add('ok');
       quizMsg('아쉬워요! 이건 “' + quiz.target + '” 예요', 'bad');
       vibrate([10, 40, 10]);
-      setTimeout(function(){ if (quiz.on) say(quiz.target, null, RATE); }, 260);
+      setTimeout(function(){ if (quiz.on) say(wordSpeech(quiz.target), null, RATE); }, 260);
     }
     quizSetScore();
     quiz.timer = setTimeout(function(){ if (quiz.on) quizRound(); }, ok ? 1100 : 1800);
@@ -1722,7 +1734,7 @@
   $('quizStart').addEventListener('click', quizStart);
   $('quizReplay').addEventListener('click', function(){
     if (!quiz.on) { quizStart(); return; }
-    if (quiz.target) say(quiz.target, null, RATE);
+    if (quiz.target) say(wordSpeech(quiz.target), null, RATE);
   });
 
   /* =====================================================================
@@ -1853,6 +1865,7 @@
     tab: function(name){ setTab(name); return currentTab; },
     mode: function(){ return mode; },
     say: function(t){ return say(t, null, RATE); },
+    lastSay: function(){ return lastSaid; },
     line: function(i){ return lineEls[i] ? lineEls[i].textContent : null; },
     tap: function(i){ if (lineEls[i]) lineEls[i].click(); },
     quiz: {
