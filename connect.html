@@ -1554,7 +1554,7 @@
     { w:'reading', ko:'읽기 시간', e:'📖' },
     { w:'math',    ko:'수학',      e:'🔢' },
     { w:'writing', ko:'쓰기 시간', e:'✏️' },
-    { w:'recess',  ko:'쉬는 시간', e:'🛝', say:"It’s time for recess.", tip:'발음: 리-세스 (앞 강세!)' },
+    { w:'recess',  ko:'쉬는 시간', e:'🛝', say:'REE-sess', tip:'RE-cess (앞 강세)' },
     { w:'art',     ko:'미술',      e:'🎨' },
     { w:'music',   ko:'음악',      e:'🎵' }
   ];
@@ -1575,8 +1575,8 @@
   var sayNoteEl = $('vocabNote');
   function vnote(msg){ if (sayNoteEl) sayNoteEl.textContent = msg || ''; }
 
-  /* recess 는 그냥 읽으면 뒤에 강세(re-CESS)로 들리기 쉬워서, 동사·명사가 다 맞는 문장째 읽어 준다 */
-  var SAY_AS = { recess: 'It’s time for recess.' };
+  /* recess 는 iOS·크롬 낭독이 뒤 강세(re-CESS)로 읽어서, 소리로만 'REE-sess' 라고 넣어 앞 강세를 만든다 */
+  var SAY_AS = { recess: 'REE-sess' };
   function wordSpeech(w){ return SAY_AS[w] || w; }
 
   function buildVocab(){
@@ -1593,7 +1593,7 @@
                     (it.tip ? '<span class="tip">' + it.tip + '</span>' : '');
       b.addEventListener('click', function(){
         var spoken = it.say || wordSpeech(it.w);
-        vnote('🔊 ' + spoken + ' · ' + it.ko);
+        vnote('🔊 ' + it.w + ' · ' + it.ko + (it.tip ? ' · 앞 강세' : ''));
         say(spoken, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
         vibrate(8);
       });
