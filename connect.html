@@ -32,9 +32,10 @@
     max-width:760px;margin:0 auto;
     padding:calc(env(safe-area-inset-top) + 12px) 15px calc(env(safe-area-inset-bottom) + 28px);
   }
+  [hidden]{display:none !important}
 
   /* ---------- header ---------- */
-  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
   .brand{display:flex;align-items:center;gap:10px;min-width:0}
   .brand .logo{
     font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(37,99,235,.2));
@@ -46,12 +47,12 @@
 
   /* ---------- hero ---------- */
   .hero{
-    position:relative;overflow:hidden;margin:0 0 18px;
-    padding:13px 15px 11px;
+    position:relative;overflow:hidden;margin:0 0 12px;
+    padding:12px 15px 11px;
     background:
       radial-gradient(120% 96% at 90% -6%,#ffffff 0%,rgba(255,255,255,0) 58%),
       linear-gradient(158deg,#f3f9ff 0%,#e5f1ff 54%,#d8e9ff 100%);
-    border:1px solid #cfe3fa;border-radius:24px;
+    border:1px solid #cfe3fa;border-radius:22px;
     box-shadow:0 6px 16px rgba(37,99,235,.10),inset 0 1px 0 #fff;
   }
   .hero-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
@@ -67,11 +68,11 @@
   .hero-main{display:flex;align-items:flex-end;gap:2px}
   .hero-copy{flex:1 1 auto;min-width:0;padding-bottom:3px}
   .hero-title{
-    margin:0;font-size:clamp(19px,5.7vw,25px);line-height:1.08;letter-spacing:-.6px;font-weight:900;
+    margin:0;font-size:clamp(18px,5.4vw,24px);line-height:1.1;letter-spacing:-.6px;font-weight:900;
     color:#1e3a5f;font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
   }
-  .hero-sub{margin:7px 0 0;font-size:12px;font-weight:800;color:#456e9b;line-height:1.4}
-  .hero-art{flex:0 0 auto;width:clamp(88px,25vw,112px);margin:0 -3px -6px 0}
+  .hero-sub{margin:6px 0 0;font-size:12px;font-weight:800;color:#456e9b;line-height:1.4}
+  .hero-art{flex:0 0 auto;width:clamp(76px,21vw,96px);margin:0 -3px -4px 0}
   .hero-art svg{display:block;width:100%;height:auto;overflow:visible}
   .hero-art .note{animation:herobob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
   @keyframes herobob{0%,100%{transform:translateY(0) rotate(-1.4deg)}50%{transform:translateY(-4px) rotate(1.4deg)}}
@@ -79,21 +80,57 @@
   .hero-art .twinkle.d2{animation-delay:1.1s}
   @keyframes twinkle{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1.08)}}
 
+  /* ---------- tabs ---------- */
+  .tabs{
+    position:sticky;top:0;z-index:30;
+    display:flex;gap:5px;padding:6px;margin:0 0 12px;
+    background:rgba(255,255,255,.90);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    border:1px solid #e3eefb;border-radius:18px;
+    box-shadow:0 4px 14px rgba(37,99,235,.10);
+  }
+  .tab{
+    flex:1 1 0;min-width:0;min-height:52px;padding:5px 2px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    font-family:inherit;font-size:12.5px;font-weight:900;letter-spacing:-.3px;
+    color:#64748b;background:transparent;border:2px solid transparent;border-radius:13px;
+    cursor:pointer;transition:background .16s,color .16s,box-shadow .16s;
+  }
+  .tab .em{font-size:17px;line-height:1.1}
+  .tab[aria-selected="true"]{
+    color:#fff;background:linear-gradient(180deg,#3b82f6,#2563eb);
+    box-shadow:0 4px 12px rgba(37,99,235,.30);
+  }
+  .tab:active{transform:translateY(1px)}
+  .panel{display:none}
+  .panel.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
   /* ---------- cards ---------- */
   .card{
     background:var(--card);border:1px solid #e6eef9;border-radius:22px;
-    padding:16px 15px 17px;margin-bottom:14px;
+    padding:15px 15px 16px;margin-bottom:13px;
     box-shadow:0 4px 14px rgba(37,99,235,.07);
   }
   .card-head{display:flex;align-items:center;gap:9px;margin:0 0 4px}
   .card-head .num{
-    flex:0 0 auto;width:27px;height:27px;border-radius:9px;
+    flex:0 0 auto;min-width:27px;height:27px;padding:0 5px;border-radius:9px;
     display:flex;align-items:center;justify-content:center;
-    font-size:14px;font-weight:900;color:#fff;background:var(--blue);
+    font-size:13.5px;font-weight:900;color:#fff;background:var(--blue);
     box-shadow:0 3px 8px rgba(37,99,235,.30);
   }
   .card-head h3{margin:0;font-size:16.5px;letter-spacing:-.3px;line-height:1.25}
-  .hint{margin:6px 2px 13px;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.55}
+  .hint{margin:6px 2px 12px;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.55}
+  .hint b{color:#334155}
+  .subhead{
+    display:flex;align-items:center;gap:6px;margin:16px 2px 8px;
+    font-size:12.5px;font-weight:900;color:#3f5d84;letter-spacing:-.1px;
+  }
+  .subhead:first-child{margin-top:4px}
+  .subhead .cnt{
+    font-size:10.5px;font-weight:900;color:#2563eb;background:#eff6ff;
+    border:1px solid #dbeafe;border-radius:999px;padding:2px 7px;
+  }
 
   /* ---------- buttons ---------- */
   .btn{
@@ -110,17 +147,31 @@
   .btn-rec{color:#fff;background:linear-gradient(180deg,#fb7185,#e11d48);box-shadow:0 4px 0 #be123c,0 8px 18px rgba(225,29,72,.26)}
   .btn-rec:active{box-shadow:0 2px 0 #be123c,0 4px 10px rgba(225,29,72,.22)}
   .btn-stop{color:#fff;background:linear-gradient(180deg,#64748b,#475569);box-shadow:0 4px 0 #334155}
+  .btn-mini{min-height:46px;font-size:13.5px;border-radius:13px}
   .btn[disabled]{opacity:.55;box-shadow:none}
   .row{display:flex;gap:9px;margin-top:9px}
   .row > *{flex:1 1 0}
 
-  /* ---------- soundcloud ---------- */
+  /* ---------- soundcloud dock ---------- */
+  .dock{
+    background:#fff;border:1px solid #dbe7f7;border-radius:22px;
+    padding:11px 11px 12px;margin:0 0 13px;
+    box-shadow:0 6px 18px rgba(37,99,235,.10);
+  }
+  .dock-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 3px 8px}
+  .dock-title{font-size:12.5px;font-weight:900;color:#3f5d84}
+  .dock-mode{
+    font-size:11px;font-weight:900;color:#2563eb;background:#eff6ff;
+    border:1px solid #dbeafe;border-radius:999px;padding:3px 9px;white-space:nowrap;
+  }
   .sc-wrap{
-    border-radius:16px;overflow:hidden;background:#f1f5f9;
-    border:1px solid #e2e8f0;margin-bottom:11px;
-    min-height:166px;
+    border-radius:15px;overflow:hidden;background:#f1f5f9;
+    border:1px solid #e2e8f0;min-height:166px;
   }
   .sc-wrap iframe{display:block;width:100%;height:166px;border:0}
+  .dock-hint{margin:8px 3px 0;font-size:11.5px;font-weight:700;color:#7a8ea8;line-height:1.5}
+  .dock-hint b{color:#2563eb}
+
   .pb{
     position:relative;height:15px;margin:13px 2px 0;border-radius:999px;overflow:hidden;
     background:#e6edf7;box-shadow:inset 0 1px 3px rgba(30,58,95,.12);cursor:pointer;outline:none;
@@ -130,11 +181,13 @@
     position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;
     background:linear-gradient(90deg,#93c5fd,#2563eb);transition:width .12s linear;
   }
+  .pb-fill.story{background:linear-gradient(90deg,#fcd34d,#f59e0b)}
   .sc-meta{
     display:flex;align-items:center;justify-content:space-between;gap:8px;
     margin:7px 2px 0;font-size:12px;font-weight:800;color:var(--muted);
   }
   .sc-meta .time{font-variant-numeric:tabular-nums;color:#2563eb;font-weight:900}
+  .sc-meta .time.story{color:#b45309}
   .sc-state{
     display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;
     margin:10px 0 0;padding:9px 11px;min-height:40px;border-radius:13px;
@@ -216,7 +269,6 @@
   }
   .line.speaking{background:#eff6ff;border-color:#bfdbfe}
   .line.speaking small{color:var(--blue)}
-  /* 노래방 싱크: 지금 부르는 줄 */
   .line.active{
     color:#1d4ed8;border-color:#93c5fd;
     background-image:linear-gradient(90deg,#dbeafe 0%,#dbeafe var(--p,0%),#f8fbff var(--p,0%));
@@ -225,31 +277,161 @@
   .line.active .w{color:#1d4ed8;border-bottom-color:#60a5fa}
   .gap{height:9px}
 
+  /* ---------- vocabulary ---------- */
+  .wgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media (max-width:359px){.wgrid{grid-template-columns:repeat(2,1fr)}}
+  .wcard{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    min-height:84px;padding:10px 5px;
+    font-family:inherit;cursor:pointer;
+    background:#fff;border:2px solid #e2e8f0;border-radius:16px;
+    transition:border-color .16s,background .16s,transform .12s;
+  }
+  .wcard .em{font-size:23px;line-height:1.1}
+  .wcard .w{font-size:15.5px;font-weight:900;color:#1f2a44;letter-spacing:-.3px;line-height:1.15}
+  .wcard .ko{font-size:10.5px;font-weight:800;color:var(--muted)}
+  .wcard.speaking{border-color:#93c5fd;background:#eff6ff}
+  .wcard.speaking .w{color:#1d4ed8}
+  .wcard:active{transform:scale(.97)}
+
+  .kcard{
+    display:block;width:100%;text-align:left;
+    background:#fff;border:2px solid #e2e8f0;border-radius:16px;
+    padding:10px 11px;margin-bottom:8px;
+    transition:border-color .16s,background .16s;
+  }
+  .kcard:last-child{margin-bottom:0}
+  .kcard.speaking{border-color:#93c5fd;background:#f8fbff}
+  .kcard-top{display:flex;align-items:center;gap:8px}
+  .kcard .em{font-size:21px;line-height:1}
+  .kcard .w{
+    font-size:18px;font-weight:900;color:#1d4ed8;letter-spacing:-.3px;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+  }
+  .kcard .ko{font-size:11px;font-weight:800;color:#64748b;margin-left:auto}
+  .kcard .sent{
+    display:block;width:100%;text-align:left;margin-top:6px;padding:7px 9px;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+    font-size:15px;font-weight:700;color:#243b5a;line-height:1.45;
+    background:#f8fbff;border:1px dashed #cfe3fa;border-radius:11px;cursor:pointer;
+    transition:background .16s,border-color .16s;
+  }
+  .kcard .sent:active{background:#eef6ff}
+  .kcard .sent.speaking{background:#eaf3ff;border-color:#93c5fd;color:#1d4ed8}
+
+  .hfw{display:flex;gap:8px;flex-wrap:wrap}
+  .hfw-card{
+    flex:1 1 0;min-width:72px;display:flex;flex-direction:column;align-items:center;gap:1px;
+    padding:9px 6px;font-family:inherit;cursor:pointer;
+    background:#fff;border:2px solid #e7e2fb;border-radius:15px;
+    transition:border-color .16s,background .16s;
+  }
+  .hfw-card .w{
+    font-size:17px;font-weight:900;color:#6d28d9;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+  }
+  .hfw-card .ko{font-size:10.5px;font-weight:800;color:#8b7ab8}
+  .hfw-card.speaking{border-color:#c4b5fd;background:#f8f5ff}
+  .hfw-card:active{transform:scale(.97)}
+
+  .say-note{
+    margin:0 2px;min-height:19px;text-align:center;
+    font-size:12.5px;font-weight:800;color:#3b82f6;line-height:1.4;
+  }
+
+  /* ---------- quiz ---------- */
+  .quiz-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
+  .quiz-score{
+    font-size:13px;font-weight:900;color:#1d4ed8;
+    background:#eff6ff;border:1px solid #dbeafe;border-radius:999px;padding:5px 11px;
+    font-variant-numeric:tabular-nums;
+  }
+  .qopts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0 0}
+  .qopt{
+    min-height:56px;padding:8px 6px;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+    font-size:17px;font-weight:900;color:#1d4ed8;
+    background:#fff;border:2px solid #dbeafe;border-radius:15px;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .1s;
+  }
+  .qopt:active{transform:scale(.98)}
+  .qopt.ok{background:#dcfce7;border-color:#16a34a;color:#15803d}
+  .qopt.no{background:#fee2e2;border-color:#ef4444;color:#b91c1c;animation:shake .32s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+  .quiz-msg{
+    margin:10px 0 0;min-height:38px;padding:8px 10px;border-radius:12px;
+    background:#f8fafc;border:1px solid #eef2f7;
+    font-size:13px;font-weight:900;color:#5b7091;text-align:center;line-height:1.4;
+  }
+  .quiz-msg.good{background:#ecfdf5;border-color:#bbf7d0;color:#15803d}
+  .quiz-msg.bad{background:#fff1f2;border-color:#fecdd3;color:#be123c}
+
+  /* ---------- story ---------- */
+  .pcard{padding:13px 14px 12px}
+  .pcard-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .pnum{
+    flex:0 0 auto;min-width:44px;height:24px;padding:0 7px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:900;color:#fff;background:#f59e0b;
+    box-shadow:0 2px 6px rgba(245,158,11,.28);
+  }
+  .pnote{font-size:11px;font-weight:800;color:#a08a6a}
+  .sent{
+    display:block;width:100%;text-align:left;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,system-ui,sans-serif;
+    font-size:clamp(16.5px,4.4vw,19px);font-weight:700;line-height:1.45;letter-spacing:-.15px;
+    color:#22385a;background:transparent;border:2px solid transparent;border-radius:11px;
+    padding:5px 8px;cursor:pointer;
+    transition:background .16s,border-color .16s;
+  }
+  .sent:active{background:#f4f9ff}
+  .sent.speaking{background:#eaf6ff;border-color:#bfdbfe;color:#1d4ed8}
+  mark.kw{
+    background:#fde68a;color:#7a4b00;border-radius:5px;padding:0 3px;font-weight:900;
+    box-shadow:inset 0 -1px 0 #f6c94a;
+  }
+  details.checkin{
+    margin-top:9px;padding:8px 11px;border-radius:13px;
+    background:#faf7ff;border:1px solid #ece6fd;
+  }
+  details.checkin summary{
+    cursor:pointer;list-style:none;font-size:12.5px;font-weight:900;color:#7c3aed;
+    display:flex;align-items:center;gap:5px;
+  }
+  details.checkin summary::-webkit-details-marker{display:none}
+  details.checkin summary::after{content:"▾";margin-left:auto;font-size:11px;color:#a78bfa}
+  details.checkin[open] summary::after{content:"▴"}
+  .qbtn{
+    display:block;width:100%;text-align:left;padding:5px 0;
+    font-family:inherit;font-size:13.5px;font-weight:800;color:#5b4b8a;
+    background:none;border:none;cursor:pointer;line-height:1.4;
+  }
+  .qbtn.speaking{color:#7c3aed;text-decoration:underline}
+  .qbtn:active{color:#7c3aed}
+
   /* ---------- recorder ---------- */
+  .rec-wrap.compact{margin-top:9px;padding-top:9px;border-top:1px dashed #e6eef9}
   .rec-state{
     display:flex;align-items:center;justify-content:center;gap:7px;
-    margin:0 0 11px;min-height:22px;
-    font-size:13.5px;font-weight:900;color:var(--muted);text-align:center;line-height:1.4;
+    margin:9px 0 0;min-height:20px;
+    font-size:13px;font-weight:900;color:var(--muted);text-align:center;line-height:1.4;
   }
+  .rec-state.mini{font-size:12px;margin-top:7px}
   .rec-state.live{color:#e11d48}
   .dot{width:9px;height:9px;border-radius:50%;background:#e11d48;animation:blink 1s steps(1) infinite}
   @keyframes blink{50%{opacity:.15}}
-  .rec-timer{font-variant-numeric:tabular-nums}
-  audio{width:100%;margin-top:10px;border-radius:12px}
-  .playback{display:none;margin-top:4px}
+  audio{width:100%;margin-top:9px;border-radius:12px}
+  .playback{display:none;margin-top:2px}
   .playback.on{display:block;animation:fade .28s ease}
-  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .save-link{
     display:flex;align-items:center;justify-content:center;gap:6px;
-    margin-top:9px;min-height:46px;border-radius:14px;
+    margin-top:8px;min-height:44px;border-radius:13px;
     background:#f8fafc;border:1px solid #e2e8f0;
-    font-size:13.5px;font-weight:900;color:#475569;text-decoration:none;
+    font-size:13px;font-weight:900;color:#475569;text-decoration:none;
   }
 
   /* ---------- footer ---------- */
-  .foot{
-    display:flex;gap:8px;margin:18px 0 0;
-  }
+  .foot{display:flex;gap:8px;margin:16px 0 0}
   .foot a{
     flex:1 1 0;display:flex;align-items:center;justify-content:center;
     min-height:46px;border-radius:14px;background:#fff;border:1px solid #e6eef9;
@@ -267,23 +449,23 @@
       <span class="logo">📘</span>
       <div>
         <h1>Shawn’s Connect 1 예습</h1>
-        <p>Song · The More We Play Together</p>
+        <p>Unit 1 · 노래 · 단어 · 스토리</p>
       </div>
     </div>
   </header>
 
-  <section class="hero" aria-label="The More We Play Together">
+  <section class="hero" aria-label="오늘의 Connect 1">
     <div class="hero-top">
-      <span class="hero-eyebrow">🎵 CONNECT TO The Theme</span>
-      <span class="hero-star">Unit 1</span>
+      <span class="hero-eyebrow" id="heroEyebrow">🎵 CONNECT TO The Theme</span>
+      <span class="hero-star" id="heroStar">Unit 1</span>
     </div>
     <div class="hero-main">
       <div class="hero-copy">
-        <h2 class="hero-title">The More We Play Together</h2>
-        <p class="hero-sub">듣고 · 따라 부르고 · 내 목소리로 녹음해요</p>
+        <h2 class="hero-title" id="heroTitle">The More We Play Together</h2>
+        <p class="hero-sub" id="heroSub">듣고 · 따라 부르고 · 내 목소리로 녹음해요</p>
       </div>
-      <div class="hero-art">
-        <svg viewBox="0 0 140 126" role="img" aria-label="음표와 반짝이">
+      <div class="hero-art" id="heroArt">
+        <svg viewBox="0 0 140 126" role="img" aria-label="음표와 반짝이" data-art="music">
           <circle cx="78" cy="58" r="36" fill="#ffffff" opacity=".65"/>
           <g class="note" stroke="#1e3a5f" stroke-width="3.4" stroke-linecap="round" fill="none">
             <path d="M72 74 L72 34"/>
@@ -299,86 +481,190 @@
           </g>
           <path d="M112 96 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 z" fill="#bae6fd"/>
         </svg>
+        <svg viewBox="0 0 140 126" role="img" aria-label="낱말 카드" data-art="abc" hidden>
+          <rect x="30" y="34" width="80" height="62" rx="14" fill="#ffffff" stroke="#1e3a5f" stroke-width="3"/>
+          <text x="70" y="79" text-anchor="middle" font-family="Avenir Next,Verdana,sans-serif" font-size="30" font-weight="900" fill="#2563eb">ABC</text>
+          <g fill="#ffd166">
+            <path class="twinkle" d="M24 24 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 z"/>
+            <path class="twinkle d2" d="M118 36 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 z"/>
+          </g>
+          <path d="M108 96 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 z" fill="#bae6fd"/>
+        </svg>
+        <svg viewBox="0 0 140 126" role="img" aria-label="펼친 책" data-art="book" hidden>
+          <path d="M24 40 q22 -10 46 0 q24 -10 46 0 v52 q-22 -10 -46 0 q-24 -10 -46 0 z" fill="#ffffff" stroke="#1e3a5f" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M70 40 v52" stroke="#1e3a5f" stroke-width="3"/>
+          <g stroke="#93c5fd" stroke-width="3.4" stroke-linecap="round">
+            <path d="M34 56 h24"/><path d="M34 68 h24"/><path d="M34 80 h16"/>
+            <path d="M84 56 h24"/><path d="M84 68 h24"/><path d="M84 80 h16"/>
+          </g>
+          <g fill="#ffd166">
+            <path class="twinkle" d="M120 24 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 z"/>
+            <path class="twinkle d2" d="M18 96 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 z"/>
+          </g>
+        </svg>
       </div>
     </div>
   </section>
 
-  <!-- ============ 1. 듣기 ============ -->
-  <section class="card" id="card-listen">
-    <div class="card-head"><span class="num">1</span><h3>🎵 노래 듣기<span class="badge">0:28</span></h3></div>
-    <p class="hint">이 노래는 <b>0:28</b>에서 끝나요. 플레이어의 <b>▶</b>를 누르면 가사가 노래방처럼 따라가고, 28초가 되면 저절로 멈춰요.</p>
+  <nav class="tabs" role="tablist" aria-label="Connect 1 코너">
+    <button class="tab" role="tab" id="tab-song" data-tab="song" aria-selected="true" aria-controls="panel-song">
+      <span class="em">🎵</span><span>노래</span>
+    </button>
+    <button class="tab" role="tab" id="tab-words" data-tab="words" aria-selected="false" aria-controls="panel-words">
+      <span class="em">📚</span><span>필수 단어</span>
+    </button>
+    <button class="tab" role="tab" id="tab-story" data-tab="story" aria-selected="false" aria-controls="panel-story">
+      <span class="em">📖</span><span>1과 스토리</span>
+    </button>
+  </nav>
 
+  <!-- ============ shared SoundCloud player ============ -->
+  <section class="dock" id="dock" aria-label="Connect 1 음원 플레이어">
+    <div class="dock-head">
+      <span class="dock-title">🎧 Connect 1 음원</span>
+      <span class="dock-mode" id="dockMode">노래 0:00~0:28</span>
+    </div>
     <div class="sc-wrap" id="scWrap">
       <iframe id="scFrame"
         title="Connect 1 SB Unit 1~4 by JAYONE EduTech"
         scrolling="no" frameborder="no" allow="autoplay; encrypted-media"
         src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fjayoneedu%2Fconnect-1-sb-4gaeyunis-unit-1unit-4-1&amp;color=%232563eb&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false"></iframe>
     </div>
-
-    <div class="pb" id="pb" role="slider" tabindex="0" aria-label="노래 위치 (0:00~0:28)" aria-valuemin="0" aria-valuemax="28" aria-valuenow="0">
-      <div class="pb-fill" id="pbFill"></div>
-    </div>
-    <div class="sc-meta">
-      <span class="time" id="scTime">0:00 / 0:28</span>
-      <span>JAYONE EduTech · Connect 1 SB</span>
-    </div>
-
-    <p class="sc-state" id="scState">플레이어의 ▶를 눌러 노래를 시작해요</p>
-
-    <div class="row" style="margin-top:11px">
-      <button class="btn btn-primary" id="restartBtn">⏮️ 처음부터 (0:00)</button>
-      <button class="btn btn-chip" id="loopBtn" aria-pressed="false" aria-label="한 곡 반복">🔁 한 곡 반복</button>
-    </div>
-    <div class="row">
-      <a class="btn btn-ghost" href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a>
-    </div>
-
-    <p class="fallback" id="scFallback" hidden>
-      플레이어가 바로 시작되지 않으면 플레이어의 <b>▶</b> 버튼을 한 번 눌러 주세요.
-      화면이 계속 비어 있으면 <a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">SoundCloud에서 직접 열기</a>.
-    </p>
-    <p class="hint" style="margin:10px 2px 0">원래 트랙에는 Unit 1~4 노래가 모두 들어 있어요(31분). 맨 처음 28초가 오늘 배울 <b>The More We Play Together</b>라서, 이 페이지는 0:28에서 끊어서 들려줘요.</p>
+    <p class="dock-hint" id="dockHint">플레이어의 <b>▶</b>를 눌러도 되고, 아래 큰 버튼을 누르면 딱 들을 구간만 들려줘요.</p>
   </section>
 
-  <!-- ============ 2. 가사 ============ -->
-  <section class="card" id="card-sing">
-    <div class="card-head"><span class="num">2</span><h3>🎤 가사 보며 따라 부르기</h3></div>
-    <p class="hint">단어를 골라 노래를 바꿔 불러 보세요. 문장을 누르면 <b>그 줄만 원곡으로</b> 들려주고, 노래가 흐르는 동안 지금 부르는 줄이 노래방처럼 밝혀져요.</p>
+  <!-- ================= TAB 1 · 노래 ================= -->
+  <div class="panel on" id="panel-song" role="tabpanel" aria-labelledby="tab-song">
 
-    <p class="pill-label">단어 바꾸기 · Change the words</p>
-    <div class="pills" id="pills" role="group" aria-label="단어 선택">
-      <button class="pill on" data-word="play" aria-pressed="true"><span class="em">⚽</span><span class="w">play</span><span class="ko">놀다</span></button>
-      <button class="pill" data-word="learn" aria-pressed="false"><span class="em">📖</span><span class="w">learn</span><span class="ko">배우다</span></button>
-      <button class="pill" data-word="read" aria-pressed="false"><span class="em">📚</span><span class="w">read</span><span class="ko">읽다</span></button>
-    </div>
+    <section class="card" id="card-listen">
+      <div class="card-head"><span class="num">1</span><h3>🎵 노래 듣기<span class="badge">0:28</span></h3></div>
+      <p class="hint">이 노래는 <b>0:28</b>에서 끝나요. <b>▶️ 노래 듣기</b>를 누르면 0:00부터 시작해서 가사가 노래방처럼 따라가고, 28초가 되면 저절로 멈춰요.</p>
 
-    <div class="lyrics" id="lyrics"></div>
+      <div class="pb" id="pb" role="slider" tabindex="0" aria-label="노래 위치 (0:00~0:28)" aria-valuemin="0" aria-valuemax="28" aria-valuenow="0">
+        <div class="pb-fill" id="pbFill"></div>
+      </div>
+      <div class="sc-meta">
+        <span class="time" id="scTime">0:00 / 0:28</span>
+        <span>The More We Play Together</span>
+      </div>
 
-    <div class="row">
-      <button class="btn btn-ghost" id="slowBtn">🔊 한 줄씩 노래 속도로 듣기</button>
-    </div>
-    <div class="chipbar">
-      <button class="chip" id="speechBtn" aria-pressed="false">🔊 영어로 천천히</button>
-    </div>
-    <p class="hint" id="speakNote" style="margin:9px 2px 0;min-height:18px;text-align:center"></p>
-  </section>
+      <p class="sc-state" id="scState">▶️ 노래 듣기를 눌러 시작해요</p>
 
-  <!-- ============ 3. 녹음 ============ -->
-  <section class="card" id="card-rec">
-    <div class="card-head"><span class="num">3</span><h3>🎙️ 내 목소리 녹음해서 들어보기</h3></div>
-    <p class="hint">내 목소리로 노래를 불러 봐요. 처음 한 번은 <b>마이크 허용</b>을 눌러 주세요.</p>
+      <div class="row" style="margin-top:11px">
+        <button class="btn btn-primary" id="restartBtn">▶️ 노래 듣기 (0:00~0:28)</button>
+        <button class="btn btn-chip" id="loopBtn" aria-pressed="false" aria-label="한 곡 반복">🔁 반복</button>
+      </div>
+      <div class="row">
+        <a class="btn btn-ghost" href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a>
+      </div>
 
-    <p class="rec-state" id="recState">아직 녹음하지 않았어요</p>
+      <p class="fallback" id="scFallback" hidden>
+        플레이어가 바로 시작되지 않으면 위 플레이어의 <b>▶</b> 버튼을 한 번 눌러 주세요.
+        화면이 계속 비어 있으면 <a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">SoundCloud에서 직접 열기</a>.
+      </p>
+      <p class="hint" style="margin:10px 2px 0">원래 트랙에는 Unit 1~4 노래와 스토리가 모두 들어 있어요(31분). 맨 처음 28초가 오늘 배울 <b>The More We Play Together</b>예요.</p>
+    </section>
 
-    <button class="btn btn-rec" id="recBtn">🎙️ 녹음 시작</button>
+    <section class="card" id="card-sing">
+      <div class="card-head"><span class="num">2</span><h3>🎤 가사 보며 따라 부르기</h3></div>
+      <p class="hint">단어를 골라 노래를 바꿔 불러 보세요. 문장을 누르면 <b>그 줄만 원곡으로</b> 들려주고, 노래가 흐르는 동안 지금 부르는 줄이 노래방처럼 밝혀져요.</p>
 
-    <div class="playback" id="playback">
-      <audio id="audio" controls playsinline preload="metadata"></audio>
-      <a class="save-link" id="saveLink" download="shawn-connect1.m4a" href="#">💾 녹음 파일 저장하기</a>
-    </div>
+      <p class="pill-label">단어 바꾸기 · Change the words</p>
+      <div class="pills" id="pills" role="group" aria-label="단어 선택">
+        <button class="pill on" data-word="play" aria-pressed="true"><span class="em">⚽</span><span class="w">play</span><span class="ko">놀다</span></button>
+        <button class="pill" data-word="learn" aria-pressed="false"><span class="em">📖</span><span class="w">learn</span><span class="ko">배우다</span></button>
+        <button class="pill" data-word="read" aria-pressed="false"><span class="em">📚</span><span class="w">read</span><span class="ko">읽다</span></button>
+      </div>
 
-    <p class="fallback" id="recFallback" hidden></p>
-  </section>
+      <div class="lyrics" id="lyrics"></div>
+
+      <div class="row">
+        <button class="btn btn-ghost" id="slowBtn">🔊 한 줄씩 노래 속도로 듣기</button>
+      </div>
+      <div class="chipbar">
+        <button class="chip" id="speechBtn" aria-pressed="false">🔊 영어로 천천히</button>
+      </div>
+      <p class="hint" id="speakNote" style="margin:9px 2px 0;min-height:18px;text-align:center"></p>
+    </section>
+
+    <section class="card" id="card-rec">
+      <div class="card-head"><span class="num">3</span><h3>🎙️ 내 목소리 녹음해서 들어보기</h3></div>
+      <p class="hint">내 목소리로 노래를 불러 봐요. 처음 한 번은 <b>마이크 허용</b>을 눌러 주세요.</p>
+      <div class="rec-host" id="songRec"></div>
+    </section>
+  </div>
+
+  <!-- ================= TAB 2 · 필수 단어 ================= -->
+  <div class="panel" id="panel-words" role="tabpanel" aria-labelledby="tab-words">
+
+    <section class="card" id="card-vocab">
+      <div class="card-head"><span class="num">📚</span><h3>꼭 익혀야 하는 단어<span class="badge">12+4</span></h3></div>
+      <p class="hint">단어를 누르면 <b>영어 발음</b>이 나와요. 두 번 누르면 또 들려줘요.</p>
+
+      <div class="subhead"><span>🏫 학교 시간 단어</span><span class="cnt">6</span></div>
+      <div class="wgrid" id="gridSchool"></div>
+
+      <div class="subhead"><span>✏️ 스토리 핵심 동사 · Key Words</span><span class="cnt">6</span></div>
+      <div id="listKey"></div>
+
+      <div class="subhead"><span>🔤 자주 쓰는 단어 · High Frequency</span><span class="cnt">4</span></div>
+      <div class="hfw" id="listHFW"></div>
+
+      <p class="say-note" id="vocabNote"></p>
+    </section>
+
+    <section class="card" id="card-quiz">
+      <div class="card-head"><span class="num">🔊</span><h3>소리 듣고 단어 맞히기</h3></div>
+      <p class="hint">영어로 들려주는 단어를 골라 봐요. 12개 단어로 연습해요.</p>
+      <div class="quiz-top">
+        <span class="quiz-score" id="quizScore">0 / 0</span>
+        <button class="chip" id="quizReplay" type="button">🔊 다시 듣기</button>
+      </div>
+      <div class="qopts" id="quizOptions"></div>
+      <p class="quiz-msg" id="quizMsg">아래 버튼을 누르면 퀴즈가 시작돼요</p>
+      <div class="row">
+        <button class="btn btn-primary" id="quizStart">▶️ 퀴즈 시작</button>
+      </div>
+    </section>
+
+    <section class="card" id="card-word-rec">
+      <div class="card-head"><span class="num">🎙️</span><h3>단어·문장 따라 말하고 녹음하기</h3></div>
+      <p class="hint">먼저 단어를 듣고, <b>녹음 시작</b>을 눌러 따라 말해 봐요. 처음 한 번은 <b>마이크 허용</b>을 눌러 주세요.</p>
+      <div class="rec-host" id="wordRec"></div>
+    </section>
+  </div>
+
+  <!-- ================= TAB 3 · 스토리 ================= -->
+  <div class="panel" id="panel-story" role="tabpanel" aria-labelledby="tab-story">
+
+    <section class="card" id="card-story-audio">
+      <div class="card-head"><span class="num">📖</span><h3>1과 스토리 · <span style="font-family:&quot;Avenir Next&quot;,Verdana,sans-serif">It’s Time for School</span></h3></div>
+      <p class="hint">by <b>John Hicks</b> · 스토리는 음원 <b>1:35~3:13</b>(1분 38초)에 담겨 있어요. 아래 버튼을 누르면 딱 그 부분만 들려주고 끝나면 처음으로 돌아가요.</p>
+
+      <div class="pb" id="stPb" role="slider" tabindex="0" aria-label="스토리 위치 (1:35~3:13)" aria-valuemin="0" aria-valuemax="98" aria-valuenow="0">
+        <div class="pb-fill story" id="stPbFill"></div>
+      </div>
+      <div class="sc-meta">
+        <span class="time story" id="stTime">0:00 / 1:38</span>
+        <span>스토리 1:35 ~ 3:13</span>
+      </div>
+
+      <p class="sc-state" id="stState">▶️ 스토리 듣기를 눌러 시작해요</p>
+
+      <div class="row" style="margin-top:11px">
+        <button class="btn btn-primary" id="storyPlayBtn" style="background:linear-gradient(180deg,#fbbf24,#f59e0b);box-shadow:0 4px 0 #d97706,0 8px 18px rgba(245,158,11,.28)">▶️ 스토리 듣기 (1:35~3:13)</button>
+        <button class="btn btn-chip" id="storyRestartBtn">⏮️ 처음(1:35)</button>
+      </div>
+
+      <p class="fallback" id="stFallback" hidden>
+        스토리를 시작하지 못했어요. 위 플레이어에서 <b>▶</b>를 한 번 누른 뒤 다시 시도해 주세요.
+      </p>
+    </section>
+
+    <div id="storyPages"></div>
+
+    <p class="hint" style="text-align:center;margin:2px 0 14px">스토리 전체를 다시 들으려면 맨 위 <b>📖 스토리</b> 카드의 버튼을 눌러요.</p>
+  </div>
 
   <div class="foot">
     <a href="./index.html">🏠 아침 루틴</a>
@@ -392,36 +678,50 @@
 (function(){
   'use strict';
 
-  /* ---------- tiny helpers ---------- */
   var $ = function(id){ return document.getElementById(id); };
   var errs = [];
   window.addEventListener('error', function(e){ errs.push(String(e.message || e)); });
   window.addEventListener('unhandledrejection', function(e){ errs.push('promise: ' + String(e.reason)); });
   window.__connectErrors = errs;
 
+  function vibrate(ms){
+    if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} }
+  }
+  function mmss(sec){
+    sec = Math.max(0, Math.floor(sec || 0));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
   /* =====================================================================
-     1) SoundCloud widget · 0:28 컷 · 노래방 싱크
+     1) 사운드클라우드 위젯 하나로 노래(0:00~0:28) · 스토리(1:35~3:13)
      ===================================================================== */
-  var SONG_END = 28000;                 /* 이 노래는 28초에서 끝나요 */
-  var LYRIC_TIMING = [                  /* 0:00~0:28 가사 구간(ms) */
+  var SONG  = { s: 0,     e: 28000  };   /* 노래: 0:00 ~ 0:28 */
+  var STORY = { s: 95000, e: 193000 };   /* 스토리: 1:35 ~ 3:13 (1:38) */
+
+  var LYRIC_TIMING = [
     [3500, 6500], [6500, 9200], [9200, 12200], [12200, 15200],
     [15200, 18300], [18300, 21400], [21400, 24400], [24400, 28000]
   ];
+
   var widget = null, widgetReady = false;
-  var posMs = 0, isPlaying = false, finished = false, loopOn = false;
-  var seg = null;                       /* 지금 듣는 한 줄 구간 {s,e,i} */
+  var mode = 'song';                    /* 'song' | 'story' */
+  var songPos = 0, storyPos = STORY.s;
+  var lastPos = 0;
+  var isPlaying = false, finished = false, storyFinished = false, loopOn = false;
+  var seg = null;
   var activeIdx = -1;
-  var ignoreUntil = 0, quietUntil = 0;  /* 늦게 도착한 이벤트·안내 문구 보호 */
-  var scCalls = [];                     /* 확인용 기록(최근 40개) */
+  var ignoreUntil = 0, quietUntil = 0;
+  var scCalls = [];
   var SC_PAGE = 'https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1';
 
   function recall(name, v){
     scCalls.push(v == null ? name : name + '(' + Math.round(v) + ')');
-    if (scCalls.length > 40) scCalls.shift();
+    if (scCalls.length > 60) scCalls.shift();
   }
   function wSeek(ms){
     recall('seek', ms);
-    ignoreUntil = Date.now() + 400;
+    ignoreUntil = Date.now() + 450;
     if (widget && widgetReady) { try { widget.seekTo(Math.round(ms)); } catch (e) { errs.push('seek: ' + e); } }
   }
   function wPlay(){
@@ -432,24 +732,44 @@
     recall('pause');
     if (widget && widgetReady) { try { widget.pause(); } catch (e) { errs.push('pause: ' + e); } }
   }
-
-  function mmss(sec){
-    sec = Math.max(0, Math.floor(sec || 0));
-    var m = Math.floor(sec / 60), s = sec % 60;
-    return m + ':' + (s < 10 ? '0' : '') + s;
+  function softPause(){
+    if (!widget || !widgetReady) { isPlaying = false; return; }
+    quietUntil = Date.now() + 900;
+    wPause();
+    isPlaying = false;
   }
 
-  function setState(msg, tone){
+  function setSongState(msg, tone){
     var el = $('scState');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'sc-state' + (tone ? ' ' + tone : '');
+  }
+  function setStoryState(msg, tone){
+    var el = $('stState');
+    if (!el) return;
     el.textContent = msg;
     el.className = 'sc-state' + (tone ? ' ' + tone : '');
   }
 
-  function paint(ms){
-    posMs = Math.max(0, Math.min(SONG_END, ms || 0));
-    $('pbFill').style.width = (posMs / SONG_END * 100).toFixed(2) + '%';
-    $('scTime').textContent = mmss(posMs / 1000) + ' / 0:28';
-    $('pb').setAttribute('aria-valuenow', (posMs / 1000).toFixed(1));
+  function paintSong(ms){
+    songPos = Math.max(0, Math.min(SONG.e, ms || 0));
+    $('pbFill').style.width = (songPos / SONG.e * 100).toFixed(2) + '%';
+    $('scTime').textContent = mmss(songPos / 1000) + ' / 0:28';
+    $('pb').setAttribute('aria-valuenow', (songPos / 1000).toFixed(1));
+  }
+  function paintStory(ms){
+    storyPos = Math.max(STORY.s, Math.min(STORY.e, (ms == null ? STORY.s : ms)));
+    var rel = storyPos - STORY.s, span = STORY.e - STORY.s;
+    $('stPbFill').style.width = (rel / span * 100).toFixed(2) + '%';
+    $('stTime').textContent = mmss(rel / 1000) + ' / 1:38';
+    $('stPb').setAttribute('aria-valuenow', (rel / 1000).toFixed(1));
+  }
+  function paint(){ if (mode === 'story') paintStory(storyPos); else paintSong(songPos); }
+
+  function syncModeUI(){
+    var dm = $('dockMode');
+    if (dm) dm.textContent = mode === 'story' ? '스토리 1:35~3:13' : '노래 0:00~0:28';
   }
 
   /* 지금 부르는 줄만 밝힌다 (노래방) */
@@ -466,7 +786,7 @@
         lineEls[activeIdx].style.removeProperty('--p');
       }
       activeIdx = idx;
-      if (idx >= 0) {
+      if (idx >= 0 && lineEls[idx]) {
         var el = lineEls[idx];
         el.classList.add('active');
         try {
@@ -481,7 +801,6 @@
       lineEls[idx].style.setProperty('--p', (frac * 100).toFixed(1) + '%');
     }
   }
-
   function clearKaraoke(){
     if (lineEls) {
       lineEls.forEach(function(el){
@@ -492,85 +811,123 @@
     activeIdx = -1;
   }
 
-  /* 28초에 도착: 멈추고 0:00으로 (반복이 켜져 있으면 처음부터 다시) */
+  /* 노래 0:28 도착 */
   function finishSong(){
     seg = null;
     wPause();
     clearKaraoke();
     quietUntil = Date.now() + 1500;
     if (loopOn) {
-      wSeek(0); paint(0); wPlay();
-      setState('🔁 한 곡 반복 · 처음부터 다시 불러요', 'on');
+      wSeek(0); paintSong(0); wPlay();
+      setSongState('🔁 한 곡 반복 · 처음부터 다시 불러요', 'on');
       return;
     }
-    finished = true;
-    wSeek(0); paint(0);
-    setState('🎉 노래 끝! 다시 들으려면 ▶를 눌러요', 'done');
+    finished = true; isPlaying = false;
+    wSeek(0); paintSong(0);
+    setSongState('🎉 노래 끝! 다시 들으려면 ▶️를 눌러요', 'done');
     vibrate(30);
   }
 
-  /* 한 줄 구간 재생이 끝났을 때 */
+  /* 스토리 3:13 도착 */
+  function finishStory(){
+    storyFinished = true;
+    wPause();
+    quietUntil = Date.now() + 1500;
+    wSeek(STORY.s); paintStory(STORY.s);
+    setStoryState('🎉 스토리 끝! 다시 들으려면 ▶️ 스토리 듣기를 눌러요', 'done');
+    vibrate(30);
+  }
+
+  /* 한 줄 구간 재생이 끝났을 때 (노래) */
   function endSegment(){
     seg = null;
     wPause();
     clearKaraoke();
     finished = true;
     quietUntil = Date.now() + 1500;
-    wSeek(0); paint(0);
-    setState('🔊 이 줄 다 들었어요! 또 들으려면 문장을 다시 눌러요', 'done');
+    wSeek(0); paintSong(0);
+    setSongState('🔊 이 줄 다 들었어요! 또 들으려면 문장을 다시 눌러요', 'done');
     vibrate(15);
   }
 
   function onProgress(ms){
     if (typeof ms !== 'number' || !isFinite(ms)) return;
     if (Date.now() < ignoreUntil) return;
+    lastPos = ms;
+
+    if (mode === 'story') {
+      if (ms >= STORY.e) { if (!storyFinished) finishStory(); return; }
+      if (ms < STORY.e - 200) storyFinished = false;
+      if (ms < STORY.s) { paintStory(STORY.s); return; }
+      paintStory(ms);
+      return;
+    }
+
     if (seg && ms >= seg.e) { endSegment(); return; }
-    if (ms >= SONG_END) { finishSong(); return; }
-    paint(ms);
+    if (ms >= SONG.e) { finishSong(); return; }
+    paintSong(ms);
     if (!finished) karaoke(ms);
   }
 
   function initSoundCloud(){
     var frame = $('scFrame');
     if (typeof SC === 'undefined' || !SC.Widget) {
-      /* api.js 가 막힌 경우: 플레이어는 그대로 두고 안내만 보여 준다. */
       $('scFallback').hidden = false;
+      $('stFallback').hidden = false;
       return;
     }
     widget = SC.Widget(frame);
     widget.bind(SC.Widget.Events.READY, function(){
       widgetReady = true;
-      paint(0);
+      paint();
     });
     widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){
       if (e && typeof e.currentPosition === 'number') onProgress(e.currentPosition);
     });
     widget.bind(SC.Widget.Events.PLAY, function(){
-      isPlaying = true;
-      finished = false;
+      isPlaying = true; finished = false;
       $('scFallback').hidden = true;
+      $('stFallback').hidden = true;
       if (speaking) stopChain();
-      if (Date.now() > quietUntil) {
-        if (seg) setState('🔊 ' + (seg.i + 1) + '번째 줄을 들려주는 중…', 'on');
-        else setState('🎤 같이 불러 봐요!', 'on');
+
+      if (mode === 'story') {
+        storyFinished = false;
+        if (lastPos < STORY.s - 1500) { wSeek(STORY.s); paintStory(STORY.s); }
+        if (Date.now() > quietUntil) setStoryState('📖 스토리를 들려주는 중…', 'on');
+      } else {
+        if (lastPos >= SONG.e - 300) { wSeek(0); paintSong(0); }
+        if (Date.now() > quietUntil) {
+          if (seg) setSongState('🔊 ' + (seg.i + 1) + '번째 줄을 들려주는 중…', 'on');
+          else setSongState('🎤 같이 불러 봐요!', 'on');
+        }
       }
     });
     widget.bind(SC.Widget.Events.PAUSE, function(){
       isPlaying = false;
       if (Date.now() < quietUntil || seg || finished) return;
-      setState('⏸ 멈췄어요 · ▶를 누르면 이어서 재생', '');
+      if (mode === 'story') {
+        if (!storyFinished) setStoryState('⏸ 멈췄어요 · ▶️를 누르면 이어서 들려줘요', '');
+      } else {
+        setSongState('⏸ 멈췄어요 · ▶️를 누르면 이어서 재생', '');
+      }
     });
     widget.bind(SC.Widget.Events.FINISH, function(){ isPlaying = false; });
   }
 
+  function ensureWidget(fallbackId){
+    if (widget && widgetReady) return true;
+    var f = $(fallbackId || 'scFallback');
+    if (f) f.hidden = false;
+    return false;
+  }
+
+  /* ---- 노래 버튼 ---- */
   $('restartBtn').addEventListener('click', function(){
-    if (!widget || !widgetReady) {
-      $('scFallback').hidden = false;
-      return;
-    }
+    if (!ensureWidget('scFallback')) return;
+    mode = 'song'; syncModeUI();
     seg = null; finished = false; clearKaraoke();
-    wSeek(0); paint(0); wPlay();
-    setState('🎤 같이 불러 봐요!', 'on');
+    wSeek(0); paintSong(0); wPlay();
+    setSongState('🎤 같이 불러 봐요!', 'on');
     isPlaying = false;
     setTimeout(function(){ if (!isPlaying) $('scFallback').hidden = false; }, 2000);
   });
@@ -578,23 +935,47 @@
   $('loopBtn').addEventListener('click', function(){
     loopOn = !loopOn;
     this.setAttribute('aria-pressed', loopOn ? 'true' : 'false');
-    setState(loopOn
+    setSongState(loopOn
       ? '🔁 한 곡 반복 켜짐 · 0:28이 지나면 처음부터 다시 재생해요'
       : '🔁 한 곡 반복 꺼짐 · 0:28에서 멈춰요', loopOn ? 'on' : '');
     vibrate(8);
   });
 
-  /* 진행 바를 눌러 그 위치로 이동 */
+  /* ---- 스토리 버튼 ---- */
+  $('storyPlayBtn').addEventListener('click', function(){
+    if (!ensureWidget('stFallback')) return;
+    mode = 'story'; syncModeUI();
+    finished = false; storyFinished = false;
+    if (storyPos > STORY.s + 800 && storyPos < STORY.e - 800 && lastPos > STORY.s - 1500) {
+      wPlay();
+      setStoryState('📖 이어서 들려주는 중…', 'on');
+    } else {
+      wSeek(STORY.s); paintStory(STORY.s); wPlay();
+      setStoryState('📖 스토리를 들려주는 중 · 1:35~3:13', 'on');
+    }
+    setTimeout(function(){ if (!isPlaying) $('stFallback').hidden = false; }, 2200);
+  });
+
+  $('storyRestartBtn').addEventListener('click', function(){
+    if (!ensureWidget('stFallback')) return;
+    mode = 'story'; syncModeUI();
+    finished = false; storyFinished = false;
+    wSeek(STORY.s); paintStory(STORY.s); wPlay();
+    setStoryState('📖 스토리 처음(1:35)부터 들려줘요', 'on');
+  });
+
+  /* 노래 진행 바 */
   (function(){
     var pb = $('pb');
     function seekAt(clientX){
       var r = pb.getBoundingClientRect();
       if (!r.width) return;
       var pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
-      var ms = Math.min(SONG_END - 300, Math.round(SONG_END * pct));
+      var ms = Math.min(SONG.e - 300, Math.round(SONG.e * pct));
+      mode = 'song'; syncModeUI();
       seg = null; finished = false;
-      wSeek(ms); paint(ms); karaoke(ms); wPlay();
-      setState('🎤 ' + mmss(ms / 1000) + '부터 불러요', 'on');
+      wSeek(ms); paintSong(ms); karaoke(ms); wPlay();
+      setSongState('🎤 ' + mmss(ms / 1000) + '부터 불러요', 'on');
     }
     pb.addEventListener('click', function(e){ seekAt(e.clientX); });
     pb.addEventListener('keydown', function(e){
@@ -603,8 +984,34 @@
       if (!d) return;
       e.preventDefault();
       seg = null; finished = false;
-      var ms = Math.max(0, Math.min(SONG_END - 200, posMs + d));
-      wSeek(ms); paint(ms); karaoke(ms);
+      var ms = Math.max(0, Math.min(SONG.e - 200, songPos + d));
+      wSeek(ms); paintSong(ms); karaoke(ms);
+      if (isPlaying) wPlay();
+    });
+  })();
+
+  /* 스토리 진행 바 */
+  (function(){
+    var pb = $('stPb');
+    function seekAt(clientX){
+      var r = pb.getBoundingClientRect();
+      if (!r.width) return;
+      var pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      var ms = STORY.s + Math.round((STORY.e - STORY.s - 1000) * pct);
+      mode = 'story'; syncModeUI();
+      storyFinished = false;
+      wSeek(ms); paintStory(ms); wPlay();
+      setStoryState('📖 ' + mmss((ms - STORY.s) / 1000) + '부터 들려줘요', 'on');
+    }
+    pb.addEventListener('click', function(e){ seekAt(e.clientX); });
+    pb.addEventListener('keydown', function(e){
+      var d = (e.key === 'ArrowRight' || e.key === 'Right') ? 5000
+            : ((e.key === 'ArrowLeft' || e.key === 'Left') ? -5000 : 0);
+      if (!d) return;
+      e.preventDefault();
+      storyFinished = false;
+      var ms = Math.max(STORY.s, Math.min(STORY.e - 1000, storyPos + d));
+      wSeek(ms); paintStory(ms);
       if (isPlaying) wPlay();
     });
   })();
@@ -613,7 +1020,360 @@
   else window.addEventListener('load', initSoundCloud);
 
   /* =====================================================================
-     2) 가사 · 단어 바꾸기 · 한 줄씩 읽기
+     2) 영어 읽어주기 (speechSynthesis)
+     ===================================================================== */
+  var speechOK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+  var enVoice = null, voicesTried = 0;
+  var speakToken = 0, speaking = false;
+
+  function pickVoice(){
+    if (!speechOK) return null;
+    var vs = window.speechSynthesis.getVoices() || [];
+    if (!vs.length) return null;
+    var en = vs.filter(function(v){ return /^en/i.test(v.lang); });
+    var us = en.filter(function(v){ return /en[-_]US/i.test(v.lang); });
+    var nice = us.filter(function(v){ return /samantha|google|microsoft|aria|jenny|zira/i.test(v.name); });
+    return (nice[0] || us[0] || en[0] || vs[0]);
+  }
+  function ensureVoice(){
+    if (enVoice) return;
+    enVoice = pickVoice();
+    if (!enVoice && voicesTried < 6) {
+      voicesTried++;
+      setTimeout(ensureVoice, 250);
+    }
+  }
+  if (speechOK) {
+    ensureVoice();
+    window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', ensureVoice);
+    window.speechSynthesis.onvoiceschanged = ensureVoice;
+  }
+
+  var RATE = 0.85;   /* 단어·문장: 또렷하게 */
+
+  function speak(text, rate){
+    return new Promise(function(resolve){
+      if (!speechOK) { resolve(false); return; }
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate || RATE;
+      u.pitch = 1.05;
+      if (enVoice) u.voice = enVoice;
+      var done = false;
+      function fin(ok){ if (done) return; done = true; clearTimeout(guard); resolve(ok); }
+      var guard = setTimeout(function(){ fin(false); }, Math.max(4000, text.length * 130 + 3000));
+      u.onend = function(){ fin(true); };
+      u.onerror = function(){ fin(false); };
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+      window.speechSynthesis.speak(u);
+    });
+  }
+
+  function clearSpeaking(){
+    Array.prototype.forEach.call(document.querySelectorAll('.speaking'), function(el){
+      el.classList.remove('speaking');
+    });
+  }
+
+  function stopChain(){
+    speakToken++;
+    speaking = false;
+    clearSpeaking();
+    try { if (speechOK) window.speechSynthesis.cancel(); } catch (e) {}
+    var sb = $('slowBtn');
+    if (sb) sb.textContent = '🔊 한 줄씩 노래 속도로 듣기';
+  }
+
+  /* 한 단어·한 문장 읽기 */
+  function say(text, el, rate){
+    if (!speechOK) return Promise.resolve(false);
+    if (isPlaying) softPause();
+    var my = ++speakToken;
+    speaking = true;
+    clearSpeaking();
+    if (el) el.classList.add('speaking');
+    return speak(text, rate || RATE).then(function(ok){
+      if (my === speakToken) { speaking = false; if (el) el.classList.remove('speaking'); }
+      return ok;
+    });
+  }
+
+  /* 여러 문장 이어 읽기 */
+  function sayList(items, opts){
+    opts = opts || {};
+    if (!speechOK) return;
+    if (isPlaying) softPause();
+    var my = ++speakToken;
+    speaking = true;
+    var i = 0;
+    (function step(){
+      if (my !== speakToken) return;
+      if (i >= items.length) {
+        speaking = false;
+        clearSpeaking();
+        if (opts.done) opts.done();
+        return;
+      }
+      var it = items[i++];
+      clearSpeaking();
+      if (it.el) {
+        it.el.classList.add('speaking');
+        try { it.el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+      }
+      speak(it.text, opts.rate || RATE).then(function(){
+        if (my !== speakToken) return;
+        setTimeout(step, opts.gap || 260);
+      });
+    })();
+  }
+
+  /* =====================================================================
+     3) 녹음 (여러 곳에서 같이 쓰는 부품)
+     ===================================================================== */
+  var recorders = [];
+  var micOwner = null;
+
+  function pickMime(){
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+    var cands = ['audio/mp4', 'audio/mp4;codecs=mp4a.40.2', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+    for (var i = 0; i < cands.length; i++) {
+      if (MediaRecorder.isTypeSupported(cands[i])) return cands[i];
+    }
+    return '';
+  }
+
+  function makeRecorder(host, opts){
+    opts = opts || {};
+    var base = opts.base || 'shawn-connect1';
+    var compact = !!opts.compact;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'rec-wrap' + (compact ? ' compact' : '');
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn ' + (compact ? 'btn-ghost btn-mini' : 'btn-rec');
+    btn.textContent = compact ? '🎙️ 따라 읽고 녹음하기' : '🎙️ 녹음 시작';
+
+    var state = document.createElement('p');
+    state.className = 'rec-state' + (compact ? ' mini' : '');
+    state.textContent = '아직 녹음하지 않았어요';
+
+    var playback = document.createElement('div');
+    playback.className = 'playback';
+    var audio = document.createElement('audio');
+    audio.controls = true; audio.setAttribute('playsinline', ''); audio.preload = 'metadata';
+    var save = document.createElement('a');
+    save.className = 'save-link';
+    save.href = '#';
+    save.download = base + '.m4a';
+    save.textContent = '💾 녹음 파일 저장하기';
+    playback.appendChild(audio);
+    playback.appendChild(save);
+
+    var fb = document.createElement('p');
+    fb.className = 'fallback'; fb.hidden = true;
+
+    wrap.appendChild(btn);
+    wrap.appendChild(state);
+    wrap.appendChild(playback);
+    wrap.appendChild(fb);
+    host.appendChild(wrap);
+
+    var rec = null, chunks = [], stream = null, recording = false;
+    var recStart = 0, timerId = null, audioURL = null;
+
+    function setMsg(msg, live){
+      state.textContent = '';
+      if (live) {
+        var d = document.createElement('span');
+        d.className = 'dot';
+        state.appendChild(d);
+      }
+      state.appendChild(document.createTextNode(msg));
+      state.classList.toggle('live', !!live);
+    }
+    function problem(msg){
+      fb.hidden = false;
+      fb.innerHTML = msg;
+    }
+    function tick(){ setMsg('녹음 중… ' + mmss((Date.now() - recStart) / 1000), true); }
+
+    function stop(){
+      if (!rec || !recording) return;
+      recording = false;
+      if (micOwner === api) micOwner = null;
+      try { rec.stop(); } catch (e) {}
+      if (timerId) { clearInterval(timerId); timerId = null; }
+      btn.textContent = compact ? '🎙️ 다시 녹음하기' : '🎙️ 다시 녹음';
+      btn.className = 'btn ' + (compact ? 'btn-ghost btn-mini' : 'btn-rec');
+    }
+
+    function start(){
+      if (micOwner && micOwner !== api) { try { micOwner.stop(); } catch (e) {} }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+        setMsg('이 브라우저에서는 녹음이 안 돼요');
+        problem('녹음을 쓰려면 최신 사파리(iOS 15 이상)나 크롬에서 열어 주세요.');
+        return;
+      }
+      fb.hidden = true;
+      setMsg('마이크를 준비하는 중…');
+      navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+      }).then(function(s){
+        stream = s;
+        chunks = [];
+        var mime = pickMime();
+        try {
+          rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        } catch (e) {
+          try { rec = new MediaRecorder(stream); } catch (e2) {
+            setMsg('녹음을 시작할 수 없어요');
+            problem('이 브라우저의 녹음 기능을 쓸 수 없어요. 사파리 최신 버전에서 다시 해 보세요.');
+            return;
+          }
+        }
+        rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function(){
+          var type = (rec && rec.mimeType) || mime || 'audio/mp4';
+          var blob = new Blob(chunks, { type: type });
+          if (audioURL) { try { URL.revokeObjectURL(audioURL); } catch (e) {} }
+          audioURL = URL.createObjectURL(blob);
+          audio.src = audioURL;
+          playback.classList.add('on');
+          var ext = /mp4|aac|m4a/i.test(type) ? 'm4a' : (/ogg/i.test(type) ? 'ogg' : 'webm');
+          save.setAttribute('download', base + '.' + ext);
+          save.href = audioURL;
+          var secs = Math.max(1, Math.round((Date.now() - recStart) / 1000));
+          setMsg('녹음 완료 · ' + mmss(secs) + ' · ▶️ 들어 보세요');
+          if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
+          try { audio.play(); } catch (e) {}
+        };
+        rec.start();
+        recording = true;
+        micOwner = api;
+        recStart = Date.now();
+        setMsg('녹음 중… 0:00', true);
+        timerId = setInterval(tick, 500);
+        btn.textContent = '⏹️ 녹음 끝내기';
+        btn.className = 'btn btn-stop';
+        vibrate(20);
+      }).catch(function(err){
+        recording = false;
+        if (timerId) { clearInterval(timerId); timerId = null; }
+        btn.textContent = compact ? '🎙️ 따라 읽고 녹음하기' : '🎙️ 녹음 시작';
+        btn.className = 'btn ' + (compact ? 'btn-ghost btn-mini' : 'btn-rec');
+        var name = (err && err.name) || '';
+        if (name === 'NotAllowedError' || name === 'SecurityError') {
+          setMsg('마이크 사용이 막혀 있어요');
+          problem('아이폰 <b>설정 → Safari</b>에서 마이크가 ‘허용’인지 확인해 주세요. 그래도 안 되면 주소창 왼쪽 <b>AA → 웹사이트 설정</b>에서 마이크를 허용으로 바꿔 주세요.');
+        } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+          setMsg('마이크를 찾지 못했어요');
+          problem('마이크가 연결되어 있는지 확인해 주세요.');
+        } else {
+          setMsg('녹음을 시작하지 못했어요');
+          problem('잠시 뒤 다시 눌러 보세요. (' + (name || 'error') + ')');
+        }
+      });
+    }
+
+    btn.addEventListener('click', function(){
+      if (recording) stop(); else start();
+    });
+
+    var api = {
+      start: start,
+      stop: stop,
+      isRecording: function(){ return recording; },
+      el: wrap
+    };
+    recorders.push(api);
+    return api;
+  }
+
+  window.addEventListener('pagehide', function(){
+    recorders.forEach(function(r){ if (r.isRecording()) { try { r.stop(); } catch (e) {} } });
+  });
+
+  /* =====================================================================
+     4) 탭 전환
+     ===================================================================== */
+  var HERO = {
+    song: {
+      eyebrow: '🎵 CONNECT TO The Theme',
+      title: 'The More We Play Together',
+      sub: '듣고 · 따라 부르고 · 내 목소리로 녹음해요',
+      star: 'Unit 1',
+      art: 'music'
+    },
+    words: {
+      eyebrow: '📚 Vocabulary · Key Words',
+      title: '꼭 익혀야 하는 단어',
+      sub: '12개 단어 + 자주 쓰는 단어 4개',
+      star: 'Unit 1',
+      art: 'abc'
+    },
+    story: {
+      eyebrow: '📖 Story · Unit 1',
+      title: 'It’s Time for School',
+      sub: 'by John Hicks · 1:35~3:13 듣고 따라 읽어요',
+      star: 'p.9~17',
+      art: 'book'
+    }
+  };
+  var currentTab = 'song';
+
+  function setTab(name){
+    if (!HERO[name]) name = 'song';
+    if (name === currentTab) return;
+
+    stopChain();
+
+    if (name !== 'song' && mode === 'song' && isPlaying) softPause();
+    if (name !== 'story' && mode === 'story' && isPlaying) softPause();
+
+    currentTab = name;
+    if (name === 'song' || name === 'story') { mode = name; syncModeUI(); }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){
+      t.setAttribute('aria-selected', t.getAttribute('data-tab') === name ? 'true' : 'false');
+    });
+    ['song','words','story'].forEach(function(k){
+      var p = $('panel-' + k);
+      if (p) p.classList.toggle('on', k === name);
+    });
+
+    var h = HERO[name];
+    $('heroEyebrow').textContent = h.eyebrow;
+    $('heroTitle').textContent = h.title;
+    $('heroSub').textContent = h.sub;
+    $('heroStar').textContent = h.star;
+    Array.prototype.forEach.call(document.querySelectorAll('#heroArt [data-art]'), function(g){
+      /* SVG 에서는 .hidden 프로퍼티가 없어서 속성으로 직접 감춘다 */
+      if (g.getAttribute('data-art') === h.art) g.removeAttribute('hidden');
+      else g.setAttribute('hidden', '');
+    });
+
+    var dock = $('dock');
+    dock.hidden = (name === 'words');
+    if (name === 'words') {
+      $('dockHint').textContent = '단어는 소리 내어 읽어 줘요. 노래·스토리는 위 탭에서 들어요.';
+    } else {
+      $('dockHint').innerHTML = '플레이어의 <b>▶</b>를 눌러도 되고, 큰 버튼을 누르면 딱 들을 구간만 들려줘요.';
+    }
+
+    try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){
+    t.addEventListener('click', function(){
+      setTab(t.getAttribute('data-tab'));
+      vibrate(6);
+    });
+  });
+
+  /* =====================================================================
+     5) 노래 가사
      ===================================================================== */
   var LINES = [
     'The more we {w} together,',
@@ -680,24 +1440,18 @@
     if (animate) vibrate(10);
   }
 
-  function vibrate(ms){
-    if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} }
-  }
-
   Array.prototype.forEach.call(document.querySelectorAll('#pills .pill'), function(p){
     p.addEventListener('click', function(){
-      if (seg) { seg = null; wPause(); clearKaraoke(); paint(0); }
+      if (seg) { seg = null; wPause(); clearKaraoke(); paintSong(0); }
       applyWord(p.getAttribute('data-word'), true);
       note(current === 'play' ? '' : '바꾼 단어는 원곡에 없어서, 문장을 누르면 영어로 읽어 줘요.');
     });
   });
 
-  /* 문장을 누를 때: 원곡으로 그 줄만 / 영어로 천천히 */
   var speechMode = false;
-  var $speechBtn = $('speechBtn');
-  $speechBtn.addEventListener('click', function(){
+  $('speechBtn').addEventListener('click', function(){
     speechMode = !speechMode;
-    $speechBtn.setAttribute('aria-pressed', speechMode ? 'true' : 'false');
+    $('speechBtn').setAttribute('aria-pressed', speechMode ? 'true' : 'false');
     note(speechMode
       ? '이제 문장을 누르면 영어로 천천히 읽어 줘요.'
       : '이제 문장을 누르면 원곡으로 그 줄만 들려줘요.');
@@ -706,9 +1460,9 @@
 
   function tapLine(i, btn){
     if (speaking) stopChain();
+    if (!btn) return;
     var t = LYRIC_TIMING[i];
     note('');
-    /* 원곡은 'play'로만 노래해요 → 바꾼 단어·영어 모드·플레이어 미준비는 말로 읽기 */
     if (current !== 'play' || speechMode || !widget || !widgetReady) {
       if (current !== 'play') note('바꾼 단어(' + current + ')는 원곡에 없어서 영어로 읽어 줘요.');
       else if (!widget || !widgetReady) note('플레이어가 준비되기 전이라 영어로 읽어 줄게요.');
@@ -716,13 +1470,14 @@
       return;
     }
     if (!t) return;
+    mode = 'song'; syncModeUI();
     seg = { s: t[0], e: t[1], i: i };
     finished = false;
     wSeek(t[0]);
-    paint(t[0]);
+    paintSong(t[0]);
     karaoke(t[0]);
     wPlay();
-    setState('🔊 ' + (i + 1) + '번째 줄을 들려주는 중…', 'on');
+    setSongState('🔊 ' + (i + 1) + '번째 줄을 들려주는 중…', 'on');
     note('원곡으로 이 줄만 들려줘요 (' + mmss(t[0] / 1000) + '~' + mmss(t[1] / 1000) + ')');
     vibrate(8);
   }
@@ -737,93 +1492,27 @@
     return tpl ? tpl.replace('{w}', current) : '';
   }
 
-  /* ---- speech ---- */
-  var speechOK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
-  var enVoice = null, voicesTried = 0;
-
-  function pickVoice(){
-    if (!speechOK) return null;
-    var vs = window.speechSynthesis.getVoices() || [];
-    if (!vs.length) return null;
-    var en = vs.filter(function(v){ return /^en/i.test(v.lang); });
-    var us = en.filter(function(v){ return /en[-_]US/i.test(v.lang); });
-    var nice = us.filter(function(v){ return /samantha|google|microsoft|aria|jenny|zira/i.test(v.name); });
-    return (nice[0] || us[0] || en[0] || vs[0]);
-  }
-  function ensureVoice(){
-    if (enVoice) return;
-    enVoice = pickVoice();
-    if (!enVoice && voicesTried < 6) {
-      voicesTried++;
-      setTimeout(ensureVoice, 250);
-    }
-  }
-  if (speechOK) {
-    ensureVoice();
-    window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', ensureVoice);
-    window.speechSynthesis.onvoiceschanged = ensureVoice;
-  }
-
-  var speakToken = 0, speaking = false;
-
-  function speak(text, rate){
-    return new Promise(function(resolve){
-      if (!speechOK) { resolve(false); return; }
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-US';
-      u.rate = rate || 0.85;
-      u.pitch = 1.05;
-      if (enVoice) u.voice = enVoice;
-      var done = false;
-      function fin(ok){ if (done) return; done = true; clearTimeout(guard); resolve(ok); }
-      var guard = setTimeout(function(){ fin(false); }, Math.max(4000, text.length * 110 + 2500));
-      u.onend = function(){ fin(true); };
-      u.onerror = function(){ fin(false); };
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-      window.speechSynthesis.speak(u);
-    });
-  }
-
-  function clearSpeaking(){
-    lineEls.forEach(function(b){ b.classList.remove('speaking'); });
-  }
-
   function speakOne(i, btn){
     if (!speechOK) { note('이 브라우저에서는 소리 읽기를 쓸 수 없어요.'); return; }
-    stopChain();
-    var my = ++speakToken;
-    clearSpeaking();
-    btn.classList.add('speaking');
     note('🔊 ' + lineText(i));
-    speak(lineText(i), 0.86).then(function(){
-      if (my === speakToken) clearSpeaking();
-    });
+    say(lineText(i), btn, 0.86);
   }
 
   function note(msg){ $('speakNote').textContent = msg || ''; }
 
-  function stopChain(){
-    speakToken++;
-    speaking = false;
-    clearSpeaking();
-    try { if (speechOK) window.speechSynthesis.cancel(); } catch (e) {}
-    $('slowBtn').textContent = '🔊 한 줄씩 노래 속도로 듣기';
-  }
-
-  var SING_RATE = 0.95;   /* 노래 부르는 속도에 가깝게 */
-  var LINE_GAP = 120;     /* 줄 사이 쉼 (ms) */
+  var SING_RATE = 0.95;
+  var LINE_GAP = 120;
 
   $('slowBtn').addEventListener('click', function(){
     if (!speechOK) { note('이 브라우저에서는 소리 읽기를 쓸 수 없어요.'); return; }
     if (speaking) { stopChain(); note('멈췄어요.'); return; }
     if (seg) { seg = null; wPause(); clearKaraoke(); }
-    speaking = true;
     var my = ++speakToken;
+    speaking = true;
     $('slowBtn').textContent = '⏹ 멈추기';
     var seq = [];
     for (var i = 0; i < lineEls.length; i++) seq.push(i);
     var idx = 0;
-
     function step(){
       if (my !== speakToken || !speaking) return;
       if (idx >= seq.length) {
@@ -836,156 +1525,364 @@
       var btn = lineEls[i];
       clearSpeaking();
       btn.classList.add('speaking');
-      try { btn.scrollIntoView({block:'center', behavior:'smooth'}); } catch (e) {}
+      try { btn.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
       note('🔊 ' + lineText(i));
-      speak(lineText(i), SING_RATE).then(function(ok){
+      speak(lineText(i), SING_RATE).then(function(){
         if (my !== speakToken || !speaking) return;
         setTimeout(step, LINE_GAP);
       });
     }
     step();
+    vibrate(8);
   });
 
   buildLyrics();
   applyWord(current, false);
 
   /* =====================================================================
-     3) 녹음
+     6) 필수 단어
      ===================================================================== */
-  var rec = null, chunks = [], stream = null, recording = false;
-  var recStart = 0, timerId = null, audioURL = null;
+  var SCHOOL = [
+    { w:'reading', ko:'읽기 시간', e:'📖' },
+    { w:'math',    ko:'수학',      e:'🔢' },
+    { w:'writing', ko:'쓰기 시간', e:'✏️' },
+    { w:'recess',  ko:'쉬는 시간', e:'🛝' },
+    { w:'art',     ko:'미술',      e:'🎨' },
+    { w:'music',   ko:'음악',      e:'🎵' }
+  ];
+  var KEYS = [
+    { w:'read',  ko:'읽다',   e:'📖', s:'You read a book.' },
+    { w:'write', ko:'쓰다',   e:'✏️', s:'You write with a pencil.' },
+    { w:'draw',  ko:'그리다', e:'🖍️', s:'You draw a picture.' },
+    { w:'eat',   ko:'먹다',   e:'🍎', s:'You eat lunch.' },
+    { w:'count', ko:'세다',   e:'🔢', s:'You count 1, 2, 3, 4, 5, 6, 7.' },
+    { w:'paint', ko:'칠하다', e:'🎨', s:'You paint with a paintbrush.' }
+  ];
+  var HFW = [
+    { w:'a',    ko:'하나의' },
+    { w:'and',  ko:'그리고' },
+    { w:'the',  ko:'그' },
+    { w:'with', ko:'~와 함께' }
+  ];
+  var sayNoteEl = $('vocabNote');
+  function vnote(msg){ if (sayNoteEl) sayNoteEl.textContent = msg || ''; }
 
-  function recMsg(msg, live){
-    var el = $('recState');
-    el.textContent = '';
-    if (live) {
-      var d = document.createElement('span');
-      d.className = 'dot';
-      el.appendChild(d);
-    }
-    el.appendChild(document.createTextNode(msg));
-    el.classList.toggle('live', !!live);
-  }
-  function recProblem(msg){
-    var el = $('recFallback');
-    el.hidden = false;
-    el.innerHTML = msg;
-  }
+  function buildVocab(){
+    var grid = $('gridSchool');
+    grid.innerHTML = '';
+    SCHOOL.forEach(function(it){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'wcard';
+      b.setAttribute('data-word', it.w);
+      b.innerHTML = '<span class="em">' + it.e + '</span>' +
+                    '<span class="w">' + it.w + '</span>' +
+                    '<span class="ko">' + it.ko + '</span>';
+      b.addEventListener('click', function(){
+        vnote('🔊 ' + it.w + ' · ' + it.ko);
+        say(it.w, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
+        vibrate(8);
+      });
+      grid.appendChild(b);
+    });
 
-  function pickMime(){
-    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
-    var cands = ['audio/mp4', 'audio/mp4;codecs=mp4a.40.2', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
-    for (var i = 0; i < cands.length; i++) {
-      if (MediaRecorder.isTypeSupported(cands[i])) return cands[i];
-    }
-    return '';
-  }
+    var list = $('listKey');
+    list.innerHTML = '';
+    KEYS.forEach(function(it){
+      var card = document.createElement('div');
+      card.className = 'kcard';
+      card.setAttribute('data-word', it.w);
 
-  function tick(){
-    var s = Math.floor((Date.now() - recStart) / 1000);
-    recMsg('녹음 중… ' + mmss(s), true);
-  }
+      var top = document.createElement('div');
+      top.className = 'kcard-top';
+      var em = document.createElement('span'); em.className = 'em'; em.textContent = it.e;
+      var w = document.createElement('span'); w.className = 'w'; w.textContent = it.w;
+      var ko = document.createElement('span'); ko.className = 'ko'; ko.textContent = it.ko;
+      top.appendChild(em); top.appendChild(w); top.appendChild(ko);
+      top.addEventListener('click', function(){
+        vnote('🔊 ' + it.w + ' · ' + it.ko);
+        say(it.w, card, RATE);
+        vibrate(8);
+      });
 
-  function stopRecording(){
-    if (!rec || !recording) return;
-    recording = false;
-    try { rec.stop(); } catch (e) {}
-    if (timerId) { clearInterval(timerId); timerId = null; }
-    $('recBtn').textContent = '🎙️ 다시 녹음';
-    $('recBtn').className = 'btn btn-rec';
-  }
+      var sent = document.createElement('button');
+      sent.type = 'button';
+      sent.className = 'sent';
+      sent.textContent = it.s;
+      sent.addEventListener('click', function(){
+        vnote('🔊 ' + it.s);
+        say(it.s, sent, RATE);
+        vibrate(8);
+      });
 
-  function startRecording(){
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
-      recMsg('이 브라우저에서는 녹음이 안 돼요');
-      recProblem('녹음을 쓰려면 최신 사파리(iOS 15 이상)나 크롬에서 열어 주세요.');
-      return;
-    }
-    $('recFallback').hidden = true;
-    recMsg('마이크를 준비하는 중…');
-    navigator.mediaDevices.getUserMedia({
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-    }).then(function(s){
-      stream = s;
-      chunks = [];
-      var mime = pickMime();
-      try {
-        rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
-      } catch (e) {
-        try { rec = new MediaRecorder(stream); } catch (e2) {
-          recMsg('녹음을 시작할 수 없어요');
-          recProblem('이 브라우저의 녹음 기능을 쓸 수 없어요. 사파리 최신 버전에서 다시 해 보세요.');
-          return;
-        }
-      }
-      rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
-      rec.onstop = function(){
-        var type = (rec && rec.mimeType) || mime || 'audio/mp4';
-        var blob = new Blob(chunks, { type: type });
-        if (audioURL) { try { URL.revokeObjectURL(audioURL); } catch (e) {} }
-        audioURL = URL.createObjectURL(blob);
-        var a = $('audio');
-        a.src = audioURL;
-        $('playback').classList.add('on');
-        var ext = /mp4|aac|m4a/i.test(type) ? 'm4a' : (/ogg/i.test(type) ? 'ogg' : 'webm');
-        $('saveLink').setAttribute('download', 'shawn-connect1.' + ext);
-        $('saveLink').href = audioURL;
-        var secs = Math.max(1, Math.round((Date.now() - recStart) / 1000));
-        recMsg('녹음 완료 · ' + mmss(secs) + ' · ▶️ 들어 보세요');
-        if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
-        try { a.play(); } catch (e) {}
-      };
-      rec.start();
-      recording = true;
-      recStart = Date.now();
-      recMsg('녹음 중… 0:00', true);
-      timerId = setInterval(tick, 500);
-      $('recBtn').textContent = '⏹️ 녹음 끝내기';
-      $('recBtn').className = 'btn btn-stop';
-      vibrate(20);
-    }).catch(function(err){
-      recording = false;
-      if (timerId) { clearInterval(timerId); timerId = null; }
-      $('recBtn').textContent = '🎙️ 녹음 시작';
-      $('recBtn').className = 'btn btn-rec';
-      var name = (err && err.name) || '';
-      if (name === 'NotAllowedError' || name === 'SecurityError') {
-        recMsg('마이크 사용이 막혀 있어요');
-        recProblem('아이폰 <b>설정 → Safari</b>에서 마이크가 ‘허용’인지 확인해 주세요. 그래도 안 되면 주소창 왼쪽 <b>AA → 웹사이트 설정</b>에서 마이크를 허용으로 바꿔 주세요.');
-      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
-        recMsg('마이크를 찾지 못했어요');
-        recProblem('마이크가 연결되어 있는지 확인해 주세요.');
-      } else {
-        recMsg('녹음을 시작하지 못했어요');
-        recProblem('잠시 뒤 다시 눌러 보세요. (' + (name || 'error') + ')');
-      }
+      card.appendChild(top);
+      card.appendChild(sent);
+      list.appendChild(card);
+    });
+
+    var hfw = $('listHFW');
+    hfw.innerHTML = '';
+    HFW.forEach(function(it){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'hfw-card';
+      b.setAttribute('data-word', it.w);
+      b.innerHTML = '<span class="w">' + it.w + '</span><span class="ko">' + it.ko + '</span>';
+      b.addEventListener('click', function(){
+        vnote('🔊 ' + it.w + ' · ' + it.ko);
+        say(it.w, b, RATE);
+        vibrate(8);
+      });
+      hfw.appendChild(b);
     });
   }
 
-  $('recBtn').addEventListener('click', function(){
-    if (recording) stopRecording();
-    else startRecording();
+  /* ---- 미니 퀴즈 ---- */
+  var QUIZ_WORDS = SCHOOL.map(function(x){ return x.w; }).concat(KEYS.map(function(x){ return x.w; }));
+  var quiz = { on:false, score:0, done:0, target:null, last:null, locked:false, timer:null };
+
+  function shuffle(a){
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function quizSetScore(){
+    $('quizScore').textContent = quiz.score + ' / ' + quiz.done;
+  }
+  function quizMsg(msg, tone){
+    var el = $('quizMsg');
+    el.textContent = msg;
+    el.className = 'quiz-msg' + (tone ? ' ' + tone : '');
+  }
+
+  function quizRound(){
+    if (quiz.timer) { clearTimeout(quiz.timer); quiz.timer = null; }
+    quiz.locked = false;
+
+    var t;
+    do { t = QUIZ_WORDS[Math.floor(Math.random() * QUIZ_WORDS.length)]; }
+    while (t === quiz.last && QUIZ_WORDS.length > 1);
+    quiz.target = t;
+    quiz.last = t;
+
+    var others = shuffle(QUIZ_WORDS.filter(function(w){ return w !== t; })).slice(0, 3);
+    var opts = shuffle([t].concat(others));
+
+    var box = $('quizOptions');
+    box.innerHTML = '';
+    opts.forEach(function(w){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'qopt';
+      b.setAttribute('data-w', w);
+      b.textContent = w;
+      b.addEventListener('click', function(){ quizAnswer(w, b); });
+      box.appendChild(b);
+    });
+
+    quizMsg('🔊 어떤 단어일까요?');
+    setTimeout(function(){ if (quiz.on) say(t, null, RATE); }, 220);
+  }
+
+  function quizStart(){
+    quiz.on = true; quiz.score = 0; quiz.done = 0; quiz.last = null;
+    quizSetScore();
+    $('quizStart').textContent = '🔄 처음부터 다시';
+    quizRound();
+    vibrate(8);
+  }
+
+  function quizAnswer(word, btn){
+    if (!quiz.on || quiz.locked) return;
+    quiz.locked = true;
+    quiz.done++;
+    var ok = (word === quiz.target);
+    if (ok) {
+      btn.classList.add('ok');
+      quiz.score++;
+      quizMsg('정답! 👍  ' + word, 'good');
+      vibrate(15);
+    } else {
+      btn.classList.add('no');
+      var right = document.querySelector('#quizOptions .qopt[data-w="' + quiz.target + '"]');
+      if (right) right.classList.add('ok');
+      quizMsg('아쉬워요! 이건 “' + quiz.target + '” 예요', 'bad');
+      vibrate([10, 40, 10]);
+      setTimeout(function(){ if (quiz.on) say(quiz.target, null, RATE); }, 260);
+    }
+    quizSetScore();
+    quiz.timer = setTimeout(function(){ if (quiz.on) quizRound(); }, ok ? 1100 : 1800);
+  }
+
+  $('quizStart').addEventListener('click', quizStart);
+  $('quizReplay').addEventListener('click', function(){
+    if (!quiz.on) { quizStart(); return; }
+    if (quiz.target) say(quiz.target, null, RATE);
   });
 
-  window.addEventListener('pagehide', function(){
-    if (timerId) clearInterval(timerId);
-    if (stream) { try { stream.getTracks().forEach(function(t){ t.stop(); }); } catch (e) {} }
-  });
+  /* =====================================================================
+     7) 1과 스토리
+     ===================================================================== */
+  var PAGES = [
+    { p:9,  note:'학교 가는 길', s:['It’s time for school.', 'Lily walks to school with her mom.'],
+      check:['1. What time is it?', '2. How does Lily go to school?'] },
+    { p:10, note:'교실에 도착',
+      s:['Lily goes to class.', 'She lines up with her friends.', 'The teacher says, “Hello.”'] },
+    { p:11, note:'읽기 시간', s:['It’s time for reading.', 'The teacher {reads} a story.', 'Lily and her classmates sit and listen.'],
+      check:['1. Where is Lily?', '2. What time is it?'] },
+    { p:12, note:'쓰기 시간', s:['It’s time for writing.', 'Lily {writes} at her table.', 'She {draws} a picture, too.'] },
+    { p:13, note:'쉬는 시간', s:['It’s time for recess.', 'Lily plays with her friends.', 'They run and jump.'],
+      check:['1. Where does Lily write?', '2. When does Lily play?'] },
+    { p:14, note:'점심 시간', s:['It’s time for lunch.', 'Lily {eats} in the cafeteria.', 'The students eat and talk.'] },
+    { p:15, note:'수학 시간', s:['It’s time for math.', 'Lily {counts} shapes.', 'She has four circles.'],
+      check:['1. Where does Lily eat?', '2. What does Lily count?'] },
+    { p:16, note:'미술 시간', s:['It’s time for art.', 'Lily {paints} a picture.', 'She uses lots of colors.'] },
+    { p:17, note:'집에 가는 길', s:['It’s time to go home.', 'Lily tells about her day.', 'She likes school.'],
+      check:['1. What does Lily paint?', '2. What does Lily like?'] }
+  ];
 
-  /* 확인용 (화면에는 쓰이지 않아요) */
+  function plain(t){ return t.replace(/[{}]/g, ''); }
+  function marked(t){ return t.replace(/\{([^}]+)\}/g, '<mark class="kw">$1</mark>'); }
+
+  function buildStory(){
+    var host = $('storyPages');
+    host.innerHTML = '';
+    PAGES.forEach(function(pg){
+      var card = document.createElement('section');
+      card.className = 'card pcard';
+      card.setAttribute('data-page', String(pg.p));
+
+      var head = document.createElement('div');
+      head.className = 'pcard-head';
+      var num = document.createElement('span');
+      num.className = 'pnum';
+      num.textContent = 'p.' + pg.p;
+      var nt = document.createElement('span');
+      nt.className = 'pnote';
+      nt.textContent = pg.note;
+      head.appendChild(num);
+      head.appendChild(nt);
+      card.appendChild(head);
+
+      var items = [];
+      pg.s.forEach(function(t){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sent';
+        b.innerHTML = marked(t);
+        b.setAttribute('data-text', plain(t));
+        b.addEventListener('click', function(){
+          say(plain(t), b, RATE);
+          vibrate(8);
+        });
+        card.appendChild(b);
+        items.push({ text: plain(t), el: b });
+      });
+
+      var readRow = document.createElement('div');
+      readRow.className = 'row';
+      readRow.style.marginTop = '6px';
+      var readBtn = document.createElement('button');
+      readBtn.type = 'button';
+      readBtn.className = 'btn btn-ghost btn-mini';
+      readBtn.textContent = '🔊 이 페이지 듣기';
+      readBtn.addEventListener('click', function(){
+        sayList(items, { rate: RATE, gap: 320 });
+        vibrate(8);
+      });
+      readRow.appendChild(readBtn);
+      card.appendChild(readRow);
+
+      if (pg.check && pg.check.length) {
+        var det = document.createElement('details');
+        det.className = 'checkin';
+        var sum = document.createElement('summary');
+        sum.textContent = '💬 Check In 질문';
+        det.appendChild(sum);
+        pg.check.forEach(function(q){
+          var qb = document.createElement('button');
+          qb.type = 'button';
+          qb.className = 'qbtn';
+          qb.textContent = q;
+          qb.addEventListener('click', function(){
+            say(plain(q.replace(/^\d\.\s*/, '')), qb, RATE);
+            vibrate(6);
+          });
+          det.appendChild(qb);
+        });
+        card.appendChild(det);
+      }
+
+      var recHost = document.createElement('div');
+      recHost.className = 'rec-host';
+      card.appendChild(recHost);
+      makeRecorder(recHost, { base: 'shawn-connect1-p' + pg.p, compact: true });
+
+      host.appendChild(card);
+    });
+  }
+
+  /* =====================================================================
+     8) 처음 그리기
+     ===================================================================== */
+  buildVocab();
+  buildStory();
+  makeRecorder($('songRec'), { base: 'shawn-connect1-song' });
+  makeRecorder($('wordRec'), { base: 'shawn-connect1-words' });
+  paintSong(0);
+  paintStory(STORY.s);
+  syncModeUI();
+  setTab('song');
+  /* setTab 은 같은 탭이면 아무 것도 하지 않으므로 첫 화면 상태를 직접 맞춘다 */
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function(t){
+    t.setAttribute('aria-selected', t.getAttribute('data-tab') === 'song' ? 'true' : 'false');
+  });
+  $('dock').hidden = false;
+  quizSetScore();
+
+  /* =====================================================================
+     확인용 (화면에는 쓰이지 않아요)
+     ===================================================================== */
   window.__connectTest = {
     progress: onProgress,
-    karaoke: karaoke,
+    tab: function(name){ setTab(name); return currentTab; },
+    mode: function(){ return mode; },
+    say: function(t){ return say(t, null, RATE); },
     line: function(i){ return lineEls[i] ? lineEls[i].textContent : null; },
     tap: function(i){ if (lineEls[i]) lineEls[i].click(); },
+    quiz: {
+      start: quizStart,
+      answer: function(w){ var b = document.querySelector('#quizOptions .qopt[data-w="' + w + '"]'); if (b) b.click(); return !!b; },
+      state: function(){ return { on: quiz.on, score: quiz.score, done: quiz.done, target: quiz.target, opts: Array.prototype.map.call(document.querySelectorAll('#quizOptions .qopt'), function(b){ return b.getAttribute('data-w'); }) }; }
+    },
+    counts: function(){
+      return {
+        school: document.querySelectorAll('#gridSchool .wcard').length,
+        keys: document.querySelectorAll('#listKey .kcard').length,
+        hfw: document.querySelectorAll('#listHFW .hfw-card').length,
+        pages: document.querySelectorAll('#storyPages .pcard').length,
+        sentences: document.querySelectorAll('#storyPages .sent').length,
+        checks: document.querySelectorAll('#storyPages details.checkin').length,
+        recorders: recorders.length
+      };
+    },
     state: function(){
       return {
-        pos: Math.round(posMs), seg: seg, finished: finished, loop: loopOn,
+        tab: currentTab, mode: mode,
+        pos: Math.round(songPos), storyPos: Math.round(storyPos),
+        seg: seg, finished: finished, storyFinished: storyFinished, loop: loopOn,
         active: activeIdx, ready: widgetReady, playing: isPlaying,
-        calls: scCalls.slice(-14),
+        calls: scCalls.slice(-12),
         stateText: $('scState').textContent,
         timeText: $('scTime').textContent,
         fill: $('pbFill').style.width,
+        storyStateText: $('stState').textContent,
+        storyTimeText: $('stTime').textContent,
+        storyFill: $('stPbFill').style.width,
+        dockHidden: $('dock').hidden,
         word: current, speechMode: speechMode, note: $('speakNote').textContent,
         errors: errs.slice()
       };
