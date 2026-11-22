@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>connect preview frame</title>
+<style>
+  html,body{margin:0;padding:0;background:#eef4fb;font-family:-apple-system,sans-serif}
+  .wrap{padding:16px;display:flex;justify-content:center}
+  #frame{width:390px;height:800px;border:0;display:block;background:#fff;border-radius:22px;box-shadow:0 10px 30px rgba(37,99,235,.12);overflow:hidden}
+</style>
+</head>
+<body>
+<div class="wrap"><iframe id="frame" src="./connect-v2.html" title="connect preview"></iframe></div>
+<script>
+  var f = document.getElementById('frame');
+  f.addEventListener('load', function(){
+    function fit(){
+      try {
+        var h = f.contentDocument.documentElement.scrollHeight;
+        if (h > 400) { f.style.height = (h + 24) + 'px'; }
+      } catch (e) {}
+    }
+    setTimeout(fit, 800); setTimeout(fit, 2500); setTimeout(fit, 5000);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#e8f4ff">
+<title>Shawn’s Connect 1 예습</title>
+<style>
+  :root{
+    --blue:#2563eb; --blue-l:#dbeafe; --sky:#e8f4ff;
+    --green:#16a34a; --green-l:#dcfce7;
+    --orange:#f97316; --amber:#ffb020;
+    --pink:#ff6b9d; --purple:#8b5cf6;
+    --ink:#1f2a44; --muted:#64748b;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,#e6f3ff 0%,#f3f9ff 38%,#fff8ea 100%);
+    background-attachment:fixed;
+    min-height:100dvh;
+    -webkit-user-select:none;user-select:none;
+    touch-action:manipulation;
+    -webkit-text-size-adjust:100%;
+  }
+  .app{
+    max-width:760px;margin:0 auto;
+    padding:calc(env(safe-area-inset-top) + 12px) 15px calc(env(safe-area-inset-bottom) + 28px);
+  }
+
+  /* ---------- header ---------- */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand .logo{
+    font-size:30px;line-height:1;filter:drop-shadow(0 3px 4px rgba(37,99,235,.2));
+    animation:bob 2.6s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(3deg)}}
+  .brand h1{font-size:19px;margin:0;letter-spacing:-.4px;line-height:1.15}
+  .brand p{margin:2px 0 0;font-size:11.5px;color:var(--muted);font-weight:600}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;overflow:hidden;margin:0 0 18px;
+    padding:13px 15px 11px;
+    background:
+      radial-gradient(120% 96% at 90% -6%,#ffffff 0%,rgba(255,255,255,0) 58%),
+      linear-gradient(158deg,#f3f9ff 0%,#e5f1ff 54%,#d8e9ff 100%);
+    border:1px solid #cfe3fa;border-radius:24px;
+    box-shadow:0 6px 16px rgba(37,99,235,.10),inset 0 1px 0 #fff;
+  }
+  .hero-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px}
+  .hero-eyebrow{
+    font-size:10.5px;font-weight:900;color:#4e7cac;letter-spacing:.2px;
+    background:rgba(255,255,255,.75);padding:4px 9px;border-radius:999px;white-space:nowrap;
+  }
+  .hero-star{
+    font-size:11.5px;font-weight:900;color:#8a5a12;background:#fff;
+    padding:5px 10px;border-radius:999px;white-space:nowrap;
+    box-shadow:0 2px 6px rgba(37,99,235,.12);
+  }
+  .hero-main{display:flex;align-items:flex-end;gap:2px}
+  .hero-copy{flex:1 1 auto;min-width:0;padding-bottom:3px}
+  .hero-title{
+    margin:0;font-size:clamp(19px,5.7vw,25px);line-height:1.08;letter-spacing:-.6px;font-weight:900;
+    color:#1e3a5f;font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+  }
+  .hero-sub{margin:7px 0 0;font-size:12px;font-weight:800;color:#456e9b;line-height:1.4}
+  .hero-art{flex:0 0 auto;width:clamp(88px,25vw,112px);margin:0 -3px -6px 0}
+  .hero-art svg{display:block;width:100%;height:auto;overflow:visible}
+  .hero-art .note{animation:herobob 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+  @keyframes herobob{0%,100%{transform:translateY(0) rotate(-1.4deg)}50%{transform:translateY(-4px) rotate(1.4deg)}}
+  .hero-art .twinkle{animation:twinkle 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%}
+  .hero-art .twinkle.d2{animation-delay:1.1s}
+  @keyframes twinkle{0%,100%{opacity:.4;transform:scale(.85)}50%{opacity:1;transform:scale(1.08)}}
+
+  /* ---------- cards ---------- */
+  .card{
+    background:var(--card);border:1px solid #e6eef9;border-radius:22px;
+    padding:16px 15px 17px;margin-bottom:14px;
+    box-shadow:0 4px 14px rgba(37,99,235,.07);
+  }
+  .card-head{display:flex;align-items:center;gap:9px;margin:0 0 4px}
+  .card-head .num{
+    flex:0 0 auto;width:27px;height:27px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:900;color:#fff;background:var(--blue);
+    box-shadow:0 3px 8px rgba(37,99,235,.30);
+  }
+  .card-head h3{margin:0;font-size:16.5px;letter-spacing:-.3px;line-height:1.25}
+  .hint{margin:6px 2px 13px;font-size:12.5px;font-weight:700;color:var(--muted);line-height:1.55}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    width:100%;min-height:54px;padding:12px 14px;
+    font-family:inherit;font-size:16px;font-weight:900;letter-spacing:-.2px;
+    border-radius:16px;border:none;cursor:pointer;
+    transition:transform .12s,box-shadow .12s,background .15s;
+  }
+  .btn:active{transform:translateY(1px) scale(.995)}
+  .btn-primary{color:#fff;background:linear-gradient(180deg,#3b82f6,#2563eb);box-shadow:0 4px 0 #1d4ed8,0 8px 18px rgba(37,99,235,.28)}
+  .btn-primary:active{box-shadow:0 2px 0 #1d4ed8,0 4px 10px rgba(37,99,235,.24)}
+  .btn-ghost{color:var(--blue);background:#eff6ff;border:1px solid #dbeafe;box-shadow:none;font-size:14.5px;min-height:48px}
+  .btn-rec{color:#fff;background:linear-gradient(180deg,#fb7185,#e11d48);box-shadow:0 4px 0 #be123c,0 8px 18px rgba(225,29,72,.26)}
+  .btn-rec:active{box-shadow:0 2px 0 #be123c,0 4px 10px rgba(225,29,72,.22)}
+  .btn-stop{color:#fff;background:linear-gradient(180deg,#64748b,#475569);box-shadow:0 4px 0 #334155}
+  .btn[disabled]{opacity:.55;box-shadow:none}
+  .row{display:flex;gap:9px;margin-top:9px}
+  .row > *{flex:1 1 0}
+
+  /* ---------- soundcloud ---------- */
+  .sc-wrap{
+    border-radius:16px;overflow:hidden;background:#f1f5f9;
+    border:1px solid #e2e8f0;margin-bottom:11px;
+    min-height:166px;
+  }
+  .sc-wrap iframe{display:block;width:100%;height:166px;border:0}
+  .pb{
+    position:relative;height:13px;margin:13px 2px 0;border-radius:999px;overflow:hidden;
+    background:#e6edf7;box-shadow:inset 0 1px 3px rgba(30,58,95,.12);cursor:pointer;outline:none;
+  }
+  .pb:focus-visible{box-shadow:inset 0 1px 3px rgba(30,58,95,.12),0 0 0 3px #bfdbfe}
+  .pb-fill{
+    position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;
+    background:linear-gradient(90deg,#93c5fd,#2563eb);transition:width .12s linear;
+  }
+  .sc-meta{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin:7px 2px 0;font-size:12px;font-weight:800;color:var(--muted);
+  }
+  .sc-meta .time{font-variant-numeric:tabular-nums;color:#2563eb;font-weight:900}
+  .sc-state{
+    display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35;
+    margin:10px 0 0;padding:9px 11px;min-height:40px;border-radius:13px;
+    background:#f4f8ff;border:1px solid #e2e8f0;
+    font-size:13px;font-weight:900;color:#5b7091;
+    transition:background .2s,border-color .2s,color .2s;
+  }
+  .sc-state.on{background:#eaf6ff;border-color:#bfdbfe;color:#1d4ed8}
+  .sc-state.done{background:#fff7e8;border-color:#fde68a;color:#9a5b06}
+  .btn-chip{
+    flex:0 0 auto;color:#2563eb;background:#fff;border:2px solid #dbeafe;
+    box-shadow:0 2px 8px rgba(37,99,235,.08);font-size:13.5px;min-height:54px;
+    padding:0 12px;white-space:nowrap;
+  }
+  .btn-chip[aria-pressed="true"]{
+    background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:#2563eb;color:#fff;
+    box-shadow:0 4px 14px rgba(37,99,235,.30);
+  }
+  .badge{
+    display:inline-block;margin-left:5px;padding:3px 8px;border-radius:999px;
+    background:#eff6ff;border:1px solid #dbeafe;color:#2563eb;
+    font-size:11px;font-weight:900;vertical-align:middle;letter-spacing:0;
+  }
+  .chipbar{display:flex;justify-content:center;margin-top:9px}
+  .chip{
+    display:flex;align-items:center;gap:5px;min-height:42px;padding:0 15px;
+    border-radius:999px;border:2px solid #dbeafe;background:#fff;
+    font-family:inherit;font-size:13px;font-weight:900;color:#3b82f6;cursor:pointer;
+    transition:background .16s,border-color .16s,color .16s;
+  }
+  .chip[aria-pressed="true"]{
+    background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.28);
+  }
+  .fallback{
+    margin:10px 0 0;padding:11px 12px;border-radius:14px;
+    background:#fffbeb;border:1px solid #fde68a;
+    font-size:12.5px;font-weight:700;color:#92400e;line-height:1.55;
+  }
+  .fallback a{color:#b45309;font-weight:900}
+
+  /* ---------- word pills ---------- */
+  .pill-label{margin:2px 2px 8px;font-size:11.5px;font-weight:900;color:#7e96b4;letter-spacing:.4px}
+  .pills{display:flex;gap:8px;margin-bottom:15px}
+  .pill{
+    flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    min-height:62px;padding:8px 4px;
+    font-family:inherit;cursor:pointer;
+    background:#fff;border:2px solid #e2e8f0;border-radius:16px;
+    transition:border-color .16s,background .16s,transform .12s;
+  }
+  .pill .em{font-size:19px;line-height:1.1}
+  .pill .w{font-size:16px;font-weight:900;color:var(--ink);letter-spacing:-.2px}
+  .pill .ko{font-size:10.5px;font-weight:800;color:var(--muted)}
+  .pill.on{border-color:var(--blue);background:#eff6ff;box-shadow:0 4px 12px rgba(37,99,235,.16)}
+  .pill.on .w{color:var(--blue)}
+  .pill.on .ko{color:#3b82f6}
+  .pill:active{transform:translateY(1px)}
+
+  /* ---------- lyrics ---------- */
+  .lyrics{display:flex;flex-direction:column;gap:4px;margin:0 0 13px}
+  .line{
+    display:block;width:100%;text-align:left;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,system-ui,sans-serif;
+    font-size:clamp(18px,4.9vw,21px);font-weight:700;line-height:1.5;letter-spacing:-.2px;
+    color:#243b5a;
+    background:transparent;border:2px solid transparent;border-radius:13px;
+    padding:7px 10px;cursor:pointer;
+    transition:background .16s,border-color .16s;
+  }
+  .line small{display:inline-block;margin-left:6px;font-size:12px;color:#9bb0c9;font-weight:800;font-family:-apple-system,system-ui,sans-serif}
+  .line .w{
+    color:var(--blue);font-weight:900;
+    border-bottom:3px solid #bfdbfe;padding:0 1px;
+  }
+  .line .w.flash{animation:pop .5s ease}
+  @keyframes pop{
+    0%{transform:scale(1)}35%{transform:scale(1.22) rotate(-2deg);color:#f97316;border-bottom-color:#fdba74}
+    100%{transform:scale(1)}
+  }
+  .line.speaking{background:#eff6ff;border-color:#bfdbfe}
+  .line.speaking small{color:var(--blue)}
+  /* 노래방 싱크: 지금 부르는 줄 */
+  .line.active{
+    color:#1d4ed8;border-color:#93c5fd;
+    background-image:linear-gradient(90deg,#dbeafe 0%,#dbeafe var(--p,0%),#f8fbff var(--p,0%));
+    box-shadow:inset 4px 0 0 #3b82f6,0 3px 10px rgba(37,99,235,.13);
+  }
+  .line.active .w{color:#1d4ed8;border-bottom-color:#60a5fa}
+  .gap{height:9px}
+
+  /* ---------- recorder ---------- */
+  .rec-state{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    margin:0 0 11px;min-height:22px;
+    font-size:13.5px;font-weight:900;color:var(--muted);text-align:center;line-height:1.4;
+  }
+  .rec-state.live{color:#e11d48}
+  .dot{width:9px;height:9px;border-radius:50%;background:#e11d48;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:.15}}
+  .rec-timer{font-variant-numeric:tabular-nums}
+  audio{width:100%;margin-top:10px;border-radius:12px}
+  .playback{display:none;margin-top:4px}
+  .playback.on{display:block;animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .save-link{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:9px;min-height:46px;border-radius:14px;
+    background:#f8fafc;border:1px solid #e2e8f0;
+    font-size:13.5px;font-weight:900;color:#475569;text-decoration:none;
+  }
+
+  /* ---------- footer ---------- */
+  .foot{
+    display:flex;gap:8px;margin:18px 0 0;
+  }
+  .foot a{
+    flex:1 1 0;display:flex;align-items:center;justify-content:center;
+    min-height:46px;border-radius:14px;background:#fff;border:1px solid #e6eef9;
+    font-size:13px;font-weight:900;color:#64748b;text-decoration:none;
+    box-shadow:0 2px 8px rgba(37,99,235,.06);
+  }
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <span class="logo">📘</span>
+      <div>
+        <h1>Shawn’s Connect 1 예습</h1>
+        <p>Song · The More We Play Together</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="The More We Play Together">
+    <div class="hero-top">
+      <span class="hero-eyebrow">🎵 CONNECT TO The Theme</span>
+      <span class="hero-star">Unit 1</span>
+    </div>
+    <div class="hero-main">
+      <div class="hero-copy">
+        <h2 class="hero-title">The More We Play Together</h2>
+        <p class="hero-sub">듣고 · 따라 부르고 · 내 목소리로 녹음해요</p>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 140 126" role="img" aria-label="음표와 반짝이">
+          <circle cx="78" cy="58" r="36" fill="#ffffff" opacity=".65"/>
+          <g class="note" stroke="#1e3a5f" stroke-width="3.4" stroke-linecap="round" fill="none">
+            <path d="M72 74 L72 34"/>
+            <path d="M104 68 L104 28"/>
+            <path d="M72 34 L104 28"/>
+            <path d="M72 46 L104 40" stroke-width="7"/>
+          </g>
+          <ellipse cx="63" cy="77" rx="11.5" ry="8.6" transform="rotate(-16 63 77)" fill="#60a5fa" stroke="#1e3a5f" stroke-width="2.4"/>
+          <ellipse cx="95" cy="71" rx="11.5" ry="8.6" transform="rotate(-16 95 71)" fill="#60a5fa" stroke="#1e3a5f" stroke-width="2.4"/>
+          <g fill="#ffd166">
+            <path class="twinkle" d="M30 32 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 z"/>
+            <path class="twinkle d2" d="M124 62 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 z"/>
+          </g>
+          <path d="M112 96 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 z" fill="#bae6fd"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 1. 듣기 ============ -->
+  <section class="card" id="card-listen">
+    <div class="card-head"><span class="num">1</span><h3>🎵 노래 듣기<span class="badge">0:28</span></h3></div>
+    <p class="hint">이 노래는 <b>0:28</b>에서 끝나요. 플레이어의 <b>▶</b>를 누르면 가사가 노래방처럼 따라가고, 28초가 되면 저절로 멈춰요.</p>
+
+    <div class="sc-wrap" id="scWrap">
+      <iframe id="scFrame"
+        title="Connect 1 SB Unit 1~4 by JAYONE EduTech"
+        scrolling="no" frameborder="no" allow="autoplay; encrypted-media"
+        src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fjayoneedu%2Fconnect-1-sb-4gaeyunis-unit-1unit-4-1&amp;color=%232563eb&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false"></iframe>
+    </div>
+
+    <div class="pb" id="pb" role="slider" tabindex="0" aria-label="노래 위치 (0:00~0:28)" aria-valuemin="0" aria-valuemax="28" aria-valuenow="0">
+      <div class="pb-fill" id="pbFill"></div>
+    </div>
+    <div class="sc-meta">
+      <span class="time" id="scTime">0:00 / 0:28</span>
+      <span>JAYONE EduTech · Connect 1 SB</span>
+    </div>
+
+    <p class="sc-state" id="scState">▶ 플레이어의 ▶를 눌러 노래를 시작해요</p>
+
+    <div class="row" style="margin-top:11px">
+      <button class="btn btn-primary" id="restartBtn">⏮️ 처음부터 (0:00)</button>
+      <button class="btn btn-chip" id="loopBtn" aria-pressed="false" aria-label="한 곡 반복">🔁 한 곡 반복</button>
+    </div>
+    <div class="row">
+      <a class="btn btn-ghost" href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a>
+    </div>
+
+    <p class="fallback" id="scFallback" hidden>
+      플레이어가 바로 시작되지 않으면 플레이어의 <b>▶</b> 버튼을 한 번 눌러 주세요.
+      화면이 계속 비어 있으면 <a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">SoundCloud에서 직접 열기</a>.
+    </p>
+    <p class="hint" style="margin:10px 2px 0">원래 트랙에는 Unit 1~4 노래가 모두 들어 있어요(31분). 맨 처음 28초가 오늘 배울 <b>The More We Play Together</b>라서, 이 페이지는 0:28에서 끊어서 들려줘요.</p>
+  </section>
+
+  <!-- ============ 2. 가사 ============ -->
+  <section class="card" id="card-sing">
+    <div class="card-head"><span class="num">2</span><h3>🎤 가사 보며 따라 부르기</h3></div>
+    <p class="hint">단어를 골라 노래를 바꿔 불러 보세요. 문장을 누르면 <b>그 줄만 원곡으로</b> 들려주고, 노래가 흐르는 동안 지금 부르는 줄이 노래방처럼 밝혀져요.</p>
+
+    <p class="pill-label">단어 바꾸기 · Change the words</p>
+    <div class="pills" id="pills" role="group" aria-label="단어 선택">
+      <button class="pill on" data-word="play" aria-pressed="true"><span class="em">⚽</span><span class="w">play</span><span class="ko">놀다</span></button>
+      <button class="pill" data-word="learn" aria-pressed="false"><span class="em">📖</span><span class="w">learn</span><span class="ko">배우다</span></button>
+      <button class="pill" data-word="read" aria-pressed="false"><span class="em">📚</span><span class="w">read</span><span class="ko">읽다</span></button>
+    </div>
+
+    <div class="lyrics" id="lyrics"></div>
+
+    <div class="row">
+      <button class="btn btn-ghost" id="slowBtn">🔊 한 줄씩 노래 속도로 듣기</button>
+    </div>
+    <div class="chipbar">
+      <button class="chip" id="speechBtn" aria-pressed="false">🔊 영어로 천천히</button>
+    </div>
+    <p class="hint" id="speakNote" style="margin:9px 2px 0;min-height:18px;text-align:center"></p>
+  </section>
+
+  <!-- ============ 3. 녹음 ============ -->
+  <section class="card" id="card-rec">
+    <div class="card-head"><span class="num">3</span><h3>🎙️ 내 목소리 녹음해서 들어보기</h3></div>
+    <p class="hint">내 목소리로 노래를 불러 봐요. 처음 한 번은 <b>마이크 허용</b>을 눌러 주세요.</p>
+
+    <p class="rec-state" id="recState">아직 녹음하지 않았어요</p>
+
+    <button class="btn btn-rec" id="recBtn">🎙️ 녹음 시작</button>
+
+    <div class="playback" id="playback">
+      <audio id="audio" controls playsinline preload="metadata"></audio>
+      <a class="save-link" id="saveLink" download="shawn-connect1.m4a" href="#">💾 녹음 파일 저장하기</a>
+    </div>
+
+    <p class="fallback" id="recFallback" hidden></p>
+  </section>
+
+  <div class="foot">
+    <a href="./index.html">🏠 아침 루틴</a>
+    <a href="./spelling.html">🐝 스펠링</a>
+  </div>
+
+</div>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ---------- tiny helpers ---------- */
+  var $ = function(id){ return document.getElementById(id); };
+  var errs = [];
+  window.addEventListener('error', function(e){ errs.push(String(e.message || e)); });
+  window.addEventListener('unhandledrejection', function(e){ errs.push('promise: ' + String(e.reason)); });
+  window.__connectErrors = errs;
+
+  /* =====================================================================
+     1) SoundCloud widget · 0:28 컷 · 노래방 싱크
+     ===================================================================== */
+  var SONG_END = 28000;                 /* 이 노래는 28초에서 끝나요 */
+  var LYRIC_TIMING = [                  /* 0:00~0:28 가사 구간(ms) */
+    [3500, 6500], [6500, 9200], [9200, 12200], [12200, 15200],
+    [15200, 18300], [18300, 21400], [21400, 24400], [24400, 28000]
+  ];
+  var widget = null, widgetReady = false;
+  var posMs = 0, isPlaying = false, finished = false, loopOn = false;
+  var seg = null;                       /* 지금 듣는 한 줄 구간 {s,e,i} */
+  var activeIdx = -1;
+  var ignoreUntil = 0, quietUntil = 0;  /* 늦게 도착한 이벤트·안내 문구 보호 */
+  var scCalls = [];                     /* 확인용 기록(최근 40개) */
+  var SC_PAGE = 'https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1';
+
+  function recall(name, v){
+    scCalls.push(v == null ? name : name + '(' + Math.round(v) + ')');
+    if (scCalls.length > 40) scCalls.shift();
+  }
+  function wSeek(ms){
+    recall('seek', ms);
+    ignoreUntil = Date.now() + 400;
+    if (widget && widgetReady) { try { widget.seekTo(Math.round(ms)); } catch (e) { errs.push('seek: ' + e); } }
+  }
+  function wPlay(){
+    recall('play');
+    if (widget && widgetReady) { try { widget.play(); } catch (e) { errs.push('play: ' + e); } }
+  }
+  function wPause(){
+    recall('pause');
+    if (widget && widgetReady) { try { widget.pause(); } catch (e) { errs.push('pause: ' + e); } }
+  }
+
+  function mmss(sec){
+    sec = Math.max(0, Math.floor(sec || 0));
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function setState(msg, tone){
+    var el = $('scState');
+    el.textContent = msg;
+    el.className = 'sc-state' + (tone ? ' ' + tone : '');
+  }
+
+  function paint(ms){
+    posMs = Math.max(0, Math.min(SONG_END, ms || 0));
+    $('pbFill').style.width = (posMs / SONG_END * 100).toFixed(2) + '%';
+    $('scTime').textContent = mmss(posMs / 1000) + ' / 0:28';
+    $('pb').setAttribute('aria-valuenow', (posMs / 1000).toFixed(1));
+  }
+
+  /* 지금 부르는 줄만 밝힌다 (노래방) */
+  function karaoke(ms){
+    if (!lineEls || !lineEls.length) return;
+    var idx = -1, frac = 0;
+    for (var i = 0; i < LYRIC_TIMING.length; i++) {
+      var a = LYRIC_TIMING[i][0], b = LYRIC_TIMING[i][1];
+      if (ms >= a && ms < b) { idx = i; frac = (ms - a) / (b - a); break; }
+    }
+    if (idx !== activeIdx) {
+      if (activeIdx >= 0 && lineEls[activeIdx]) {
+        lineEls[activeIdx].classList.remove('active');
+        lineEls[activeIdx].style.removeProperty('--p');
+      }
+      activeIdx = idx;
+      if (idx >= 0) {
+        var el = lineEls[idx];
+        el.classList.add('active');
+        try {
+          var r = el.getBoundingClientRect();
+          if (r.bottom > window.innerHeight - 16 || r.top < 16) {
+            el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          }
+        } catch (e) {}
+      }
+    }
+    if (idx >= 0 && lineEls[idx]) {
+      lineEls[idx].style.setProperty('--p', (frac * 100).toFixed(1) + '%');
+    }
+  }
+
+  function clearKaraoke(){
+    if (lineEls) {
+      lineEls.forEach(function(el){
+        el.classList.remove('active');
+        el.style.removeProperty('--p');
+      });
+    }
+    activeIdx = -1;
+  }
+
+  /* 28초에 도착: 멈추고 0:00으로 (반복이 켜져 있으면 처음부터 다시) */
+  function finishSong(){
+    seg = null;
+    wPause();
+    clearKaraoke();
+    quietUntil = Date.now() + 1500;
+    if (loopOn) {
+      wSeek(0); paint(0); wPlay();
+      setState('🔁 한 곡 반복 · 처음부터 다시 불러요', 'on');
+      return;
+    }
+    finished = true;
+    wSeek(0); paint(0);
+    setState('🎉 노래 끝! 다시 들으려면 ▶를 눌러요', 'done');
+    vibrate(30);
+  }
+
+  /* 한 줄 구간 재생이 끝났을 때 */
+  function endSegment(){
+    seg = null;
+    wPause();
+    clearKaraoke();
+    finished = true;
+    quietUntil = Date.now() + 1500;
+    wSeek(0); paint(0);
+    setState('🔊 이 줄 다 들었어요! 또 들으려면 문장을 다시 눌러요', 'done');
+    vibrate(15);
+  }
+
+  function onProgress(ms){
+    if (typeof ms !== 'number' || !isFinite(ms)) return;
+    if (Date.now() < ignoreUntil) return;
+    if (seg && ms >= seg.e) { endSegment(); return; }
+    if (ms >= SONG_END) { finishSong(); return; }
+    paint(ms);
+    if (!finished) karaoke(ms);
+  }
+
+  function initSoundCloud(){
+    var frame = $('scFrame');
+    if (typeof SC === 'undefined' || !SC.Widget) {
+      /* api.js 가 막힌 경우: 플레이어는 그대로 두고 안내만 보여 준다. */
+      $('scFallback').hidden = false;
+      return;
+    }
+    widget = SC.Widget(frame);
+    widget.bind(SC.Widget.Events.READY, function(){
+      widgetReady = true;
+      paint(0);
+    });
+    widget.bind(SC.Widget.Events.PLAY_PROGRESS, function(e){
+      if (e && typeof e.currentPosition === 'number') onProgress(e.currentPosition);
+    });
+    widget.bind(SC.Widget.Events.PLAY, function(){
+      isPlaying = true;
+      finished = false;
+      $('scFallback').hidden = true;
+      if (speaking) stopChain();
+      if (Date.now() > quietUntil) {
+        if (seg) setState('🔊 ' + (seg.i + 1) + '번째 줄을 들려주는 중…', 'on');
+        else setState('🎤 같이 불러 봐요!', 'on');
+      }
+    });
+    widget.bind(SC.Widget.Events.PAUSE, function(){
+      isPlaying = false;
+      if (Date.now() < quietUntil || seg || finished) return;
+      setState('⏸ 멈췄어요 · ▶를 누르면 이어서 재생', '');
+    });
+    widget.bind(SC.Widget.Events.FINISH, function(){ isPlaying = false; });
+  }
+
+  $('restartBtn').addEventListener('click', function(){
+    if (!widget || !widgetReady) {
+      $('scFallback').hidden = false;
+      return;
+    }
+    seg = null; finished = false; clearKaraoke();
+    wSeek(0); paint(0); wPlay();
+    setState('🎤 같이 불러 봐요!', 'on');
+    isPlaying = false;
+    setTimeout(function(){ if (!isPlaying) $('scFallback').hidden = false; }, 2000);
+  });
+
+  $('loopBtn').addEventListener('click', function(){
+    loopOn = !loopOn;
+    this.setAttribute('aria-pressed', loopOn ? 'true' : 'false');
+    setState(loopOn
+      ? '🔁 한 곡 반복 켜짐 · 0:28이 지나면 처음부터 다시 재생해요'
+      : '🔁 한 곡 반복 꺼짐 · 0:28에서 멈춰요', loopOn ? 'on' : '');
+    vibrate(8);
+  });
+
+  /* 진행 바를 눌러 그 위치로 이동 */
+  (function(){
+    var pb = $('pb');
+    function seekAt(clientX){
+      var r = pb.getBoundingClientRect();
+      if (!r.width) return;
+      var pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      var ms = Math.min(SONG_END - 300, Math.round(SONG_END * pct));
+      seg = null; finished = false;
+      wSeek(ms); paint(ms); karaoke(ms); wPlay();
+      setState('🎤 ' + mmss(ms / 1000) + '부터 불러요', 'on');
+    }
+    pb.addEventListener('click', function(e){ seekAt(e.clientX); });
+    pb.addEventListener('keydown', function(e){
+      var d = (e.key === 'ArrowRight' || e.key === 'Right') ? 1000
+            : ((e.key === 'ArrowLeft' || e.key === 'Left') ? -1000 : 0);
+      if (!d) return;
+      e.preventDefault();
+      seg = null; finished = false;
+      var ms = Math.max(0, Math.min(SONG_END - 200, posMs + d));
+      wSeek(ms); paint(ms); karaoke(ms);
+      if (isPlaying) wPlay();
+    });
+  })();
+
+  if (document.readyState === 'complete') initSoundCloud();
+  else window.addEventListener('load', initSoundCloud);
+
+  /* =====================================================================
+     2) 가사 · 단어 바꾸기 · 한 줄씩 읽기
+     ===================================================================== */
+  var LINES = [
+    'The more we {w} together,',
+    'Together, together,',
+    'The more we {w} together,',
+    "The happier we'll be!",
+    'GAP',
+    'For your friends are my friends,',
+    'And my friends are your friends.',
+    'The more we {w} together,',
+    "The happier we'll be!"
+  ];
+  var WORDS = { play:'⚽', learn:'📖', read:'📚' };
+  var current = 'play';
+  try {
+    var saved = localStorage.getItem('connect1.word');
+    if (saved && WORDS[saved]) current = saved;
+  } catch (e) {}
+
+  var lineEls = [];
+
+  function buildLyrics(){
+    var box = $('lyrics');
+    box.innerHTML = '';
+    lineEls = [];
+    LINES.forEach(function(tpl){
+      if (tpl === 'GAP') {
+        var g = document.createElement('div');
+        g.className = 'gap';
+        box.appendChild(g);
+        return;
+      }
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'line';
+      var parts = tpl.split('{w}');
+      btn.innerHTML = parts.join('<span class="w">' + current + '</span>');
+      btn.addEventListener('click', function(){
+        tapLine(lineEls.indexOf(btn), btn);
+      });
+      box.appendChild(btn);
+      lineEls.push(btn);
+    });
+  }
+
+  function applyWord(word, animate){
+    current = word;
+    try { localStorage.setItem('connect1.word', word); } catch (e) {}
+    Array.prototype.forEach.call(document.querySelectorAll('#pills .pill'), function(p){
+      var on = p.getAttribute('data-word') === word;
+      p.classList.toggle('on', on);
+      p.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    lineEls.forEach(function(btn){
+      Array.prototype.forEach.call(btn.querySelectorAll('.w'), function(span){
+        span.textContent = word;
+        if (animate) {
+          span.classList.remove('flash');
+          void span.offsetWidth;
+          span.classList.add('flash');
+        }
+      });
+    });
+    if (animate) vibrate(10);
+  }
+
+  function vibrate(ms){
+    if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('#pills .pill'), function(p){
+    p.addEventListener('click', function(){
+      if (seg) { seg = null; wPause(); clearKaraoke(); paint(0); }
+      applyWord(p.getAttribute('data-word'), true);
+      note(current === 'play' ? '' : '바꾼 단어는 원곡에 없어서, 문장을 누르면 영어로 읽어 줘요.');
+    });
+  });
+
+  /* 문장을 누를 때: 원곡으로 그 줄만 / 영어로 천천히 */
+  var speechMode = false;
+  var $speechBtn = $('speechBtn');
+  $speechBtn.addEventListener('click', function(){
+    speechMode = !speechMode;
+    $speechBtn.setAttribute('aria-pressed', speechMode ? 'true' : 'false');
+    note(speechMode
+      ? '이제 문장을 누르면 영어로 천천히 읽어 줘요.'
+      : '이제 문장을 누르면 원곡으로 그 줄만 들려줘요.');
+    vibrate(8);
+  });
+
+  function tapLine(i, btn){
+    if (speaking) stopChain();
+    var t = LYRIC_TIMING[i];
+    note('');
+    /* 원곡은 'play'로만 노래해요 → 바꾼 단어·영어 모드·플레이어 미준비는 말로 읽기 */
+    if (current !== 'play' || speechMode || !widget || !widgetReady) {
+      if (current !== 'play') note('바꾼 단어(' + current + ')는 원곡에 없어서 영어로 읽어 줘요.');
+      else if (!widget || !widgetReady) note('플레이어가 준비되기 전이라 영어로 읽어 줄게요.');
+      speakOne(i, btn);
+      return;
+    }
+    if (!t) return;
+    seg = { s: t[0], e: t[1], i: i };
+    finished = false;
+    wSeek(t[0]);
+    paint(t[0]);
+    karaoke(t[0]);
+    wPlay();
+    setState('🔊 ' + (i + 1) + '번째 줄을 들려주는 중…', 'on');
+    note('원곡으로 이 줄만 들려줘요 (' + mmss(t[0] / 1000) + '~' + mmss(t[1] / 1000) + ')');
+    vibrate(8);
+  }
+
+  function lineText(i){
+    var tpl = null, k = 0;
+    for (var j = 0; j < LINES.length; j++) {
+      if (LINES[j] === 'GAP') continue;
+      if (k === i) { tpl = LINES[j]; break; }
+      k++;
+    }
+    return tpl ? tpl.replace('{w}', current) : '';
+  }
+
+  /* ---- speech ---- */
+  var speechOK = ('speechSynthesis' in window) && ('SpeechSynthesisUtterance' in window);
+  var enVoice = null, voicesTried = 0;
+
+  function pickVoice(){
+    if (!speechOK) return null;
+    var vs = window.speechSynthesis.getVoices() || [];
+    if (!vs.length) return null;
+    var en = vs.filter(function(v){ return /^en/i.test(v.lang); });
+    var us = en.filter(function(v){ return /en[-_]US/i.test(v.lang); });
+    var nice = us.filter(function(v){ return /samantha|google|microsoft|aria|jenny|zira/i.test(v.name); });
+    return (nice[0] || us[0] || en[0] || vs[0]);
+  }
+  function ensureVoice(){
+    if (enVoice) return;
+    enVoice = pickVoice();
+    if (!enVoice && voicesTried < 6) {
+      voicesTried++;
+      setTimeout(ensureVoice, 250);
+    }
+  }
+  if (speechOK) {
+    ensureVoice();
+    window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', ensureVoice);
+    window.speechSynthesis.onvoiceschanged = ensureVoice;
+  }
+
+  var speakToken = 0, speaking = false;
+
+  function speak(text, rate){
+    return new Promise(function(resolve){
+      if (!speechOK) { resolve(false); return; }
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = rate || 0.85;
+      u.pitch = 1.05;
+      if (enVoice) u.voice = enVoice;
+      var done = false;
+      function fin(ok){ if (done) return; done = true; clearTimeout(guard); resolve(ok); }
+      var guard = setTimeout(function(){ fin(false); }, Math.max(4000, text.length * 110 + 2500));
+      u.onend = function(){ fin(true); };
+      u.onerror = function(){ fin(false); };
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+      window.speechSynthesis.speak(u);
+    });
+  }
+
+  function clearSpeaking(){
+    lineEls.forEach(function(b){ b.classList.remove('speaking'); });
+  }
+
+  function speakOne(i, btn){
+    if (!speechOK) { note('이 브라우저에서는 소리 읽기를 쓸 수 없어요.'); return; }
+    stopChain();
+    var my = ++speakToken;
+    clearSpeaking();
+    btn.classList.add('speaking');
+    note('🔊 ' + lineText(i));
+    speak(lineText(i), 0.86).then(function(){
+      if (my === speakToken) clearSpeaking();
+    });
+  }
+
+  function note(msg){ $('speakNote').textContent = msg || ''; }
+
+  function stopChain(){
+    speakToken++;
+    speaking = false;
+    clearSpeaking();
+    try { if (speechOK) window.speechSynthesis.cancel(); } catch (e) {}
+    $('slowBtn').textContent = '🔊 한 줄씩 노래 속도로 듣기';
+  }
+
+  var SING_RATE = 0.95;   /* 노래 부르는 속도에 가깝게 */
+  var LINE_GAP = 120;     /* 줄 사이 쉼 (ms) */
+
+  $('slowBtn').addEventListener('click', function(){
+    if (!speechOK) { note('이 브라우저에서는 소리 읽기를 쓸 수 없어요.'); return; }
+    if (speaking) { stopChain(); note('멈췄어요.'); return; }
+    if (seg) { seg = null; wPause(); clearKaraoke(); }
+    speaking = true;
+    var my = ++speakToken;
+    $('slowBtn').textContent = '⏹ 멈추기';
+    var seq = [];
+    for (var i = 0; i < lineEls.length; i++) seq.push(i);
+    var idx = 0;
+
+    function step(){
+      if (my !== speakToken || !speaking) return;
+      if (idx >= seq.length) {
+        speaking = false;
+        $('slowBtn').textContent = '🔊 한 줄씩 노래 속도로 듣기';
+        note('다 들었어요! 이제 같이 불러 봐요 🎶');
+        return;
+      }
+      var i = seq[idx++];
+      var btn = lineEls[i];
+      clearSpeaking();
+      btn.classList.add('speaking');
+      try { btn.scrollIntoView({block:'center', behavior:'smooth'}); } catch (e) {}
+      note('🔊 ' + lineText(i));
+      speak(lineText(i), SING_RATE).then(function(ok){
+        if (my !== speakToken || !speaking) return;
+        setTimeout(step, LINE_GAP);
+      });
+    }
+    step();
+  });
+
+  buildLyrics();
+  applyWord(current, false);
+
+  /* =====================================================================
+     3) 녹음
+     ===================================================================== */
+  var rec = null, chunks = [], stream = null, recording = false;
+  var recStart = 0, timerId = null, audioURL = null;
+
+  function recMsg(msg, live){
+    var el = $('recState');
+    el.textContent = '';
+    if (live) {
+      var d = document.createElement('span');
+      d.className = 'dot';
+      el.appendChild(d);
+    }
+    el.appendChild(document.createTextNode(msg));
+    el.classList.toggle('live', !!live);
+  }
+  function recProblem(msg){
+    var el = $('recFallback');
+    el.hidden = false;
+    el.innerHTML = msg;
+  }
+
+  function pickMime(){
+    if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+    var cands = ['audio/mp4', 'audio/mp4;codecs=mp4a.40.2', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus'];
+    for (var i = 0; i < cands.length; i++) {
+      if (MediaRecorder.isTypeSupported(cands[i])) return cands[i];
+    }
+    return '';
+  }
+
+  function tick(){
+    var s = Math.floor((Date.now() - recStart) / 1000);
+    recMsg('녹음 중… ' + mmss(s), true);
+  }
+
+  function stopRecording(){
+    if (!rec || !recording) return;
+    recording = false;
+    try { rec.stop(); } catch (e) {}
+    if (timerId) { clearInterval(timerId); timerId = null; }
+    $('recBtn').textContent = '🎙️ 다시 녹음';
+    $('recBtn').className = 'btn btn-rec';
+  }
+
+  function startRecording(){
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+      recMsg('이 브라우저에서는 녹음이 안 돼요');
+      recProblem('녹음을 쓰려면 최신 사파리(iOS 15 이상)나 크롬에서 열어 주세요.');
+      return;
+    }
+    $('recFallback').hidden = true;
+    recMsg('마이크를 준비하는 중…');
+    navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+    }).then(function(s){
+      stream = s;
+      chunks = [];
+      var mime = pickMime();
+      try {
+        rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      } catch (e) {
+        try { rec = new MediaRecorder(stream); } catch (e2) {
+          recMsg('녹음을 시작할 수 없어요');
+          recProblem('이 브라우저의 녹음 기능을 쓸 수 없어요. 사파리 최신 버전에서 다시 해 보세요.');
+          return;
+        }
+      }
+      rec.ondataavailable = function(e){ if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function(){
+        var type = (rec && rec.mimeType) || mime || 'audio/mp4';
+        var blob = new Blob(chunks, { type: type });
+        if (audioURL) { try { URL.revokeObjectURL(audioURL); } catch (e) {} }
+        audioURL = URL.createObjectURL(blob);
+        var a = $('audio');
+        a.src = audioURL;
+        $('playback').classList.add('on');
+        var ext = /mp4|aac|m4a/i.test(type) ? 'm4a' : (/ogg/i.test(type) ? 'ogg' : 'webm');
+        $('saveLink').setAttribute('download', 'shawn-connect1.' + ext);
+        $('saveLink').href = audioURL;
+        var secs = Math.max(1, Math.round((Date.now() - recStart) / 1000));
+        recMsg('녹음 완료 · ' + mmss(secs) + ' · ▶️ 들어 보세요');
+        if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
+        try { a.play(); } catch (e) {}
+      };
+      rec.start();
+      recording = true;
+      recStart = Date.now();
+      recMsg('녹음 중… 0:00', true);
+      timerId = setInterval(tick, 500);
+      $('recBtn').textContent = '⏹️ 녹음 끝내기';
+      $('recBtn').className = 'btn btn-stop';
+      vibrate(20);
+    }).catch(function(err){
+      recording = false;
+      if (timerId) { clearInterval(timerId); timerId = null; }
+      $('recBtn').textContent = '🎙️ 녹음 시작';
+      $('recBtn').className = 'btn btn-rec';
+      var name = (err && err.name) || '';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        recMsg('마이크 사용이 막혀 있어요');
+        recProblem('아이폰 <b>설정 → Safari</b>에서 마이크가 ‘허용’인지 확인해 주세요. 그래도 안 되면 주소창 왼쪽 <b>AA → 웹사이트 설정</b>에서 마이크를 허용으로 바꿔 주세요.');
+      } else if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+        recMsg('마이크를 찾지 못했어요');
+        recProblem('마이크가 연결되어 있는지 확인해 주세요.');
+      } else {
+        recMsg('녹음을 시작하지 못했어요');
+        recProblem('잠시 뒤 다시 눌러 보세요. (' + (name || 'error') + ')');
+      }
+    });
+  }
+
+  $('recBtn').addEventListener('click', function(){
+    if (recording) stopRecording();
+    else startRecording();
+  });
+
+  window.addEventListener('pagehide', function(){
+    if (timerId) clearInterval(timerId);
+    if (stream) { try { stream.getTracks().forEach(function(t){ t.stop(); }); } catch (e) {} }
+  });
+
+  /* 확인용 (화면에는 쓰이지 않아요) */
+  window.__connectTest = {
+    progress: onProgress,
+    karaoke: karaoke,
+    line: function(i){ return lineEls[i] ? lineEls[i].textContent : null; },
+    tap: function(i){ if (lineEls[i]) lineEls[i].click(); },
+    state: function(){
+      return {
+        pos: Math.round(posMs), seg: seg, finished: finished, loop: loopOn,
+        active: activeIdx, ready: widgetReady, playing: isPlaying,
+        calls: scCalls.slice(-14),
+        stateText: $('scState').textContent,
+        timeText: $('scTime').textContent,
+        fill: $('pbFill').style.width,
+        word: current, speechMode: speechMode, note: $('speakNote').textContent,
+        errors: errs.slice()
+      };
+    }
+  };
+})();
+</script>
+</body>
+</html>
