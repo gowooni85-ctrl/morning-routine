@@ -171,6 +171,13 @@
   .sc-wrap iframe{display:block;width:100%;height:166px;border:0}
   .dock-hint{margin:8px 3px 0;font-size:11.5px;font-weight:700;color:#7a8ea8;line-height:1.5}
   .dock-hint b{color:#2563eb}
+  .dock-row{margin-top:11px}
+  .dock-row .btn{min-height:46px;font-size:14px;border-radius:13px}
+  .dock-row .btn-chip{min-height:46px;padding:0 13px;font-size:13.5px}
+  .dock-link{margin:9px 0 0;text-align:center;font-size:12px;font-weight:800}
+  .dock-link a{color:#2563eb;text-decoration:none}
+  .dock-note{margin:8px 3px 0;text-align:center;font-size:11px;font-weight:700;color:#7a8ea8;line-height:1.5}
+  .dock-note b{color:#2563eb}
 
   .pb{
     position:relative;height:15px;margin:13px 2px 0;border-radius:999px;overflow:hidden;
@@ -370,6 +377,20 @@
   }
   .quiz-msg.good{background:#ecfdf5;border-color:#bbf7d0;color:#15803d}
   .quiz-msg.bad{background:#fff1f2;border-color:#fecdd3;color:#be123c}
+  .quiz-msg .fb-top{display:block;font-size:14px;font-weight:900;line-height:1.35}
+  .quiz-msg .fb-word{
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+    font-size:19px;font-weight:900;letter-spacing:-.3px;
+  }
+  .quiz-msg.good .fb-word{color:#15803d}
+  .quiz-msg.bad .fb-word{color:#be123c}
+  .quiz-msg .fb-ko{
+    display:inline-block;margin-top:7px;padding:6px 16px;border-radius:999px;
+    background:#fff;box-shadow:0 2px 6px rgba(15,23,42,.06);
+    font-size:20px;font-weight:900;letter-spacing:-.4px;line-height:1.25;
+  }
+  .quiz-msg.good .fb-ko{color:#166534;border:2px solid #86efac}
+  .quiz-msg.bad .fb-ko{color:#9f1239;border:2px solid #fda4af}
 
   /* ---------- story ---------- */
   .pcard{padding:13px 14px 12px}
@@ -535,43 +556,40 @@
         scrolling="no" frameborder="no" allow="autoplay; encrypted-media"
         src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fjayoneedu%2Fconnect-1-sb-4gaeyunis-unit-1unit-4-1&amp;color=%232563eb&amp;auto_play=false&amp;hide_related=true&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;show_teaser=false&amp;visual=false"></iframe>
     </div>
-    <p class="dock-hint" id="dockHint">플레이어의 <b>▶</b>를 눌러도 되고, 아래 큰 버튼을 누르면 딱 들을 구간만 들려줘요.</p>
-  </section>
+    <p class="dock-hint" id="dockHint">위 플레이어의 <b>▶</b>를 누르면 <b>0:28</b>까지 재생되고 자동으로 멈춰요.</p>
 
-  <!-- ================= TAB 1 · 노래 ================= -->
-  <div class="panel on" id="panel-song" role="tabpanel" aria-labelledby="tab-song">
-
-    <section class="card" id="card-listen">
-      <div class="card-head"><span class="num">1</span><h3>🎵 노래 듣기<span class="badge">0:28</span></h3></div>
-      <p class="hint">이 노래는 <b>0:28</b>에서 끝나요. <b>▶️ 노래 듣기</b>를 누르면 0:00부터 시작해서 가사가 노래방처럼 따라가고, 28초가 되면 저절로 멈춰요.</p>
-
+    <div id="dockSong">
       <div class="pb" id="pb" role="slider" tabindex="0" aria-label="노래 위치 (0:00~0:28)" aria-valuemin="0" aria-valuemax="28" aria-valuenow="0">
         <div class="pb-fill" id="pbFill"></div>
       </div>
       <div class="sc-meta">
         <span class="time" id="scTime">0:00 / 0:28</span>
-        <span>The More We Play Together</span>
+        <span>🎵 The More We Play Together</span>
       </div>
 
-      <p class="sc-state" id="scState">▶️ 노래 듣기를 눌러 시작해요</p>
+      <p class="sc-state" id="scState">▶️ 위 플레이어의 ▶를 눌러 시작해요</p>
 
-      <div class="row" style="margin-top:11px">
-        <button class="btn btn-primary" id="restartBtn">▶️ 노래 듣기 (0:00~0:28)</button>
-        <button class="btn btn-chip" id="loopBtn" aria-pressed="false" aria-label="한 곡 반복">🔁 반복</button>
-      </div>
-      <div class="row">
-        <a class="btn btn-ghost" href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a>
+      <div class="row dock-row">
+        <button class="btn btn-ghost btn-mini" id="restartBtn" type="button">⏮️ 0:00으로</button>
+        <button class="btn btn-chip" id="loopBtn" type="button" aria-pressed="false" aria-label="한 곡 반복">🔁 반복</button>
       </div>
 
       <p class="fallback" id="scFallback" hidden>
         플레이어가 바로 시작되지 않으면 위 플레이어의 <b>▶</b> 버튼을 한 번 눌러 주세요.
         화면이 계속 비어 있으면 <a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">SoundCloud에서 직접 열기</a>.
       </p>
-      <p class="hint" style="margin:10px 2px 0">원래 트랙에는 Unit 1~4 노래와 스토리가 모두 들어 있어요(31분). 맨 처음 28초가 오늘 배울 <b>The More We Play Together</b>예요.</p>
-    </section>
+
+      <p class="dock-link"><a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a></p>
+    </div>
+
+    <p class="dock-note">이 음원 31분 중 <b>0:00~0:28</b>이 오늘 노래, <b>1:35~3:13</b>이 1과 스토리예요.</p>
+  </section>
+
+  <!-- ================= TAB 1 · 노래 ================= -->
+  <div class="panel on" id="panel-song" role="tabpanel" aria-labelledby="tab-song">
 
     <section class="card" id="card-sing">
-      <div class="card-head"><span class="num">2</span><h3>🎤 가사 보며 따라 부르기</h3></div>
+      <div class="card-head"><span class="num">1</span><h3>🎤 가사 보며 따라 부르기</h3></div>
       <p class="hint">단어를 골라 노래를 바꿔 불러 보세요. 문장을 누르면 <b>그 줄만 원곡으로</b> 들려주고, 노래가 흐르는 동안 지금 부르는 줄이 노래방처럼 밝혀져요.</p>
 
       <p class="pill-label">단어 바꾸기 · Change the words</p>
@@ -593,7 +611,7 @@
     </section>
 
     <section class="card" id="card-rec">
-      <div class="card-head"><span class="num">3</span><h3>🎙️ 내 목소리 녹음해서 들어보기</h3></div>
+      <div class="card-head"><span class="num">2</span><h3>🎙️ 내 목소리 녹음해서 들어보기</h3></div>
       <p class="hint">내 목소리로 노래를 불러 봐요. 처음 한 번은 <b>마이크 허용</b>을 눌러 주세요.</p>
       <div class="rec-host" id="songRec"></div>
     </section>
@@ -644,7 +662,7 @@
 
     <section class="card" id="card-story-audio">
       <div class="card-head"><span class="num">📖</span><h3>1과 스토리 · <span style="font-family:&quot;Avenir Next&quot;,Verdana,sans-serif">It’s Time for School</span></h3></div>
-      <p class="hint">by <b>John Hicks</b> · 스토리는 음원 <b>1:35~3:13</b>(1분 38초)에 담겨 있어요. 아래 버튼을 누르면 딱 그 부분만 들려주고 끝나면 처음으로 돌아가요.</p>
+      <p class="hint">by <b>John Hicks</b> · 스토리는 음원 <b>1:35~3:13</b>(1분 38초)에 담겨 있어요. <b>위 플레이어의 ▶</b>를 누르면 이 부분만 들려주고, 3:13에서 자동으로 멈춰요.</p>
 
       <div class="pb" id="stPb" role="slider" tabindex="0" aria-label="스토리 위치 (1:35~3:13)" aria-valuemin="0" aria-valuemax="98" aria-valuenow="0">
         <div class="pb-fill story" id="stPbFill"></div>
@@ -654,23 +672,21 @@
         <span>스토리 1:35 ~ 3:13</span>
       </div>
 
-      <p class="sc-state" id="stState">▶️ 스토리 듣기를 눌러 시작해요</p>
+      <p class="sc-state" id="stState">▶️ 위 플레이어의 ▶를 누른 뒤 1:35 위치로 이동해요</p>
 
       <div class="row" style="margin-top:11px">
-        <button class="btn btn-primary" id="storyPlayBtn" style="background:linear-gradient(180deg,#fbbf24,#f59e0b);box-shadow:0 4px 0 #d97706,0 8px 18px rgba(245,158,11,.28)">▶️ 스토리 듣기 (1:35~3:13)</button>
-      </div>
-      <div class="row">
-        <button class="btn btn-ghost" id="storyRestartBtn">⏮️ 스토리 처음부터 (1:35)</button>
+        <button class="btn btn-ghost" id="storyPlayBtn" type="button">🎯 스토리 시작 위치(1:35)로 이동</button>
       </div>
 
       <p class="fallback" id="stFallback" hidden>
-        스토리를 시작하지 못했어요. 위 플레이어에서 <b>▶</b>를 한 번 누른 뒤 다시 시도해 주세요.
+        스토리 위치로 옮기지 못했어요. 위 플레이어에서 <b>▶</b>를 한 번 누른 뒤 다시 눌러 주세요.
       </p>
+      <p class="hint" style="margin:9px 2px 0;text-align:center">위 플레이어의 <b>▶</b>를 누른 뒤 이 버튼을 누르면 <b>1:35</b>부터 들려줘요.</p>
     </section>
 
     <div id="storyPages"></div>
 
-    <p class="hint" style="text-align:center;margin:2px 0 14px">스토리 전체를 다시 들으려면 맨 위 <b>📖 스토리</b> 카드의 버튼을 눌러요.</p>
+    <p class="hint" style="text-align:center;margin:2px 0 14px">스토리를 처음부터 다시 들으려면 맨 위 플레이어의 <b>▶</b>를 눌러요.</p>
   </div>
 
   <div class="foot">
@@ -711,7 +727,7 @@
     [15200, 18300], [18300, 21400], [21400, 24400], [24400, 28000]
   ];
 
-  var widget = null, widgetReady = false;
+  var widget = null, widgetReady = false, unlocked = false;
   var mode = 'song';                    /* 'song' | 'story' */
   var songPos = 0, storyPos = STORY.s;
   var lastPos = 0;
@@ -777,6 +793,9 @@
   function syncModeUI(){
     var dm = $('dockMode');
     if (dm) dm.textContent = mode === 'story' ? '스토리 1:35~3:13' : '노래 0:00~0:28';
+    /* 노래 조작줄은 노래 탭에서만 보인다 (스토리는 스토리 카드에 자기 진행바가 있음) */
+    var ds = $('dockSong');
+    if (ds) ds.hidden = (mode === 'story');
   }
 
   /* 지금 부르는 줄만 밝힌다 (노래방) */
@@ -831,7 +850,7 @@
     }
     finished = true; isPlaying = false;
     wSeek(0); paintSong(0);
-    setSongState('🎉 노래 끝! 다시 들으려면 ▶️를 눌러요', 'done');
+    setSongState('🎉 노래 끝! 다시 들으려면 위 플레이어의 ▶를 눌러요', 'done');
     vibrate(30);
   }
 
@@ -841,7 +860,7 @@
     wPause();
     quietUntil = Date.now() + 1500;
     wSeek(STORY.s); paintStory(STORY.s);
-    setStoryState('🎉 스토리 끝! 다시 들으려면 ▶️ 스토리 듣기를 눌러요', 'done');
+    setStoryState('🎉 스토리 끝! 다시 들으려면 위 플레이어의 ▶를 눌러요', 'done');
     vibrate(30);
   }
 
@@ -892,7 +911,7 @@
       if (e && typeof e.currentPosition === 'number') onProgress(e.currentPosition);
     });
     widget.bind(SC.Widget.Events.PLAY, function(){
-      isPlaying = true; finished = false;
+      isPlaying = true; finished = false; unlocked = true;
       $('scFallback').hidden = true;
       $('stFallback').hidden = true;
       if (speaking) stopChain();
@@ -933,10 +952,14 @@
     if (!ensureWidget('scFallback')) return;
     mode = 'song'; syncModeUI();
     seg = null; finished = false; clearKaraoke();
-    wSeek(0); paintSong(0); wPlay();
-    setSongState('🎤 같이 불러 봐요!', 'on');
-    isPlaying = false;
-    setTimeout(function(){ if (!isPlaying) $('scFallback').hidden = false; }, 2000);
+    wSeek(0); paintSong(0);
+    if (unlocked) {
+      wPlay();
+      setSongState('🎤 0:00부터 같이 불러 봐요!', 'on');
+    } else {
+      setSongState('▶️ 위 플레이어의 ▶를 누르면 0:00부터 들려줘요', '');
+    }
+    vibrate(8);
   });
 
   $('loopBtn').addEventListener('click', function(){
@@ -953,22 +976,19 @@
     if (!ensureWidget('stFallback')) return;
     mode = 'story'; syncModeUI();
     finished = false; storyFinished = false;
-    if (storyPos > STORY.s + 800 && storyPos < STORY.e - 800 && lastPos > STORY.s - 1500) {
+    if (unlocked && storyPos > STORY.s + 800 && storyPos < STORY.e - 800) {
       wPlay();
       setStoryState('📖 이어서 들려주는 중…', 'on');
     } else {
-      wSeek(STORY.s); paintStory(STORY.s); wPlay();
-      setStoryState('📖 스토리를 들려주는 중 · 1:35~3:13', 'on');
+      wSeek(STORY.s); paintStory(STORY.s);
+      if (unlocked) {
+        wPlay();
+        setStoryState('📖 1:35부터 스토리를 들려줘요', 'on');
+      } else {
+        setStoryState('▶️ 위 플레이어의 ▶를 누르면 1:35부터 들려줘요', '');
+      }
     }
-    setTimeout(function(){ if (!isPlaying) $('stFallback').hidden = false; }, 2200);
-  });
-
-  $('storyRestartBtn').addEventListener('click', function(){
-    if (!ensureWidget('stFallback')) return;
-    mode = 'story'; syncModeUI();
-    finished = false; storyFinished = false;
-    wSeek(STORY.s); paintStory(STORY.s); wPlay();
-    setStoryState('📖 스토리 처음(1:35)부터 들려줘요', 'on');
+    vibrate(8);
   });
 
   /* 노래 진행 바 */
@@ -1366,8 +1386,10 @@
     dock.hidden = (name === 'words');
     if (name === 'words') {
       $('dockHint').textContent = '단어는 소리 내어 읽어 줘요. 노래·스토리는 위 탭에서 들어요.';
+    } else if (name === 'story') {
+      $('dockHint').innerHTML = '위 플레이어의 <b>▶</b>를 누르면 <b>스토리(1:35~3:13)</b>만 들려주고 자동으로 멈춰요.';
     } else {
-      $('dockHint').innerHTML = '플레이어의 <b>▶</b>를 눌러도 되고, 큰 버튼을 누르면 딱 들을 구간만 들려줘요.';
+      $('dockHint').innerHTML = '위 플레이어의 <b>▶</b>를 누르면 <b>0:28</b>까지 재생되고 자동으로 멈춰요.';
     }
 
     try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
@@ -1653,6 +1675,8 @@
 
   /* ---- 미니 퀴즈 ---- */
   var QUIZ_WORDS = SCHOOL.map(function(x){ return x.w; }).concat(KEYS.map(function(x){ return x.w; }));
+  var QUIZ_INFO = {};
+  SCHOOL.concat(KEYS).forEach(function(x){ QUIZ_INFO[x.w] = { ko: x.ko, e: x.e }; });
   var quiz = { on:false, score:0, done:0, target:null, last:null, locked:false, timer:null };
 
   function shuffle(a){
@@ -1670,6 +1694,15 @@
     var el = $('quizMsg');
     el.textContent = msg;
     el.className = 'quiz-msg' + (tone ? ' ' + tone : '');
+  }
+  /* 정답·오답 모두 밑에 한글 뜻을 크게 보여 준다 */
+  function quizFeedback(ok, word){
+    var info = QUIZ_INFO[word] || { ko: '', e: '🔤' };
+    var el = $('quizMsg');
+    el.className = 'quiz-msg ' + (ok ? 'good' : 'bad');
+    el.innerHTML = '<span class="fb-top">' + (ok ? '⭕ 맞았어요! ' : '❌ 아쉬워요! 정답은 ') +
+                   '<span class="fb-word">' + word + '</span></span>' +
+                   '<span class="fb-ko">' + (info.e ? info.e + ' ' : '') + info.ko + '</span>';
   }
 
   function quizRound(){
@@ -1717,18 +1750,18 @@
     if (ok) {
       btn.classList.add('ok');
       quiz.score++;
-      quizMsg('정답! 👍  ' + word, 'good');
       vibrate(15);
     } else {
       btn.classList.add('no');
       var right = document.querySelector('#quizOptions .qopt[data-w="' + quiz.target + '"]');
       if (right) right.classList.add('ok');
-      quizMsg('아쉬워요! 이건 “' + quiz.target + '” 예요', 'bad');
       vibrate([10, 40, 10]);
       setTimeout(function(){ if (quiz.on) say(wordSpeech(quiz.target), null, RATE); }, 260);
     }
+    quizFeedback(ok, quiz.target);
     quizSetScore();
-    quiz.timer = setTimeout(function(){ if (quiz.on) quizRound(); }, ok ? 1100 : 1800);
+    /* 한글 뜻을 읽을 시간을 넉넉히 준다 */
+    quiz.timer = setTimeout(function(){ if (quiz.on) quizRound(); }, ok ? 2600 : 3600);
   }
 
   $('quizStart').addEventListener('click', quizStart);
@@ -1871,7 +1904,16 @@
     quiz: {
       start: quizStart,
       answer: function(w){ var b = document.querySelector('#quizOptions .qopt[data-w="' + w + '"]'); if (b) b.click(); return !!b; },
-      state: function(){ return { on: quiz.on, score: quiz.score, done: quiz.done, target: quiz.target, opts: Array.prototype.map.call(document.querySelectorAll('#quizOptions .qopt'), function(b){ return b.getAttribute('data-w'); }) }; }
+      state: function(){
+        var el = $('quizMsg');
+        var ko = el.querySelector('.fb-ko');
+        return {
+          on: quiz.on, score: quiz.score, done: quiz.done, target: quiz.target,
+          opts: Array.prototype.map.call(document.querySelectorAll('#quizOptions .qopt'), function(b){ return b.getAttribute('data-w'); }),
+          msg: el.textContent, koText: ko ? ko.textContent : null,
+          tone: /\bgood\b/.test(el.className) ? 'good' : (/\bbad\b/.test(el.className) ? 'bad' : '')
+        };
+      }
     },
     counts: function(){
       return {
@@ -1898,6 +1940,12 @@
         storyTimeText: $('stTime').textContent,
         storyFill: $('stPbFill').style.width,
         dockHidden: $('dock').hidden,
+        dockSongHidden: $('dockSong').hidden,
+        unlocked: unlocked,
+        dockHintText: $('dockHint').textContent,
+        countdownCard: document.querySelectorAll('#card-listen').length,
+        deadPlayButton: document.querySelectorAll('#panel-song .btn-primary').length,
+        cardNums: Array.prototype.map.call(document.querySelectorAll('#panel-song .card-head .num'), function(n){ return n.textContent; }),
         word: current, speechMode: speechMode, note: $('speakNote').textContent,
         errors: errs.slice()
       };
