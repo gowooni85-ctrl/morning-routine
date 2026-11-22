@@ -1544,7 +1544,7 @@
     void el.offsetWidth;
     el.classList.add('on');
     clearTimeout(taTimer);
-    taTimer = setTimeout(function(){ if(t === taToken) el.classList.remove('on'); }, 1600);
+    taTimer = setTimeout(function(){ if(t === taToken) el.classList.remove('on'); }, 2000);
   }
   function hideTryAgain(){
     var el = $('tryAgain');
@@ -2047,7 +2047,7 @@
       if(rid === G.runId && G.locked){
         advance();
       }
-    }, G.course ? (perfect ? 1500 : 1250) : (perfect ? 1350 : 1150));
+    }, perfect ? 1650 : 1500);
   }
 
   /* 한 단어를 마쳤을 때: 다음 단어 → 다음 바퀴 → 틀린 단어 복습 → 결과 */
