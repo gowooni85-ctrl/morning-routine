@@ -329,6 +329,7 @@
 
 </div>
 
+<script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
 (function(){
   'use strict';
@@ -395,7 +396,6 @@
 
   if (document.readyState === 'complete') initSoundCloud();
   else window.addEventListener('load', initSoundCloud);
-  setTimeout(function(){ if (!widgetReady) $('scFallback').hidden = false; }, 7000);
 
   /* =====================================================================
      2) 가사 · 단어 바꾸기 · 한 줄씩 읽기
