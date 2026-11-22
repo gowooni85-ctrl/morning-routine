@@ -417,16 +417,58 @@
     box-shadow:inset 0 -1px 0 #f6c94a;
   }
   details.checkin{
-    margin-top:9px;padding:8px 11px;border-radius:13px;
-    background:#faf7ff;border:1px solid #ece6fd;
+    margin-top:9px;padding:9px 11px 11px;border-radius:14px;
+    background:#faf7ff;border:1.5px solid #e4d9fb;
   }
   details.checkin summary{
-    cursor:pointer;list-style:none;font-size:12.5px;font-weight:900;color:#7c3aed;
-    display:flex;align-items:center;gap:5px;
+    cursor:pointer;list-style:none;font-size:13px;font-weight:900;color:#7c3aed;
+    display:flex;align-items:center;gap:6px;
   }
   details.checkin summary::-webkit-details-marker{display:none}
   details.checkin summary::after{content:"▾";margin-left:auto;font-size:11px;color:#a78bfa}
   details.checkin[open] summary::after{content:"▴"}
+  .cq-cnt{
+    margin-left:2px;padding:2px 7px;border-radius:999px;background:#ede9fe;
+    border:1px solid #ddd6fe;color:#6d28d9;font-size:10.5px;font-weight:900;
+  }
+  .cq{margin-top:9px;padding-top:9px;border-top:1px dashed #e6dcfb}
+  .cq:first-of-type{margin-top:6px;padding-top:0;border-top:none}
+  .cq-head{display:flex;align-items:center;gap:7px}
+  .cq-num{
+    flex:0 0 auto;width:20px;height:20px;border-radius:7px;background:#8b5cf6;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:900;
+  }
+  .cq-q{
+    flex:1 1 auto;min-width:0;text-align:left;padding:3px 0;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+    font-size:14.5px;font-weight:800;line-height:1.35;color:#3b2a6b;
+    background:none;border:none;cursor:pointer;
+  }
+  .cq-q.speaking{color:#7c3aed;text-decoration:underline}
+  .cq-listen{
+    flex:0 0 auto;min-height:34px;padding:0 10px;border-radius:999px;
+    border:1.5px solid #ddd0fb;background:#fff;color:#7c3aed;
+    font-family:inherit;font-size:12px;font-weight:900;cursor:pointer;
+  }
+  .cq-listen:active{background:#f3e8ff}
+  .cq-opts{display:grid;gap:6px;margin-top:7px}
+  .cq-opt{
+    min-height:44px;padding:8px 10px;text-align:left;
+    font-family:"Avenir Next","Trebuchet MS",Verdana,sans-serif;
+    font-size:14px;font-weight:800;color:#2f3a56;
+    background:#fff;border:1.5px solid #e6e0f5;border-radius:12px;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .1s;
+  }
+  .cq-opt:active{transform:scale(.985)}
+  .cq-opt.ok{background:#dcfce7;border-color:#16a34a;color:#15803d}
+  .cq-opt.no{background:#fee2e2;border-color:#ef4444;color:#b91c1c;animation:shake .32s}
+  .cq-fb{
+    margin:7px 0 0;padding:7px 10px;border-radius:11px;
+    font-size:13px;font-weight:900;text-align:center;line-height:1.4;
+  }
+  .cq-fb.good{background:#ecfdf5;border:1px solid #bbf7d0;color:#15803d}
+  .cq-fb.bad{background:#fff1f2;border:1px solid #fecdd3;color:#be123c}
+  .cq-fb .cq-ko{display:inline-block;margin-top:2px;font-size:14px;color:#166534}
   .qbtn{
     display:block;width:100%;text-align:left;padding:5px 0;
     font-family:inherit;font-size:13.5px;font-weight:800;color:#5b4b8a;
@@ -1775,21 +1817,128 @@
      ===================================================================== */
   var PAGES = [
     { p:9,  note:'학교 가는 길', s:['It’s time for school.', 'Lily walks to school with her mom.'],
-      check:['1. What time is it?', '2. How does Lily go to school?'] },
+      check:[
+        { q:'What time is it?', a:'It’s time for school.',
+          d:['It’s time for lunch.', 'It’s time for bed.'], ko:'학교 갈 시간이에요!' },
+        { q:'How does Lily go to school?', a:'She walks with her mom.',
+          d:['She rides a bus.', 'She rides a bike.'], ko:'엄마랑 걸어서 학교에 가요.' }
+      ] },
     { p:10, note:'교실에 도착',
       s:['Lily goes to class.', 'She lines up with her friends.', 'The teacher says, “Hello.”'] },
     { p:11, note:'읽기 시간', s:['It’s time for reading.', 'The teacher {reads} a story.', 'Lily and her classmates sit and listen.'],
-      check:['1. Where is Lily?', '2. What time is it?'] },
+      check:[
+        { q:'Where is Lily?', a:'In the classroom.',
+          d:['In the cafeteria.', 'At home.'], ko:'교실에 있어요.' },
+        { q:'What time is it?', a:'It’s time for reading.',
+          d:['It’s time for art.', 'It’s time for math.'], ko:'읽기 시간이에요!' }
+      ] },
     { p:12, note:'쓰기 시간', s:['It’s time for writing.', 'Lily {writes} at her table.', 'She {draws} a picture, too.'] },
     { p:13, note:'쉬는 시간', s:['It’s time for recess.', 'Lily plays with her friends.', 'They run and jump.'],
-      check:['1. Where does Lily write?', '2. When does Lily play?'] },
+      check:[
+        { q:'Where does Lily write?', a:'At her table.',
+          d:['In the cafeteria.', 'On the playground.'], ko:'자기 책상(테이블)에서 써요.' },
+        { q:'When does Lily play?', a:'At recess.',
+          d:['At math time.', 'At lunch time.'], ko:'쉬는 시간(recess)에 놀아요!' }
+      ] },
     { p:14, note:'점심 시간', s:['It’s time for lunch.', 'Lily {eats} in the cafeteria.', 'The students eat and talk.'] },
     { p:15, note:'수학 시간', s:['It’s time for math.', 'Lily {counts} shapes.', 'She has four circles.'],
-      check:['1. Where does Lily eat?', '2. What does Lily count?'] },
+      check:[
+        { q:'Where does Lily eat?', a:'In the cafeteria.',
+          d:['At her table.', 'In the art room.'], ko:'학교 식당에서 먹어요.' },
+        { q:'What does Lily count?', a:'Shapes.',
+          d:['Pencils.', 'Colors.'], ko:'모양(동그라미 4개)을 세어요.' }
+      ] },
     { p:16, note:'미술 시간', s:['It’s time for art.', 'Lily {paints} a picture.', 'She uses lots of colors.'] },
     { p:17, note:'집에 가는 길', s:['It’s time to go home.', 'Lily tells about her day.', 'She likes school.'],
-      check:['1. What does Lily paint?', '2. What does Lily like?'] }
+      check:[
+        { q:'What does Lily paint?', a:'A picture.',
+          d:['A book.', 'A circle.'], ko:'그림을 색칠해요.' },
+        { q:'What does Lily like?', a:'School.',
+          d:['Homework.', 'Tests.'], ko:'학교를 좋아해요!' }
+      ] }
   ];
+
+  var checkinStats = { questions: 0, solved: 0 };
+
+  /* 한 문제 = 질문 듣기 + 보기 3개 고르기 */
+  function buildCheckQ(item, qi){
+    var wrap = document.createElement('div');
+    wrap.className = 'cq';
+    wrap.setAttribute('data-q', item.q);
+    wrap.setAttribute('data-answer', item.a);
+
+    var head = document.createElement('div');
+    head.className = 'cq-head';
+
+    var num = document.createElement('span');
+    num.className = 'cq-num';
+    num.textContent = String(qi + 1);
+
+    var qb = document.createElement('button');
+    qb.type = 'button';
+    qb.className = 'cq-q';
+    qb.textContent = item.q;
+
+    var listen = document.createElement('button');
+    listen.type = 'button';
+    listen.className = 'cq-listen';
+    listen.textContent = '▸ 듣기';
+
+    function hearQuestion(){
+      say(item.q, qb, RATE);
+      vibrate(6);
+    }
+    qb.addEventListener('click', hearQuestion);
+    listen.addEventListener('click', hearQuestion);
+
+    head.appendChild(num);
+    head.appendChild(qb);
+    head.appendChild(listen);
+    wrap.appendChild(head);
+
+    var box = document.createElement('div');
+    box.className = 'cq-opts';
+    var fb = document.createElement('p');
+    fb.className = 'cq-fb';
+    fb.hidden = true;
+    var solved = false;
+
+    shuffle([item.a].concat(item.d)).forEach(function(text){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cq-opt';
+      b.textContent = text;
+      b.setAttribute('data-right', text === item.a ? '1' : '0');
+      b.addEventListener('click', function(){
+        if (solved) { say(text, b, RATE); return; }
+        if (text === item.a) {
+          solved = true;
+          b.classList.add('ok');
+          fb.hidden = false;
+          fb.className = 'cq-fb good';
+          fb.innerHTML = '⭕ 맞았어요! <span class="cq-ko">' + item.ko + '</span>';
+          checkinStats.solved++;
+          say(text, b, RATE);
+          vibrate(15);
+        } else {
+          b.classList.add('no');
+          fb.hidden = false;
+          fb.className = 'cq-fb bad';
+          fb.textContent = '❌ 다시 골라 볼까요?';
+          say(text, b, RATE);
+          vibrate([10, 40, 10]);
+          setTimeout(function(){ b.classList.remove('no'); }, 900);
+        }
+      });
+      box.appendChild(b);
+    });
+
+    wrap.appendChild(box);
+    wrap.appendChild(fb);
+    checkinStats.questions++;
+    return wrap;
+  }
+
 
   function plain(t){ return t.replace(/[{}]/g, ''); }
   function marked(t){ return t.replace(/\{([^}]+)\}/g, '<mark class="kw">$1</mark>'); }
@@ -1846,19 +1995,12 @@
       if (pg.check && pg.check.length) {
         var det = document.createElement('details');
         det.className = 'checkin';
+        det.open = true;
         var sum = document.createElement('summary');
-        sum.textContent = '💬 Check In 질문';
+        sum.innerHTML = '💬 Check In 퀴즈<span class="cq-cnt">' + pg.check.length + '문제</span>';
         det.appendChild(sum);
-        pg.check.forEach(function(q){
-          var qb = document.createElement('button');
-          qb.type = 'button';
-          qb.className = 'qbtn';
-          qb.textContent = q;
-          qb.addEventListener('click', function(){
-            say(plain(q.replace(/^\d\.\s*/, '')), qb, RATE);
-            vibrate(6);
-          });
-          det.appendChild(qb);
+        pg.check.forEach(function(item, qi){
+          det.appendChild(buildCheckQ(item, qi));
         });
         card.appendChild(det);
       }
@@ -1923,8 +2065,26 @@
         pages: document.querySelectorAll('#storyPages .pcard').length,
         sentences: document.querySelectorAll('#storyPages .sent').length,
         checks: document.querySelectorAll('#storyPages details.checkin').length,
+        checkinQuestions: checkinStats.questions,
+        checkinChoices: document.querySelectorAll('#storyPages .cq-opt').length,
+        checkinOpen: document.querySelectorAll('#storyPages details.checkin[open]').length,
         recorders: recorders.length
       };
+    },
+    checkin: function(){
+      return Array.prototype.map.call(document.querySelectorAll('#storyPages .cq'), function(el){
+        var fb = el.querySelector('.cq-fb');
+        var ko = fb.querySelector('.cq-ko');
+        return {
+          page: el.closest('.pcard').getAttribute('data-page'),
+          q: el.getAttribute('data-q'),
+          answer: el.getAttribute('data-answer'),
+          opts: Array.prototype.map.call(el.querySelectorAll('.cq-opt'), function(b){ return b.textContent; }),
+          fb: fb.hidden ? null : fb.textContent,
+          tone: /\bgood\b/.test(fb.className) ? 'good' : (/\bbad\b/.test(fb.className) ? 'bad' : ''),
+          ko: ko ? ko.textContent : null
+        };
+      });
     },
     state: function(){
       return {
