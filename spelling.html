@@ -544,7 +544,7 @@
   <section class="screen on" id="screen-home">
     <section class="hero" aria-label="Shawn’s Spelling Bee">
       <div class="hero-top">
-        <span class="hero-eyebrow">🐝 매일 한 걸음</span>
+        <span class="hero-eyebrow">🐝 Connect 1 · Unit 1</span>
         <span class="hero-star">⭐ <b id="heroStars">0</b></span>
       </div>
       <div class="hero-main">
@@ -624,7 +624,7 @@
       <span class="ws-ico">👩</span>
       <span class="ws-txt">
         <b>⚙️ 엄마 설정 · 연습 단어</b>
-        <i><b id="activeCount">6</b>개 선택 · <span id="activePreview">🚗 car · 🚌 bus · 🚕 taxi</span></i>
+        <i><b id="activeCount">6</b>개 선택 · <span id="activePreview">🎨 art · 🔢 math · 🎵 music</span></i>
       </span>
       <span class="ws-go">고르기 ›</span>
     </button>
@@ -671,7 +671,7 @@
     <div class="result-head">
       <div class="big" id="resEmoji">🎉</div>
       <h2 id="resTitle">잘했어요!</h2>
-      <p id="resSub">12개를 모두 만났어요</p>
+      <p id="resSub">단어를 모두 만났어요</p>
     </div>
     <div class="result-stars">⭐ 이번에 모은 별 <b id="resStars">0</b>개</div>
     <div class="result-list" id="resList"></div>
@@ -769,47 +769,52 @@
   'use strict';
 
   /* ================= data ================= */
+  /* Connect 1 · Unit 1 — School Words 6 + Key Verbs 6
+     (2026-11-23 탈것 12단어에서 교체, connect.html과 같은 낱말·그림·문장) */
   var WORDS = [
-    {en:'bus', ko:'버스', emoji:'🚌', focus:false,
-      tip:'b·u·s 세 글자! "바스"가 아니라 "버스" 🚌',
-      fill:{pattern:'b?s', pool:['u','a','o','e']}},
-    {en:'car', ko:'자동차', emoji:'🚗', focus:false,
-      tip:'c는 "크"가 아니라 "ㄲ" 소리! c·a·r = 카 🚗',
-      fill:{pattern:'?ar', pool:['c','k','s','t']}},
-    {en:'taxi', ko:'택시', emoji:'🚕', focus:false,
-      tip:'t·a·x·i! 여기서 x는 "크스" 소리 🚕',
-      fill:{pattern:'t??i', pool:['a','x','e','o']}},
-    {en:'train', ko:'기차', emoji:'🚂', focus:true,
-      tip:'tr + ai + n! ai는 짝꿍 모음 "에이" 🚂',
-      fill:{pattern:'tr??n', pool:['a','i','e','o','u']}},
-    {en:'airplane', ko:'비행기', emoji:'✈️', focus:true,
-      tip:'air(허공) + plane(비행기)! 끝에 마법의 e가 숨어 있어요 ✈️',
-      fill:{pattern:'airplan?', pool:['e','a','i','o']}},
-    {en:'subway', ko:'지하철', emoji:'🚇', focus:false,
-      tip:'sub(아래) + way(길)! 지하로 다니는 길 🚇',
-      fill:{pattern:'s?bw??', pool:['u','a','y','o','e']}},
-    {en:'on foot', ko:'걸어서', emoji:'🚶', focus:true,
-      tip:'"on"하고 "foot" 사이에 꼭 띄어쓰기! oo는 "우~" 소리 🚶',
-      fill:{pattern:'?n f??t', pool:['o','u','a','e']}},
-    {en:'bike', ko:'자전거', emoji:'🚲', focus:true,
-      tip:'b·i·k + 마법의 e! 끝의 e는 소리가 없어요 🚲',
-      fill:{pattern:'b?k?', pool:['i','e','a','o']}},
-    {en:'boat', ko:'배', emoji:'⛵', focus:true,
-      tip:'oa는 짝꿍 모음 "오우"! b·oa·t ⛵',
-      fill:{pattern:'b??t', pool:['o','a','e','i']}},
-    {en:'motorcycle', ko:'오토바이', emoji:'🏍️', focus:true,
-      tip:'motor(모터) + cycle(바퀴)! o를 두 번 써요 🏍️',
-      fill:{pattern:'m?t?rcycle', pool:['o','a','u','e']}},
-    {en:'helicopter', ko:'헬리콥터', emoji:'🚁', focus:true,
-      tip:'heli + cop + ter, 세 덩어리로 기억해요 🚁',
-      fill:{pattern:'helic?pt?r', pool:['o','e','a','u']}},
-    {en:'spaceship', ko:'우주선', emoji:'🚀', focus:true,
-      tip:'space(우주) + ship(배)! c는 "스", 끝 e는 조용 🚀',
-      fill:{pattern:'sp?c?sh?p', pool:['a','e','i','o','u']}}
+    /* ---- School Words ---- */
+    {en:'art', ko:'미술', emoji:'🎨', focus:false,
+      tip:'ar은 "아~" 소리! a·r·t = 아트 — It’s time for art. 🎨',
+      fill:{pattern:'?rt', pool:['a','e','o','u']}},
+    {en:'math', ko:'수학', emoji:'🔢', focus:false,
+      tip:'끝 th는 혀를 살짝 물고 "쓰"! m·a·th — It’s time for math. 🔢',
+      fill:{pattern:'ma?h', pool:['t','d','s','c']}},
+    {en:'music', ko:'음악', emoji:'🎵', focus:false,
+      tip:'mu는 "뮤", si는 "지"! m·u·s·i·c — It’s time for music. 🎵',
+      fill:{pattern:'m?sic', pool:['u','a','e','o']}},
+    {en:'read', ko:'읽다', emoji:'📖', focus:true, say:'reed',
+      tip:'ea는 짝꿍 모음 "이~"! r·ea·d — You read a book. 📖',
+      fill:{pattern:'r??d', pool:['e','a','i','o','u']}},
+    {en:'eat', ko:'먹다', emoji:'🍎', focus:false,
+      tip:'ea는 "이~" 소리! e·a·t — You eat lunch. 🍎',
+      fill:{pattern:'e?t', pool:['a','e','i','o']}},
+    {en:'draw', ko:'그리다', emoji:'🖍️', focus:true,
+      tip:'aw는 "어~" 한 덩어리! d·r·aw — You draw a picture. 🖍️',
+      fill:{pattern:'dr??', pool:['a','w','o','e']}},
+    /* ---- Key Verbs ---- */
+    {en:'write', ko:'쓰다', emoji:'✏️', focus:true,
+      tip:'끝의 마법의 e는 소리가 없어요! w·r·i·t·e — You write with a pencil. ✏️',
+      fill:{pattern:'writ?', pool:['e','a','i','o']}},
+    {en:'count', ko:'세다', emoji:'🔢', focus:true,
+      tip:'ou는 "아우"! c·ou·n·t — You count 1, 2, 3… 🔢',
+      fill:{pattern:'c??nt', pool:['o','u','a','e']}},
+    {en:'paint', ko:'칠하다', emoji:'🎨', focus:true,
+      tip:'ai는 짝꿍 모음 "에이"! p·ai·n·t — You paint with a paintbrush. 🎨',
+      fill:{pattern:'p??nt', pool:['a','i','e','o']}},
+    /* ---- 긴 School Words ---- */
+    {en:'reading', ko:'읽기 시간', emoji:'📖', focus:true,
+      tip:'ea는 "이~", 그다음 ding! r·ea·ding — It’s time for reading. 📖',
+      fill:{pattern:'r??ding', pool:['e','a','i','o','u']}},
+    {en:'writing', ko:'쓰기 시간', emoji:'✏️', focus:true,
+      tip:'w는 조용, wr은 "r" 소리! w·r·i·t·i·n·g — It’s time for writing. ✏️',
+      fill:{pattern:'?riting', pool:['w','m','v','k']}},
+    {en:'recess', ko:'쉬는 시간', emoji:'🛝', focus:true, say:'REE-sess',
+      tip:'끝에 s가 두 개! re·cess, 앞 강세 REE-sess — It’s time for recess. 🛝',
+      fill:{pattern:'rece??', pool:['s','c','z','t']}}
   ];
-  var EASY6 = ['car','bus','taxi','bike','boat','train'];
-  var MID9 = EASY6.concat(['on foot','subway','airplane']);
-  var FULL12 = MID9.concat(['spaceship','helicopter','motorcycle']);
+  var EASY6 = ['art','math','music','read','eat','draw'];
+  var MID9 = EASY6.concat(['write','count','paint']);
+  var FULL12 = MID9.concat(['reading','writing','recess']);
   var CUSTOM_KEY = 'spelling_custom_v1';
   var ACTIVE_KEY = 'spelling_active_v1';
   var customWords = [];
@@ -842,6 +847,45 @@
     {key:'blocks', num:'②', emoji:'🧩', label:'블록'}
   ];
   var STORE_KEY = 'spelling_transport_v1';
+
+  /* ================= schema migration =================
+     v1 = 탈것 12단어 (2026-11-21 ~ 11-22)
+     v2 = Connect 1 · Unit 1 (2026-11-23 교체)
+     이미 탈것 단어가 저장된 아이폰·아이패드도 새로고침 한 번이면 새 단어 세트로 바뀐다.
+     - 엄마가 직접 추가한 단어는 그대로 둔다
+     - 사라진 탈것 단어의 별점만 정리하고 연속·플레이 기록은 남긴다 */
+  var SCHEMA_KEY = 'spelling_schema_v';
+  var SCHEMA_V = 2;
+  var LEGACY_EN = ['bus','car','taxi','train','airplane','subway','on foot','bike','boat','motorcycle','helicopter','spaceship'];
+  function migrateSchema(){
+    var cur = 0;
+    try{ cur = parseInt(localStorage.getItem(SCHEMA_KEY), 10) || 0; }catch(e){ cur = 0; }
+    if(cur >= SCHEMA_V) return;
+    var kept = [];
+    var nLegacy = 0;
+    try{
+      var rawA = localStorage.getItem(ACTIVE_KEY);
+      if(rawA){
+        var oa = JSON.parse(rawA);
+        if(oa && Array.isArray(oa.words)){
+          oa.words.forEach(function(en){
+            if(LEGACY_EN.indexOf(en) >= 0){ nLegacy++; return; }
+            if(kept.indexOf(en) < 0) kept.push(en);
+          });
+        }
+      }
+    }catch(e){}
+    /* 예전에 12개를 다 켜 두었으면 새 12개로, 아니면 기본 6개로 */
+    var next = (nLegacy >= LEGACY_EN.length ? FULL12 : EASY6).slice();
+    kept.forEach(function(en){ if(next.indexOf(en) < 0) next.push(en); });
+    try{ localStorage.setItem(ACTIVE_KEY, JSON.stringify({v:SCHEMA_V, words:next})); }catch(e){}
+    var pruned = false;
+    LEGACY_EN.forEach(function(en){
+      if(prog.stars && prog.stars[en] != null){ delete prog.stars[en]; pruned = true; }
+    });
+    if(pruned) saveProg();
+    try{ localStorage.setItem(SCHEMA_KEY, String(SCHEMA_V)); }catch(e){}
+  }
 
   /* ================= storage ================= */
   var prog = {v:1, stars:{}, plays:0, best:0};
@@ -938,6 +982,7 @@
   }
 
   function loadSettings(){
+    migrateSchema();
     try{
       var rawC = localStorage.getItem(CUSTOM_KEY);
       if(rawC){
@@ -980,7 +1025,7 @@
     }catch(e){}
     try{
       localStorage.setItem(ACTIVE_KEY, JSON.stringify({
-        v:1, words: activeWords().map(function(w){ return w.en; })
+        v:SCHEMA_V, words: activeWords().map(function(w){ return w.en; })
       }));
     }catch(e){}
   }
@@ -1196,6 +1241,8 @@
     }catch(e){}
   }
 
+  function sayAs(w){ return (w && (w.say || w.en)) || ''; }
+
   /* ================= helpers ================= */
   function $(id){ return document.getElementById(id); }
   function shuffle(arr){
@@ -1324,7 +1371,7 @@
     void pa.offsetWidth;
     pa.style.animation = '';
     renderStep();
-    setTimeout(function(){ speak(w.en); }, 230);
+    setTimeout(function(){ speak(sayAs(w)); }, 230);
   }
 
   function renderStepper(){
@@ -1686,7 +1733,7 @@
     G.wordWrong += G.wrong;
     if(G.hint) G.wordHint = true;
     sfx('good');
-    speak(w.en, 0.78);
+    speak(sayAs(w), 0.78);
     var doneStep = G.step;
     showTrans({emoji:'🎈✨', title:'빈칸 완성!', sub:'잘했어요! 이제 블록을 맞춰볼까?', next:'② 블록으로 →'});
     setTimeout(function(){
@@ -1699,7 +1746,7 @@
       $('pTip').hidden = true;
       $('pTip').textContent = w.tip;
       renderStep();
-      setTimeout(function(){ if(rid === G.runId) speak(w.en); }, 280);
+      setTimeout(function(){ if(rid === G.runId) speak(sayAs(w)); }, 280);
     }, 1700);
   }
 
@@ -1731,7 +1778,7 @@
     updateScore();
     updateCombo();
     sfx(perfect ? 'combo' : 'good');
-    speak(w.en, 0.78);
+    speak(sayAs(w), 0.78);
 
     $('flashStars').textContent = stars(earned);
     $('flashWord').textContent = w.en;
@@ -1938,7 +1985,7 @@
     $('mKo').textContent = w.ko || '—';
     $('mTip').textContent = w.tip;
     $('modal').classList.add('on');
-    speak(w.en);
+    speak(sayAs(w));
   }
 
   /* ================= events ================= */
@@ -1975,7 +2022,7 @@
       });
     });
     $('btnSpeak').addEventListener('click', function(){
-      if(G.queue[G.qi]) speak(G.queue[G.qi].en);
+      if(G.queue[G.qi]) speak(sayAs(G.queue[G.qi]));
       sfx('tap');
     });
     $('btnHint').addEventListener('click', function(){
@@ -2011,7 +2058,10 @@
       showScreen('home');
     });
     $('mSpeak').addEventListener('click', function(){
-      if($('mWord').textContent) speak($('mWord').textContent);
+      var shown = $('mWord').textContent;
+      if(!shown) return;
+      var mw = wordByEn(shown);
+      speak(mw ? sayAs(mw) : shown);
     });
     $('mClose').addEventListener('click', function(){
       $('modal').classList.remove('on');
