@@ -456,6 +456,12 @@
     box-shadow:0 2px 6px rgba(245,158,11,.28);
   }
   .pnote{font-size:11px;font-weight:800;color:#a08a6a}
+  /* 같은 카드 안에서 교과서 다음 쪽으로 넘어가는 곳 */
+  .pdiv{display:flex;align-items:center;gap:8px;margin:9px 3px 5px}
+  .pdiv::before,.pdiv::after{content:"";flex:1 1 0;height:1px}
+  .pdiv::before{background:linear-gradient(90deg,rgba(245,158,11,0),rgba(245,158,11,.42))}
+  .pdiv::after{background:linear-gradient(90deg,rgba(245,158,11,.42),rgba(245,158,11,0))}
+  .pdiv-pg{flex:0 0 auto;font-size:9.5px;font-weight:900;letter-spacing:.02em;color:#bf9440}
   .sent{
     display:block;width:100%;text-align:left;
     font-family:"Avenir Next","Trebuchet MS",Verdana,system-ui,sans-serif;
@@ -2111,41 +2117,53 @@
   /* =====================================================================
      7) 1과 스토리
      ===================================================================== */
+  /* 교과서 양면(펼침면) 한 장 = 카드 한 장.
+     한 카드 안의 두 쪽은 spreads 로 나누고, 사이에 얇은 구분선을 넣는다.
+     Check In 질문은 그 질문이 가리키는 카드(펼침면)에 묶는다. */
   var PAGES = [
-    { p:9,  note:'학교 가는 길', s:['It’s time for school.', 'Lily walks to school with her mom.'],
+    { p:'9', key:'p9', spreads:[
+        { note:'학교 가는 길', s:['It’s time for school.', 'Lily walks to school with her mom.'] }
+      ],
       check:[
         { q:'What time is it?', a:'It’s time for school.',
           d:['It’s time for lunch.', 'It’s time for bed.'], ko:'학교 갈 시간이에요!' },
         { q:'How does Lily go to school?', a:'She walks with her mom.',
           d:['She rides a bus.', 'She rides a bike.'], ko:'엄마랑 걸어서 학교에 가요.' }
       ] },
-    { p:10, note:'교실에 도착',
-      s:['Lily goes to class.', 'She lines up with her friends.', 'The teacher says, “Hello.”'] },
-    { p:11, note:'읽기 시간', s:['It’s time for reading.', 'The teacher {reads} a story.', 'Lily and her classmates sit and listen.'],
+    { p:'10–11', key:'p10-11', spreads:[
+        { note:'교실에 도착', s:['Lily goes to class.', 'She lines up with her friends.', 'The teacher says, “Hello.”'] },
+        { note:'읽기 시간', s:['It’s time for reading.', 'The teacher {reads} a story.', 'Lily and her classmates sit and listen.'] }
+      ],
       check:[
         { q:'Where is Lily?', a:'In the classroom.',
           d:['In the cafeteria.', 'At home.'], ko:'교실에 있어요.' },
         { q:'What time is it?', a:'It’s time for reading.',
           d:['It’s time for art.', 'It’s time for math.'], ko:'읽기 시간이에요!' }
       ] },
-    { p:12, note:'쓰기 시간', s:['It’s time for writing.', 'Lily {writes} at her table.', 'She {draws} a picture, too.'] },
-    { p:13, note:'쉬는 시간', s:['It’s time for recess.', 'Lily plays with her friends.', 'They run and jump.'],
+    { p:'12–13', key:'p12-13', spreads:[
+        { note:'쓰기 시간', s:['It’s time for writing.', 'Lily {writes} at her table.', 'She {draws} a picture, too.'] },
+        { note:'쉬는 시간', s:['It’s time for recess.', 'Lily plays with her friends.', 'They run and jump.'] }
+      ],
       check:[
         { q:'Where does Lily write?', a:'At her table.',
           d:['In the cafeteria.', 'On the playground.'], ko:'자기 책상(테이블)에서 써요.' },
         { q:'When does Lily play?', a:'At recess.',
           d:['At math time.', 'At lunch time.'], ko:'쉬는 시간(recess)에 놀아요!' }
       ] },
-    { p:14, note:'점심 시간', s:['It’s time for lunch.', 'Lily {eats} in the cafeteria.', 'The students eat and talk.'] },
-    { p:15, note:'수학 시간', s:['It’s time for math.', 'Lily {counts} shapes.', 'She has four circles.'],
+    { p:'14–15', key:'p14-15', spreads:[
+        { note:'점심 시간', s:['It’s time for lunch.', 'Lily {eats} in the cafeteria.', 'The students eat and talk.'] },
+        { note:'수학 시간', s:['It’s time for math.', 'Lily {counts} shapes.', 'She has four circles.'] }
+      ],
       check:[
         { q:'Where does Lily eat?', a:'In the cafeteria.',
           d:['At her table.', 'In the art room.'], ko:'학교 식당에서 먹어요.' },
         { q:'What does Lily count?', a:'Shapes.',
           d:['Pencils.', 'Colors.'], ko:'모양(동그라미 4개)을 세어요.' }
       ] },
-    { p:16, note:'미술 시간', s:['It’s time for art.', 'Lily {paints} a picture.', 'She uses lots of colors.'] },
-    { p:17, note:'집에 가는 길', s:['It’s time to go home.', 'Lily tells about her day.', 'She likes school.'],
+    { p:'16–17', key:'p16-17', spreads:[
+        { note:'미술 시간', s:['It’s time for art.', 'Lily {paints} a picture.', 'She uses lots of colors.'] },
+        { note:'집에 가는 길', s:['It’s time to go home.', 'Lily tells about her day.', 'She likes school.'] }
+      ],
       check:[
         { q:'What does Lily paint?', a:'A picture.',
           d:['A book.', 'A circle.'], ko:'그림을 색칠해요.' },
@@ -2247,6 +2265,8 @@
       card.className = 'card pcard';
       card.setAttribute('data-page', String(pg.p));
 
+      var pnums = String(pg.p).split('–');
+
       var head = document.createElement('div');
       head.className = 'pcard-head';
       var num = document.createElement('span');
@@ -2254,24 +2274,37 @@
       num.textContent = 'p.' + pg.p;
       var nt = document.createElement('span');
       nt.className = 'pnote';
-      nt.textContent = pg.note;
+      nt.textContent = pg.spreads.map(function(sp){ return sp.note; }).join(' · ');
       head.appendChild(num);
       head.appendChild(nt);
       card.appendChild(head);
 
       var items = [];
-      pg.s.forEach(function(t){
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'sent';
-        b.innerHTML = marked(t);
-        b.setAttribute('data-text', plain(t));
-        b.addEventListener('click', function(){
-          say(plain(t), b, RATE);
-          vibrate(8);
+      pg.spreads.forEach(function(sp, si){
+        /* 같은 카드 안에서 다음 쪽으로 넘어가는 곳 — 얇은 구분선 + 쪽수 */
+        if (si > 0) {
+          var div = document.createElement('div');
+          div.className = 'pdiv';
+          div.setAttribute('aria-hidden', 'true');
+          var dp = document.createElement('span');
+          dp.className = 'pdiv-pg';
+          dp.textContent = 'p.' + (pnums[si] || pnums[pnums.length - 1]);
+          div.appendChild(dp);
+          card.appendChild(div);
+        }
+        sp.s.forEach(function(t){
+          var b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'sent';
+          b.innerHTML = marked(t);
+          b.setAttribute('data-text', plain(t));
+          b.addEventListener('click', function(){
+            say(plain(t), b, RATE);
+            vibrate(8);
+          });
+          card.appendChild(b);
+          items.push({ text: plain(t), el: b });
         });
-        card.appendChild(b);
-        items.push({ text: plain(t), el: b });
       });
 
       var readRow = document.createElement('div');
@@ -2304,7 +2337,7 @@
       var recHost = document.createElement('div');
       recHost.className = 'rec-host';
       card.appendChild(recHost);
-      makeRecorder(recHost, { base: 'shawn-connect1-p' + pg.p, compact: true });
+      makeRecorder(recHost, { base: 'shawn-connect1-' + pg.key, compact: true });
 
       host.appendChild(card);
     });
@@ -2366,6 +2399,8 @@
         keys: document.querySelectorAll('#listKey .kcard').length,
         hfw: document.querySelectorAll('#listHFW .hfw-card').length,
         pages: document.querySelectorAll('#storyPages .pcard').length,
+        pageIds: Array.prototype.map.call(document.querySelectorAll('#storyPages .pcard'), function(c){ return c.getAttribute('data-page'); }),
+        dividers: document.querySelectorAll('#storyPages .pdiv').length,
         sentences: document.querySelectorAll('#storyPages .sent').length,
         checks: document.querySelectorAll('#storyPages details.checkin').length,
         checkinQuestions: checkinStats.questions,
