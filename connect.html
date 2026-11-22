@@ -159,11 +159,13 @@
     box-shadow:0 6px 18px rgba(37,99,235,.10);
   }
   .dock-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 3px 8px}
-  .dock-title{font-size:12.5px;font-weight:900;color:#3f5d84}
+  .dock-title{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:900;color:#3f5d84;line-height:1.35}
+  .dock-title.story{font-size:13.5px;color:#b45309}
   .dock-mode{
-    font-size:11px;font-weight:900;color:#2563eb;background:#eff6ff;
+    flex:0 0 auto;font-size:11px;font-weight:900;color:#2563eb;background:#eff6ff;
     border:1px solid #dbeafe;border-radius:999px;padding:3px 9px;white-space:nowrap;
   }
+  .dock-mode.story{color:#b45309;background:#fff7e8;border-color:#fde68a}
   .sc-wrap{
     border-radius:15px;overflow:hidden;background:#f1f5f9;
     border:1px solid #e2e8f0;min-height:166px;
@@ -649,7 +651,7 @@
   <!-- ============ shared SoundCloud player ============ -->
   <section class="dock" id="dock" aria-label="Connect 1 음원 플레이어">
     <div class="dock-head">
-      <span class="dock-title">🎧 Connect 1 음원</span>
+      <span class="dock-title" id="dockTitle">🎧 Connect 1 음원</span>
       <span class="dock-mode" id="dockMode">노래 0:00~0:28</span>
     </div>
     <div class="sc-wrap" id="scWrap">
@@ -681,10 +683,30 @@
         화면이 계속 비어 있으면 <a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">SoundCloud에서 직접 열기</a>.
       </p>
 
-      <p class="dock-link"><a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a></p>
     </div>
 
-    <p class="dock-note">이 음원 31분 중 <b>0:00~0:28</b>이 오늘 노래, <b>1:35~3:13</b>이 1과 스토리예요.</p>
+    <div id="dockStory" hidden>
+      <div class="pb" id="stPb" role="slider" tabindex="0" aria-label="스토리 위치 (1:35~3:13)" aria-valuemin="0" aria-valuemax="98" aria-valuenow="0">
+        <div class="pb-fill story" id="stPbFill"></div>
+      </div>
+      <div class="sc-meta">
+        <span class="time story" id="stTime">0:00 / 1:38</span>
+        <span>스토리 1:35 ~ 3:13</span>
+      </div>
+
+      <p class="sc-state" id="stState">▶️ 위 플레이어의 ▶를 누른 뒤 1:35 위치로 이동해요</p>
+
+      <div class="row" style="margin-top:11px">
+        <button class="btn btn-ghost" id="storyPlayBtn" type="button">🎯 스토리 시작 위치(1:35)로 이동</button>
+      </div>
+
+      <p class="fallback" id="stFallback" hidden>
+        스토리 위치로 옮기지 못했어요. 위 플레이어에서 <b>▶</b>를 한 번 누른 뒤 다시 눌러 주세요.
+      </p>
+    </div>
+
+    <p class="dock-link"><a href="https://soundcloud.com/jayoneedu/connect-1-sb-4gaeyunis-unit-1unit-4-1" target="_blank" rel="noopener">🎧 SoundCloud에서 열기</a></p>
+    <p class="dock-note" id="dockNote">이 음원 31분 중 <b>0:00~0:28</b>이 오늘 노래, <b>1:35~3:13</b>이 1과 스토리예요.</p>
   </section>
 
   <!-- ================= TAB 1 · 노래 ================= -->
@@ -762,30 +784,6 @@
 
   <!-- ================= TAB 3 · 스토리 ================= -->
   <div class="panel" id="panel-story" role="tabpanel" aria-labelledby="tab-story">
-
-    <section class="card" id="card-story-audio">
-      <div class="card-head"><span class="num">📖</span><h3>1과 스토리 · <span style="font-family:&quot;Avenir Next&quot;,Verdana,sans-serif">It’s Time for School</span></h3></div>
-      <p class="hint">by <b>John Hicks</b> · 스토리는 음원 <b>1:35~3:13</b>(1분 38초)에 담겨 있어요. <b>위 플레이어의 ▶</b>를 누르면 이 부분만 들려주고, 3:13에서 자동으로 멈춰요.</p>
-
-      <div class="pb" id="stPb" role="slider" tabindex="0" aria-label="스토리 위치 (1:35~3:13)" aria-valuemin="0" aria-valuemax="98" aria-valuenow="0">
-        <div class="pb-fill story" id="stPbFill"></div>
-      </div>
-      <div class="sc-meta">
-        <span class="time story" id="stTime">0:00 / 1:38</span>
-        <span>스토리 1:35 ~ 3:13</span>
-      </div>
-
-      <p class="sc-state" id="stState">▶️ 위 플레이어의 ▶를 누른 뒤 1:35 위치로 이동해요</p>
-
-      <div class="row" style="margin-top:11px">
-        <button class="btn btn-ghost" id="storyPlayBtn" type="button">🎯 스토리 시작 위치(1:35)로 이동</button>
-      </div>
-
-      <p class="fallback" id="stFallback" hidden>
-        스토리 위치로 옮기지 못했어요. 위 플레이어에서 <b>▶</b>를 한 번 누른 뒤 다시 눌러 주세요.
-      </p>
-      <p class="hint" style="margin:9px 2px 0;text-align:center">위 플레이어의 <b>▶</b>를 누른 뒤 이 버튼을 누르면 <b>1:35</b>부터 들려줘요.</p>
-    </section>
 
     <div id="storyPages"></div>
 
@@ -901,11 +899,27 @@
   function paint(){ if (mode === 'story') paintStory(storyPos); else paintSong(songPos); }
 
   function syncModeUI(){
+    var story = (mode === 'story');
     var dm = $('dockMode');
-    if (dm) dm.textContent = mode === 'story' ? '스토리 1:35~3:13' : '노래 0:00~0:28';
-    /* 노래 조작줄은 노래 탭에서만 보인다 (스토리는 스토리 카드에 자기 진행바가 있음) */
-    var ds = $('dockSong');
-    if (ds) ds.hidden = (mode === 'story');
+    if (dm) {
+      dm.textContent = story ? '스토리 1:35~3:13' : '노래 0:00~0:28';
+      dm.className = 'dock-mode' + (story ? ' story' : '');
+    }
+    /* 카드는 하나만 두고, 탭에 따라 제목·안내·조작줄만 바꿔 끼운다 */
+    var dt = $('dockTitle');
+    if (dt) {
+      dt.textContent = story ? '📖 1과 스토리 · It’s Time for School' : '🎧 Connect 1 음원';
+      dt.className = 'dock-title' + (story ? ' story' : '');
+    }
+    var dh = $('dockHint');
+    if (dh) {
+      dh.innerHTML = story
+        ? 'by <b>John Hicks</b> · 위 플레이어의 <b>▶</b>를 누르면 스토리(<b>1:35~3:13</b>)만 들려주고 3:13에서 자동으로 멈춰요.'
+        : '위 플레이어의 <b>▶</b>를 누르면 <b>0:28</b>까지 재생되고 자동으로 멈춰요.';
+    }
+    var ds = $('dockSong'); if (ds) ds.hidden = story;
+    var dy = $('dockStory'); if (dy) dy.hidden = !story;
+    var dn = $('dockNote'); if (dn) dn.hidden = story;
   }
 
   /* 지금 부르는 줄만 밝힌다 (노래방) */
@@ -1223,8 +1237,10 @@
   }
 
   var RATE = 0.85;   /* 단어·문장: 또렷하게 */
+  var READ_GAP = 1000;   /* '이 페이지 듣기' 문장과 문장 사이 쉬는 시간 (1초) */
 
-  function speak(text, rate){
+  function speak(text, rate, opts){
+    opts = opts || {};
     return new Promise(function(resolve){
       if (!speechOK) { resolve(false); return; }
       var u = new SpeechSynthesisUtterance(text);
@@ -1237,7 +1253,9 @@
       var guard = setTimeout(function(){ fin(false); }, Math.max(4000, text.length * 130 + 3000));
       u.onend = function(){ fin(true); };
       u.onerror = function(){ fin(false); };
-      try { window.speechSynthesis.cancel(); } catch (e) {}
+      /* 이어 읽기(noCancel)에서는 앞 문장을 끊지 않는다 —
+         문장마다 cancel()을 부르면 사파리에서 다음 문장 시작이 늦어져 쉬는 시간이 길어진다 */
+      if (!opts.noCancel) { try { window.speechSynthesis.cancel(); } catch (e) {} }
       window.speechSynthesis.speak(u);
     });
   }
@@ -1279,6 +1297,8 @@
     if (isPlaying) softPause();
     var my = ++speakToken;
     speaking = true;
+    /* 앞서 하던 읽기는 여기서 한 번만 끊고, 문장 사이에서는 끊지 않는다 */
+    try { window.speechSynthesis.cancel(); } catch (e) {}
     var i = 0;
     (function step(){
       if (my !== speakToken) return;
@@ -1294,9 +1314,9 @@
         it.el.classList.add('speaking');
         try { it.el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
       }
-      speak(it.text, opts.rate || RATE).then(function(){
+      speak(it.text, opts.rate || RATE, { noCancel: true }).then(function(){
         if (my !== speakToken) return;
-        setTimeout(step, opts.gap || 260);
+        setTimeout(step, opts.gap == null ? 260 : opts.gap);
       });
     })();
   }
@@ -1713,10 +1733,6 @@
     dock.hidden = (name === 'words');
     if (name === 'words') {
       $('dockHint').textContent = '단어는 소리 내어 읽어 줘요. 노래·스토리는 위 탭에서 들어요.';
-    } else if (name === 'story') {
-      $('dockHint').innerHTML = '위 플레이어의 <b>▶</b>를 누르면 <b>스토리(1:35~3:13)</b>만 들려주고 자동으로 멈춰요.';
-    } else {
-      $('dockHint').innerHTML = '위 플레이어의 <b>▶</b>를 누르면 <b>0:28</b>까지 재생되고 자동으로 멈춰요.';
     }
 
     try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { window.scrollTo(0, 0); }
@@ -2315,7 +2331,7 @@
       readBtn.className = 'btn btn-ghost btn-mini';
       readBtn.textContent = '🔊 이 페이지 듣기';
       readBtn.addEventListener('click', function(){
-        sayList(items, { rate: RATE, gap: 320 });
+        sayList(items, { rate: RATE, gap: READ_GAP });
         vibrate(8);
       });
       readRow.appendChild(readBtn);
@@ -2446,6 +2462,13 @@
         storyFill: $('stPbFill').style.width,
         dockHidden: $('dock').hidden,
         dockSongHidden: $('dockSong').hidden,
+        dockStoryHidden: $('dockStory').hidden,
+        dockTitleText: $('dockTitle').textContent,
+        dockModeText: $('dockMode').textContent,
+        dockNoteHidden: $('dockNote').hidden,
+        storyCardCount: document.querySelectorAll('#panel-story #card-story-audio').length,
+        dockIframes: document.querySelectorAll('#dock iframe').length,
+        readGap: READ_GAP,
         unlocked: unlocked,
         dockHintText: $('dockHint').textContent,
         countdownCard: document.querySelectorAll('#card-listen').length,
