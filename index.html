@@ -1278,7 +1278,7 @@
       ensureBreakfastMinutes(s.modes.weekend);   /* 주말 아침 25분 → 30분 */
     }
     /* v9: 두 모드 모두 '일어나서 약 먹기'·'식후 약 먹기'·'이 닦기'를 3분으로 줄인다.
-       직접 고친 시간·직접 넣은 할 일·목표 시간·오늘 체크는 건드리지 않는다. */
+       다른 할 일의 시간·직접 넣은 할 일·목표 시간·오늘 체크·기록은 건드리지 않는다. */
     if(fromV < 9){
       migrateDurationsV9(s.modes.weekday);
       migrateDurationsV9(s.modes.weekend);
