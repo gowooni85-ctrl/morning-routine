@@ -646,31 +646,32 @@
      v6부터 목표 시간을 요일 묶음(월~목 / 금 / 토 / 일)별로 저장하고,
      v7부터 주말 목록의 '리딩게이트 하기' 다음에 '눈높이 국어'(10분)가 들어간다.
      v8부터 평일 아침을 '아침밥 준비 · 물병 챙기기 · 가방 싸기'(15분) + '아침밥 먹기'(15분)로 나누고,
-     '🎲 놀기'가 목표 3분 전에 끝나고 그 뒤에 '아이패드 · 이어폰 · 숙제가방 싸기'(3분)가 붙는다. */
-  const SCHEMA_V = 8;
+     '🎲 놀기'가 목표 3분 전에 끝나고 그 뒤에 '아이패드 · 이어폰 · 숙제가방 싸기'(3분)가 붙는다.
+     v9부터 '일어나서 약 먹기'·'식후 약 먹기'·'이 닦기'의 기본 시간이 5분 → 3분이다. */
+  const SCHEMA_V = 9;   /* v9: 약 두 번·이 닦기를 3분으로 */
   /* '놀기': 시간을 정하지 않고 목표 시간까지 남는 시간이 저절로 계산된다(마지막 3분은 싸기 시간으로 남긴다). */
   const PLAY_TASK = { emoji:'🎲', name:'놀기', autoRemaining:true };
   /* 목표 3분 전에 놀이를 끝내고, 그 3분 동안 아이패드·이어폰·숙제가방을 챙긴다. */
   const PACK_TAIL_MINUTES = 3;
   const PACK_TAIL_SECONDS = PACK_TAIL_MINUTES * 60;
   const FINAL_PACK_TASK = { emoji:'🎒', name:'아이패드 · 이어폰 · 숙제가방 싸기', minutes:PACK_TAIL_MINUTES };
-  /* 평일 모드 기본 목록의 고정 할 일 (8단계 · 73분 · 맨 끝에 '놀기' + '숙제가방 싸기') */
+  /* 평일 모드 기본 목록의 고정 할 일 (7단계 · 64분 · 맨 끝에 '놀기' + '숙제가방 싸기') */
   const BASE_WEEKDAY_TASKS = [
-    { emoji:'💊', name:'일어나서 약 먹기', minutes:5 },
+    { emoji:'💊', name:'일어나서 약 먹기', minutes:3 },
     { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:15 },
     { emoji:'🍱', name:'아침밥 준비 · 물병 챙기기 · 가방 싸기', minutes:15 },
     { emoji:'🍚', name:'아침밥 먹기', minutes:15 },
-    { emoji:'💊', name:'식후 약 먹기', minutes:5 },
-    { emoji:'🪥', name:'이 닦기', minutes:5 },
+    { emoji:'💊', name:'식후 약 먹기', minutes:3 },
+    { emoji:'🪥', name:'이 닦기', minutes:3 },
     { emoji:'📚', name:'리딩게이트 하기', minutes:10 }
   ];
-  /* 주말 모드 기본 목록의 고정 할 일 (7단계 · 95분 · 가방 싸기 없음 · 리딩게이트 25분 · 눈높이 국어 10분) */
+  /* 주말 모드 기본 목록의 고정 할 일 (7단계 · 89분 · 가방 싸기 없음 · 리딩게이트 25분 · 눈높이 국어 10분) */
   const BASE_WEEKEND_TASKS = [
-    { emoji:'💊', name:'일어나서 약 먹기', minutes:5 },
+    { emoji:'💊', name:'일어나서 약 먹기', minutes:3 },
     { emoji:'🚿', name:'샤워 · 옷+양말 · 로션 · 머리 말리기', minutes:15 },
     { emoji:'🍽️', name:'아침상 차리기 · 아침 식사', minutes:30 },
-    { emoji:'💊', name:'식후 약 먹기', minutes:5 },
-    { emoji:'🪥', name:'이 닦기', minutes:5 },
+    { emoji:'💊', name:'식후 약 먹기', minutes:3 },
+    { emoji:'🪥', name:'이 닦기', minutes:3 },
     { emoji:'📚', name:'리딩게이트 하기', minutes:25 },
     { emoji:'✏️', name:'눈높이 국어', minutes:10 }
   ];
@@ -1103,6 +1104,38 @@
     });
   }
 
+  /* v9: '일어나서 약 먹기'·'식후 약 먹기'·'이 닦기'를 3분으로 맞춘다(예전 기본 5분).
+     고운 님이 요청한 세 할 일의 시간만 바꾸고, 직접 넣은 할 일·다른 할 일의 시간·
+     목표 시간·오늘 체크·기록은 그대로 남긴다.
+     타이머는 아직 쓰지 않았으면 3분으로 채우고, 돌고 있거나 줄어든 타이머는 3분을 넘지 않게만 맞춘다(늘리지 않는다). */
+  const V9_SHORT_TASKS = ['일어나서약먹기', '식후약먹기', '이닦기'];
+  const V9_NEW_MINUTES = 3;
+  function migrateDurationsV9(block){
+    if(!block || !Array.isArray(block.tasks)) return;
+    if(!block.timers || typeof block.timers !== 'object') block.timers = {};
+    block.tasks.forEach(function(t){
+      if(!t || t.autoRemaining) return;
+      if(V9_SHORT_TASKS.indexOf(normName(t.name)) < 0) return;
+      if(t.minutes === V9_NEW_MINUTES) return;   /* 이미 3분이면 그대로 */
+      var oldFull = t.minutes * 60;
+      var newFull = V9_NEW_MINUTES * 60;
+      t.minutes = V9_NEW_MINUTES;
+      var tm = block.timers[t.id];
+      if(!tm || typeof tm !== 'object'){ block.timers[t.id] = freshTimer(t); return; }
+      if(tm.endAt){
+        /* 돌고 있는 타이머: 남은 시간이 3분을 넘으면 3분으로 줄인다(늘리지 않는다). */
+        var left = Math.max(0, (tm.endAt - Date.now()) / 1000);
+        if(left > newFull){ tm.left = newFull; tm.endAt = Date.now() + newFull * 1000; }
+        else tm.left = left;
+        tm.span = newFull;
+      } else {
+        if(tm.left >= oldFull) tm.left = newFull;   /* 아직 손대지 않은 타이머 */
+        else if(tm.left > newFull) tm.left = newFull;
+        tm.span = newFull;
+      }
+    });
+  }
+
   /* v8(평일): 아침을 두 단계로 나누고, 맨 끝에 '숙제가방 싸기'를 붙인다.
      · '아침상 차리기 · 아침 식사' → '아침밥 준비 · 물병 챙기기 · 가방 싸기'(15분) + '아침밥 먹기'(15분)
      · 따로 있던 '가방 싸기'는 준비 단계에 합쳤으니 뺀다
@@ -1243,6 +1276,12 @@
       ensureBreakfastMinutes(s.modes.weekday);
       migrateWeekdayV8(s.modes.weekday);
       ensureBreakfastMinutes(s.modes.weekend);   /* 주말 아침 25분 → 30분 */
+    }
+    /* v9: 두 모드 모두 '일어나서 약 먹기'·'식후 약 먹기'·'이 닦기'를 3분으로 줄인다.
+       직접 고친 시간·직접 넣은 할 일·목표 시간·오늘 체크는 건드리지 않는다. */
+    if(fromV < 9){
+      migrateDurationsV9(s.modes.weekday);
+      migrateDurationsV9(s.modes.weekend);
     }
     /* v6: 목표 시간은 요일 묶음별로 따로 보관한다. */
     s.targets = normalizeTargets(s.targets, legacy);
