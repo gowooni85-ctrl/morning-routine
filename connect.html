@@ -148,6 +148,7 @@
   .btn-rec:active{box-shadow:0 2px 0 #be123c,0 4px 10px rgba(225,29,72,.22)}
   .btn-stop{color:#fff;background:linear-gradient(180deg,#64748b,#475569);box-shadow:0 4px 0 #334155}
   .btn-mini{min-height:46px;font-size:13.5px;border-radius:13px}
+  .btn.read-page.reading{color:#b91c1c;background:#fef2f2;border-color:#fecaca}
   .btn[disabled]{opacity:.55;box-shadow:none}
   .row{display:flex;gap:9px;margin-top:9px}
   .row > *{flex:1 1 0}
@@ -1239,24 +1240,164 @@
   var RATE = 0.85;   /* 단어·문장: 또렷하게 */
   var READ_GAP = 1000;   /* '이 페이지 듣기' 문장과 문장 사이 쉬는 시간 (1초) */
 
+  /* ---------------------------------------------------------------------
+     iOS 사파리에서 '이어 읽기'가 첫 문장에서 멈추던 문제 대응 부품
+      1) utterance 는 전역 배열에 붙잡아 둔다 — WebKit 이 GC 로 버리면 onend 가 오지 않는다
+      2) 문장 사이에서는 cancel() 을 부르지 않는다 — cancel() 뒤의 speak() 는 종종 먹통이 된다
+      3) 읽는 동안 조용한 오디오 세션(AudioContext)을 켜 둔다 — setTimeout(1000) 뒤의
+         speak() 가 '제스처 없음'으로 버려지지 않게 세션을 살려 두는 역할
+      4) speak() 가 시작되지 않으면(1.2초 무반응) 한 번만 다시 시도한다
+      5) onend 가 오지 않아도 '말하는 중' 표시가 꺼지는 것을 보고 끝을 스스로 판단한다
+     --------------------------------------------------------------------- */
+  var liveUtts = [];
+  window.__mrLiveUtts = liveUtts;          /* 참조 유지(GC 방지) */
+  function keepUtt(u){
+    liveUtts.push(u);
+    while (liveUtts.length > 16) liveUtts.shift();
+    return u;
+  }
+
+  var keepCtx = null, keepOsc = null;
+  function audioKeepAlive(){
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!keepCtx) keepCtx = new AC();
+      if (keepCtx.state === 'suspended' && keepCtx.resume) keepCtx.resume();
+      if (!keepOsc) {
+        keepOsc = keepCtx.createOscillator();
+        var g = keepCtx.createGain();
+        g.gain.value = 0.00001;            /* 들리지 않을 만큼만 — 세션만 살려 둔다 */
+        keepOsc.frequency.value = 180;
+        keepOsc.connect(g);
+        g.connect(keepCtx.destination);
+        keepOsc.start();
+      }
+    } catch (e) {}
+  }
+  function audioKeepCool(){
+    try {
+      if (keepOsc) {
+        try { keepOsc.stop(); } catch (e) {}
+        try { keepOsc.disconnect(); } catch (e) {}
+        keepOsc = null;
+      }
+      if (keepCtx && keepCtx.state === 'running' && keepCtx.suspend) keepCtx.suspend();
+    } catch (e) {}
+  }
+  function engineWake(){
+    try {
+      var ss = window.speechSynthesis;
+      if (ss && ss.paused) ss.resume();
+    } catch (e) {}
+  }
+
+  /* '이 페이지 듣기' 버튼 상태 */
+  var READ_OFF = '🔊 이 페이지 듣기', READ_ON = '⏹ 멈춤';
+  var readBtnActive = null;
+  function setReadBtn(btn){
+    if (readBtnActive) {
+      readBtnActive.textContent = READ_OFF;
+      readBtnActive.classList.remove('reading');
+      readBtnActive = null;
+    }
+    if (btn) {
+      readBtnActive = btn;
+      btn.textContent = READ_ON;
+      btn.classList.add('reading');
+    }
+  }
+
   function speak(text, rate, opts){
     opts = opts || {};
     return new Promise(function(resolve){
       if (!speechOK) { resolve(false); return; }
-      var u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-US';
-      u.rate = rate || RATE;
-      u.pitch = 1.05;
-      if (enVoice) u.voice = enVoice;
-      var done = false;
-      function fin(ok){ if (done) return; done = true; clearTimeout(guard); resolve(ok); }
-      var guard = setTimeout(function(){ fin(false); }, Math.max(4000, text.length * 130 + 3000));
-      u.onend = function(){ fin(true); };
-      u.onerror = function(){ fin(false); };
-      /* 이어 읽기(noCancel)에서는 앞 문장을 끊지 않는다 —
-         문장마다 cancel()을 부르면 사파리에서 다음 문장 시작이 늦어져 쉬는 시간이 길어진다 */
-      if (!opts.noCancel) { try { window.speechSynthesis.cancel(); } catch (e) {} }
-      window.speechSynthesis.speak(u);
+      var ss = window.speechSynthesis;
+      var done = false, tries = 0;
+      var startGuard = 0, endGuard = 0, poll = 0, idle = 0, sawSpeaking = false;
+      var cur = null, beganAt = 0;
+
+      function cleanup(){
+        if (startGuard) { clearTimeout(startGuard); startGuard = 0; }
+        if (endGuard) { clearTimeout(endGuard); endGuard = 0; }
+        if (poll) { clearInterval(poll); poll = 0; }
+      }
+      function fin(ok){
+        if (done) return;
+        done = true;
+        cleanup();
+        if (cur) { cur.onstart = null; cur.onend = null; cur.onerror = null; }
+        resolve(ok);
+      }
+
+      /* onend 가 오지 않아도 끝을 안다: 'speaking' 이 꺼진 채 300ms 지속되면 끝 */
+      function watch(){
+        if (poll) { clearInterval(poll); poll = 0; }
+        poll = setInterval(function(){
+          if (done) return;
+          try {
+            if (ss.speaking) { sawSpeaking = true; idle = 0; return; }
+            if (ss.pending) { idle = 0; return; }
+          } catch (e) { return; }
+          if (!sawSpeaking) return;                 /* 아직 시작 전 — startGuard 담당 */
+          if (Date.now() - beganAt < 600) return;   /* 너무 이른 판단 방지 */
+          if (++idle >= 3) fin(true);
+        }, 100);
+      }
+
+      function attempt(){
+        try { attemptOnce(); } catch (e) { fin(false); }
+      }
+
+      function attemptOnce(){
+        tries++;
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        u.rate = rate || RATE;
+        u.pitch = 1.05;
+        u.volume = 1;
+        if (enVoice) { try { u.voice = enVoice; } catch (e) {} }   /* 목소리 객체가 이상해도 읽기는 계속 */
+        cur = keepUtt(u);
+        beganAt = Date.now();
+        u.onstart = function(){
+          if (done) return;
+          sawSpeaking = true; idle = 0;
+          if (startGuard) { clearTimeout(startGuard); startGuard = 0; }
+        };
+        u.onend = function(){ fin(true); };
+        u.onerror = function(){ fin(false); };
+
+        if (!opts.noCancel) { try { ss.cancel(); } catch (e) {} }
+        engineWake();
+        try { ss.speak(u); } catch (e) { fin(false); return; }
+
+        /* 시작 감시 — iOS 가 speak() 를 버리면 아무 일도 일어나지 않는다 → 한 번 재시도 */
+        if (startGuard) clearTimeout(startGuard);
+        startGuard = setTimeout(function(){
+          startGuard = 0;
+          if (done || sawSpeaking) return;
+          var busy = false;
+          try { busy = !!(ss.speaking || ss.pending); } catch (e) {}
+          if (busy) { sawSpeaking = true; return; }
+          if (tries < 2) {
+            try { ss.cancel(); } catch (e) {}
+            engineWake();
+            watch();
+            attempt();
+          } else {
+            fin(false);
+          }
+        }, 1200);
+
+        /* 마지막 안전장치 — 예상 시간을 넘기면 다음 문장으로 넘어간다 */
+        if (endGuard) clearTimeout(endGuard);
+        endGuard = setTimeout(function(){
+          endGuard = 0;
+          if (!done) fin(false);
+        }, Math.max(2600, Math.round(text.length * 95) + 1800));
+      }
+
+      try { watch(); attempt(); } catch (e) { fin(false); }
     });
   }
 
@@ -1266,11 +1407,38 @@
     });
   }
 
+  /* 이어 읽기 타이머(문장 사이 1초 + 그 사이 엔진 깨우기) */
+  var gapTimers = [], gapPing = 0;
+
+  function clearGapTimers(){
+    while (gapTimers.length) { try { clearTimeout(gapTimers.pop()); } catch (e) {} }
+    if (gapPing) { try { clearInterval(gapPing); } catch (e) {} gapPing = 0; }
+  }
+
+  function scheduleStep(step, ms){
+    var t = setTimeout(function(){
+      var ix = gapTimers.indexOf(t);
+      if (ix >= 0) gapTimers.splice(ix, 1);
+      step();
+    }, ms);
+    gapTimers.push(t);
+    /* 쉬는 동안에도 엔진을 깨워 둔다 — 이 사이에 잠들면 iOS 는 다음 speak() 를 버린다 */
+    if (!gapPing) {
+      gapPing = setInterval(engineWake, 250);
+      gapTimers.push(setTimeout(function(){
+        if (gapPing) { clearInterval(gapPing); gapPing = 0; }
+      }, ms + 80));
+    }
+  }
+
   function stopChain(){
     speakToken++;
     speaking = false;
     clearSpeaking();
+    clearGapTimers();
+    setReadBtn(null);
     try { if (speechOK) window.speechSynthesis.cancel(); } catch (e) {}
+    audioKeepCool();
     var sb = $('slowBtn');
     if (sb) sb.textContent = '🔊 한 줄씩 노래 속도로 듣기';
   }
@@ -1282,42 +1450,57 @@
     if (isPlaying) softPause();
     var my = ++speakToken;
     speaking = true;
+    clearGapTimers();
+    setReadBtn(null);
     clearSpeaking();
     if (el) el.classList.add('speaking');
-    return speak(text, rate || RATE).then(function(ok){
-      if (my === speakToken) { speaking = false; if (el) el.classList.remove('speaking'); }
+    function wrap(ok){
+      if (my === speakToken) { speaking = false; if (el) el.classList.remove('speaking'); audioKeepCool(); }
       return ok;
-    });
+    }
+    return speak(text, rate || RATE).then(wrap, function(){ return wrap(false); });
   }
 
-  /* 여러 문장 이어 읽기 */
+  /* 여러 문장 이어 읽기 — 문장과 문장 사이 opts.gap(기본 1초) 쉼 */
   function sayList(items, opts){
     opts = opts || {};
     if (!speechOK) return;
     if (isPlaying) softPause();
     var my = ++speakToken;
     speaking = true;
-    /* 앞서 하던 읽기는 여기서 한 번만 끊고, 문장 사이에서는 끊지 않는다 */
+    clearGapTimers();
+    /* 앞서 하던 읽기는 여기서 한 번만 끊고, 문장 사이에서는 절대 끊지 않는다 */
     try { window.speechSynthesis.cancel(); } catch (e) {}
+    engineWake();
+    audioKeepAlive();                     /* 이 탭(제스처) 안에서 오디오 세션을 켠다 */
+    setReadBtn(opts.button || null);
     var i = 0;
-    (function step(){
+
+    function finish(){
       if (my !== speakToken) return;
-      if (i >= items.length) {
-        speaking = false;
-        clearSpeaking();
-        if (opts.done) opts.done();
-        return;
-      }
+      speaking = false;
+      clearSpeaking();
+      clearGapTimers();
+      audioKeepCool();
+      setReadBtn(null);
+      if (opts.done) opts.done();
+    }
+
+    (function step(){
+      if (my !== speakToken || !speaking) return;
+      if (i >= items.length) { finish(); return; }
       var it = items[i++];
       clearSpeaking();
       if (it.el) {
         it.el.classList.add('speaking');
         try { it.el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
       }
-      speak(it.text, opts.rate || RATE, { noCancel: true }).then(function(){
-        if (my !== speakToken) return;
-        setTimeout(step, opts.gap == null ? 260 : opts.gap);
-      });
+      /* 읽기 실패로 Promise 가 거절돼도 체인은 멈추지 않는다(다음 문장으로) */
+      var next = function(){
+        if (my !== speakToken || !speaking) return;
+        scheduleStep(step, opts.gap == null ? 260 : opts.gap);
+      };
+      speak(it.text, opts.rate || RATE, { noCancel: true }).then(next, next);
     })();
   }
 
@@ -1890,6 +2073,7 @@
     if (seg) { seg = null; wPause(); clearKaraoke(); }
     var my = ++speakToken;
     speaking = true;
+    audioKeepAlive();          /* 사용자 탭 안에서 오디오 세션을 켜 둔다(문장 사이 speak() 가 살아 있게) */
     $('slowBtn').textContent = '⏹ 멈추기';
     var seq = [];
     for (var i = 0; i < lineEls.length; i++) seq.push(i);
@@ -1898,6 +2082,7 @@
       if (my !== speakToken || !speaking) return;
       if (idx >= seq.length) {
         speaking = false;
+        audioKeepCool();
         $('slowBtn').textContent = '🔊 한 줄씩 노래 속도로 듣기';
         note('다 들었어요! 이제 같이 불러 봐요 🎶');
         return;
@@ -1909,6 +2094,9 @@
       try { btn.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
       note('🔊 ' + lineText(i));
       speak(lineText(i), SING_RATE).then(function(){
+        if (my !== speakToken || !speaking) return;
+        setTimeout(step, LINE_GAP);
+      }, function(){
         if (my !== speakToken || !speaking) return;
         setTimeout(step, LINE_GAP);
       });
@@ -2328,10 +2516,12 @@
       readRow.style.marginTop = '6px';
       var readBtn = document.createElement('button');
       readBtn.type = 'button';
-      readBtn.className = 'btn btn-ghost btn-mini';
-      readBtn.textContent = '🔊 이 페이지 듣기';
+      readBtn.className = 'btn btn-ghost btn-mini read-page';
+      readBtn.textContent = READ_OFF;
       readBtn.addEventListener('click', function(){
-        sayList(items, { rate: RATE, gap: READ_GAP });
+        /* 읽는 중에 같은 버튼을 다시 누르면 멈춘다 */
+        if (readBtnActive === readBtn) { stopChain(); vibrate(8); return; }
+        sayList(items, { rate: RATE, gap: READ_GAP, button: readBtn });
         vibrate(8);
       });
       readRow.appendChild(readBtn);
@@ -2384,6 +2574,28 @@
     tab: function(name){ setTab(name); return currentTab; },
     mode: function(){ return mode; },
     say: function(t){ return say(t, null, RATE); },
+    readPage: function(page){
+      var card = document.querySelector('#storyPages .pcard[data-page="' + page + '"]');
+      if (!card) return null;
+      var b = card.querySelector('.read-page');
+      if (b) b.click();
+      return Array.prototype.map.call(card.querySelectorAll('.sent'), function(el){ return el.getAttribute('data-text'); });
+    },
+    readState: function(){
+      return {
+        speaking: speaking, token: speakToken,
+        button: readBtnActive ? readBtnActive.textContent : null,
+        timers: gapTimers.length, ping: !!gapPing,
+        keepCtx: keepCtx ? keepCtx.state : null,
+        utts: liveUtts.length, gap: READ_GAP
+      };
+    },
+    readBtnText: function(page){
+      var card = document.querySelector('#storyPages .pcard[data-page="' + page + '"]');
+      var b = card && card.querySelector('.read-page');
+      return b ? b.textContent : null;
+    },
+    stop: function(){ stopChain(); return speaking; },
     lastSay: function(){ return lastSaid; },
     line: function(i){ return lineEls[i] ? lineEls[i].textContent : null; },
     tap: function(i){ if (lineEls[i]) lineEls[i].click(); },
