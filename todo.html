@@ -6,7 +6,7 @@
   · 체크하면 가볍게 팝 애니메이션·작은 종소리와 함께 사라지고, 3.5초 동안 '되돌리기'가 떠요(잘못 눌렀을 때).
   · 숙제와 오늘 끝낸 개수는 이 브라우저의 localStorage(simple_todo_v1)에만 저장돼요. 서버로 보내지 않아요.
   · '요일별 숙제'는 그 요일이 되면 오늘 목록에 자동으로 들어가요.
-    (모든 요일: 수학숙제·눈높이 국어 3쪽·Connect 1 / 월·수·토·일: 영어 스펠링 / 화·목: 화성영어 / 금: 숙제 쉬는 날)
+    (모든 요일: 수학숙제·눈높이 국어 3쪽·Connect 1 / 월·수·토·일: 영어 스펠링 / 화·목: 화상영어 / 금: 숙제 쉬는 날)
     예전 저장값에 남아 있던 '영어 스펠링 퀴즈'는 한 번만 '영어 스펠링' 하나로 정리되고,
     'Connect 1'은 이번 판에서 한 번만 (금요일 빼고) 요일별 목록에 더해져요.
     상단 🔁 버튼에서 숙제마다 들어갈 요일을 보고·고치고·지울 수 있어요.
@@ -490,12 +490,12 @@
     { emoji: '✏️', text: '받아쓰기' }
   ];
   var DAILY_MAX = 12;
-  var SCHEDULE_VERSION = 5;   // 3: '영어 스펠링 퀴즈' → '영어 스펠링' 하나로 정리 · 4: 'Connect 1'을 금요일 빼고 매일 · 5: '하상영어' → '화성영어'
+  var SCHEDULE_VERSION = 6;   // 3: '영어 스펠링 퀴즈' → '영어 스펠링' · 4: 'Connect 1'을 금요일 빼고 매일 · 5: '하상영어' → '화성영어' · 6: '화성영어' → '화상영어'
   var SPELLING = '영어 스펠링';
   var CONNECT = 'Connect 1';
   var LEGACY_QUIZ = '영어 스펠링 퀴즈';
-  var OLD_UNIT = '하상영어';     // v5에서 '화성영어'로 이름을 고쳐요 (예전 저장값 자동 정리)
-  var UNIT = '화성영어';
+  var OLD_UNITS = ['하상영어', '화성영어'];   // v6에서 '화상영어'로 이름을 고쳐요 (예전 저장값 자동 정리)
+  var UNIT = '화상영어';
   // 화면에는 월→일 순서로 보여요 (JS getDay(): 일=0, 월=1 … 토=6)
   var DAY_CHIPS = [
     { v: 1, l: '월' }, { v: 2, l: '화' }, { v: 3, l: '수' }, { v: 4, l: '목' },
@@ -580,14 +580,15 @@
     return out;
   }
 
-  // v5: '하상영어'를 '화성영어'로 이름만 바꿔요(오늘 목록). 체크·순서·다른 숙제는 그대로 두고,
-  // 이미 '화성영어'가 있으면 겹치지 않게 옛 이름 항목만 빼요.
+  function isOldUnit(text) { return OLD_UNITS.indexOf(text) >= 0; }
+  // v6: '하상영어'·'화성영어'를 '화상영어'로 이름만 바꿔요(오늘 목록). id·이모지·순서·체크·
+  // 다른 숙제는 그대로 두고, 이미 '화상영어'가 있으면 겹치지 않게 옛 이름 항목만 빼요.
   function renameOldUnitTasks(tasks) {
-    if (!tasks.some(function (t) { return t.text === OLD_UNIT; })) return tasks;
+    if (!tasks.some(function (t) { return isOldUnit(t.text); })) return tasks;
     var hasNew = tasks.some(function (t) { return t.text === UNIT; });
     var out = [];
     tasks.forEach(function (t) {
-      if (t.text !== OLD_UNIT) { out.push(t); return; }
+      if (!isOldUnit(t.text)) { out.push(t); return; }
       if (hasNew) return;
       hasNew = true;
       t.text = UNIT;
@@ -599,7 +600,7 @@
   // 퀴즈만 있으면 이름만 '영어 스펠링'으로 바꿔요. 다른 숙제는 건드리지 않아요.
   function migrateLegacyTasks(tasks, oldV) {
     if (!tasks.length) return tasks;
-    if (oldV < 5) tasks = renameOldUnitTasks(tasks);
+    if (oldV < 6) tasks = renameOldUnitTasks(tasks);
     if (oldV >= 3) return tasks;
     var hasSpelling = tasks.some(function (t) { return t.text === SPELLING; });
     var out = [];
@@ -639,7 +640,7 @@
       raw.forEach(function (it) {
         var text = cleanText(typeof it === 'string' ? it : (it && it.text)).slice(0, 80);
         if (!text) return;
-        if (oldV < 5 && text === OLD_UNIT) text = UNIT;   // v5: '하상영어' → '화성영어'
+        if (oldV < 6 && isOldUnit(text)) text = UNIT;   // v6: '하상영어'·'화성영어' → '화상영어'
         if (items.some(function (x) { return x.text === text; })) return;
         if (canonIndex(text) >= 0) hadDefault = true;
         var days = (it && typeof it === 'object' && Array.isArray(it.days)) ? normDays(it.days) : null;
@@ -657,8 +658,8 @@
       // 처음 쓰거나 기본 숙제를 그대로 쓰던 분만 정식 4개를 채워요. (전부 지워둔 분은 빈 상태 그대로)
       if (!raw || hadDefault) {
         CANON.forEach(function (c) {
-          // '화성영어'는 v5에서 새로 생긴 숙제가 아니라 '하상영어'의 이름만 바꾼 것이라,
-          // 이미 v4를 쓰던 분이 요일표에서 일부러 뺀 거라면 다시 넣어 두지 않아요.
+          // '화상영어'는 v6에서 새로 생긴 숙제가 아니라 '화성영어'의 이름만 바꾼 것이라,
+          // 이미 쓰던 분이 요일표에서 일부러 뺀 거라면 다시 넣어 두지 않아요.
           if (c.text === UNIT && oldV >= 4) return;
           if (!items.some(function (it) { return it.text === c.text; })) {
             items.push({ text: c.text, days: c.days.slice() });
@@ -695,7 +696,7 @@
   function dailyEmoji(text) {
     if (/connect/i.test(text)) return '📘';
     if (/수학|연산|계산/.test(text)) return '🔢';
-    if (/영어|스펠링|단어|리딩|파닉스|화성|하상/.test(text)) return '🔤';
+    if (/영어|스펠링|단어|리딩|파닉스|화상|화성|하상/.test(text)) return '🔤';
     if (/국어|독서|책|받아쓰기|일기|눈높이/.test(text)) return '📖';
     if (/준비물|가방/.test(text)) return '🎒';
     return '🔁';
