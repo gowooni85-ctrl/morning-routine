@@ -255,7 +255,8 @@
   .playarea{padding:18px 14px 20px}
 
   /* slots & tiles */
-  .slots{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:20px}
+  .slots{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;margin-bottom:20px}
+  .slots .wordgrp{display:flex;gap:7px;justify-content:center}
   .slot{
     width:clamp(36px,10.5vw,56px);height:clamp(46px,13.5vw,68px);border-radius:14px;
     border:3px dashed #c3d7f2;background:#f7fbff;display:flex;align-items:center;justify-content:center;
@@ -284,7 +285,8 @@
   .tile.shake{animation:shake .4s}
 
   /* fill mode */
-  .fillrow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;margin-bottom:22px}
+  .fillrow{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;align-items:center;margin-bottom:22px}
+  .fillrow .wordgrp{display:flex;gap:6px;justify-content:center;align-items:center}
   .fl{
     min-width:clamp(30px,8.4vw,46px);height:clamp(44px,12.5vw,62px);border-radius:12px;
     display:flex;align-items:center;justify-content:center;font-weight:800;
@@ -472,15 +474,27 @@
   .ws-head .icon-btn{width:38px;height:38px;font-size:16px;background:#f1f5f9;box-shadow:0 2px 0 #e2e8f0}
   .ws-title{font-size:19px;font-weight:900;letter-spacing:-.5px}
   .ws-sub{font-size:12px;font-weight:700;color:var(--muted);margin-top:3px;line-height:1.35}
-  .ws-presets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+  .ws-presets{display:grid;grid-template-columns:1fr 1fr;gap:7px}
   .preset{
     border:none;font-family:inherit;font-size:12px;font-weight:900;color:#4338ca;cursor:pointer;
     background:#eef2ff;padding:11px 3px;border-radius:13px;box-shadow:0 3px 0 #ddd6fe;line-height:1.25;
     transition:transform .1s,box-shadow .1s;
   }
   .preset:active{transform:translateY(3px);box-shadow:none}
-  .preset[data-preset="easy"]{background:#dcfce7;color:#15803d;box-shadow:0 3px 0 #bbf7d0}
-  .preset[data-preset="mid"]{background:#dbeafe;color:#1d4ed8;box-shadow:0 3px 0 #bfdbfe}
+  .preset.grp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 3px}
+  .preset.grp .g-t{display:block;line-height:1.2}
+  .preset.grp .g-n{font-style:normal;font-size:10px;font-weight:900;opacity:.65}
+  .preset.grp.on{background:#dcfce7;color:#15803d;box-shadow:0 3px 0 #bbf7d0}
+  .preset.grp.on .g-n{opacity:.85}
+  .preset.grp.part{background:#fef3c7;color:#b45309;box-shadow:0 3px 0 #fde68a}
+  .preset.grp.off{background:#f1f5f9;color:#64748b;box-shadow:0 3px 0 #e2e8f0}
+  .ws-tip{font-size:11px;font-weight:700;color:#64748b;line-height:1.35;margin:0 2px 8px}
+  .ws-sec{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin:15px 2px 7px;font-size:12px;font-weight:900;color:#475569;
+  }
+  .ws-sec:first-child{margin-top:2px}
+  .ws-sec-n{font-size:10.5px;font-weight:900;color:#7c3aed;background:#f5f3ff;padding:2px 7px;border-radius:999px}
   .ws-count{font-size:12px;font-weight:900;color:#7c3aed;margin:14px 2px 8px;transition:color .15s}
   .ws-count.bad{color:#dc2626}
   .ws-list{display:flex;flex-direction:column;gap:7px}
@@ -550,6 +564,36 @@
     100%{transform:translate3d(var(--dx),105vh,0) rotate(var(--rot))}
   }
   .flystar{position:fixed;font-size:22px;z-index:85;pointer-events:none;transition:transform .7s cubic-bezier(.3,-0.2,.7,1),opacity .7s}
+
+  /* ---------- 긴 단어(main office · nurse's office · playground …) ---------- */
+  .slots.long{gap:18px}
+  .slots.long .wordgrp{gap:5px}
+  .slots.long .slot{
+    width:clamp(25px,6.8vw,42px);height:clamp(40px,11vw,56px);border-radius:11px;
+    font-size:clamp(18px,5.6vw,29px);border-width:2px;
+  }
+  .slots.long .slot.gap{width:9px}
+  .slot.ab{
+    width:clamp(12px,3.2vw,18px);border:none;background:transparent;color:#64748b;
+    font-size:clamp(18px,5.4vw,26px);font-weight:900;padding:0;
+  }
+  .slots.long .slot.ab{width:clamp(10px,2.8vw,15px)}
+  .tiles.long{gap:6px}
+  .tiles.long .tile{
+    min-width:clamp(33px,9.2vw,48px);height:clamp(42px,12vw,58px);padding:0 6px;
+    border-radius:13px;font-size:clamp(19px,6.2vw,32px);
+  }
+  .fillrow.long{gap:18px}
+  .fillrow.long .wordgrp{gap:4px}
+  .fillrow.long .fl{
+    min-width:clamp(23px,6.2vw,36px);height:clamp(38px,10.5vw,52px);border-radius:10px;
+    font-size:clamp(18px,5.4vw,27px);border-width:2px;
+  }
+  .fillrow.long .fl.space{min-width:8px;width:8px}
+  .fl.apos{
+    min-width:clamp(9px,2.6vw,14px);width:auto;background:transparent;color:#64748b;
+    font-size:clamp(18px,5.4vw,26px);
+  }
 </style>
 </head>
 <body>
@@ -757,11 +801,8 @@
       <button class="icon-btn" id="wsClose" aria-label="닫기">✕</button>
     </div>
 
-    <div class="ws-presets">
-      <button class="preset" data-preset="easy">🌱 쉬운 6개</button>
-      <button class="preset" data-preset="mid">🚀 중간까지 9개</button>
-      <button class="preset" data-preset="all">🌟 전체 12개</button>
-    </div>
+    <div class="ws-tip">묶음 버튼을 누르면 그 묶음 단어가 한 번에 켜지고 꺼져요.</div>
+    <div class="ws-presets" id="wsGroups"></div>
 
     <div class="ws-count" id="wsCount">현재 6개 선택됨</div>
     <div class="ws-list" id="wsList"></div>
@@ -797,49 +838,167 @@
   'use strict';
 
   /* ================= data ================= */
-  /* Connect 1 · Unit 1 — School Words 6 + Key Verbs 6
-     (2026-11-23 탈것 12단어에서 교체, connect.html과 같은 낱말·그림·문장) */
+  /* Connect 1 · Unit 1 — 기본 12단어(학교 시간 6 · 핵심 동사 6)
+     + 2026-11-25 새 단어 35개 (교실 물건·친구 12 · 학교 사람·장소 10 · 과학 4 · 짧은 말 9)
+     connect.html의 필수 단어와 같은 낱말·그림·문장을 쓴다.
+     g = 단어 묶음(엄마 설정에서 묶음째 켜고 끈다) · show = 화면에 보여 줄 표기(Earth) */
   var WORDS = [
-    /* ---- School Words ---- */
-    {en:'art', ko:'미술', emoji:'🎨', focus:false,
+    /* ---------- 기본 12 · School Words ---------- */
+    {en:'art', ko:'미술', emoji:'🎨', g:'base', focus:false,
       tip:'ar은 "아~" 소리! a·r·t = 아트 — It’s time for art. 🎨',
       fill:{pattern:'?rt', pool:['a','e','o','u']}},
-    {en:'math', ko:'수학', emoji:'🔢', focus:false,
+    {en:'math', ko:'수학', emoji:'🔢', g:'base', focus:false,
       tip:'끝 th는 혀를 살짝 물고 "쓰"! m·a·th — It’s time for math. 🔢',
       fill:{pattern:'ma?h', pool:['t','d','s','c']}},
-    {en:'music', ko:'음악', emoji:'🎵', focus:false,
+    {en:'music', ko:'음악', emoji:'🎵', g:'base', focus:false,
       tip:'mu는 "뮤", si는 "지"! m·u·s·i·c — It’s time for music. 🎵',
       fill:{pattern:'m?sic', pool:['u','a','e','o']}},
-    {en:'read', ko:'읽다', emoji:'📖', focus:true, say:'reed',
+    {en:'read', ko:'읽다', emoji:'📖', g:'base', focus:true, say:'reed',
       tip:'ea는 짝꿍 모음 "이~"! r·ea·d — You read a book. 📖',
       fill:{pattern:'r??d', pool:['e','a','i','o','u']}},
-    {en:'eat', ko:'먹다', emoji:'🍎', focus:false,
+    {en:'eat', ko:'먹다', emoji:'🍎', g:'base', focus:false,
       tip:'ea는 "이~" 소리! e·a·t — You eat lunch. 🍎',
       fill:{pattern:'e?t', pool:['a','e','i','o']}},
-    {en:'draw', ko:'그리다', emoji:'🖍️', focus:true,
+    {en:'draw', ko:'그리다', emoji:'🖍️', g:'base', focus:true,
       tip:'aw는 "어~" 한 덩어리! d·r·aw — You draw a picture. 🖍️',
       fill:{pattern:'dr??', pool:['a','w','o','e']}},
-    /* ---- Key Verbs ---- */
-    {en:'write', ko:'쓰다', emoji:'✏️', focus:true,
+    /* ---------- 기본 12 · Key Verbs ---------- */
+    {en:'write', ko:'쓰다', emoji:'✏️', g:'base', focus:true,
       tip:'끝의 마법의 e는 소리가 없어요! w·r·i·t·e — You write with a pencil. ✏️',
       fill:{pattern:'writ?', pool:['e','a','i','o']}},
-    {en:'count', ko:'세다', emoji:'🔢', focus:true,
+    {en:'count', ko:'세다', emoji:'🔢', g:'base', focus:true,
       tip:'ou는 "아우"! c·ou·n·t — You count 1, 2, 3… 🔢',
       fill:{pattern:'c??nt', pool:['o','u','a','e']}},
-    {en:'paint', ko:'칠하다', emoji:'🎨', focus:true,
+    {en:'paint', ko:'칠하다', emoji:'🎨', g:'base', focus:true,
       tip:'ai는 짝꿍 모음 "에이"! p·ai·n·t — You paint with a paintbrush. 🎨',
       fill:{pattern:'p??nt', pool:['a','i','e','o']}},
-    /* ---- 긴 School Words ---- */
-    {en:'reading', ko:'읽기 시간', emoji:'📖', focus:true,
+    /* ---------- 기본 12 · 긴 School Words ---------- */
+    {en:'reading', ko:'읽기 시간', emoji:'📖', g:'base', focus:true,
       tip:'ea는 "이~", 그다음 ding! r·ea·ding — It’s time for reading. 📖',
       fill:{pattern:'r??ding', pool:['e','a','i','o','u']}},
-    {en:'writing', ko:'쓰기 시간', emoji:'✏️', focus:true,
+    {en:'writing', ko:'쓰기 시간', emoji:'✏️', g:'base', focus:true,
       tip:'w는 조용, wr은 "r" 소리! w·r·i·t·i·n·g — It’s time for writing. ✏️',
       fill:{pattern:'?riting', pool:['w','m','v','k']}},
-    {en:'recess', ko:'쉬는 시간', emoji:'🛝', focus:true, say:'REE-sess',
+    {en:'recess', ko:'쉬는 시간', emoji:'🛝', g:'base', focus:true, say:'REE-sess',
       tip:'끝에 s가 두 개! re·cess, 앞 강세 REE-sess — It’s time for recess. 🛝',
-      fill:{pattern:'rece??', pool:['s','c','z','t']}}
+      fill:{pattern:'rece??', pool:['s','c','z','t']}},
+
+    /* ---------- ✏️ 교실 물건 · 친구 12 ---------- */
+    {en:'book', ko:'책', emoji:'📕', g:'things', focus:false,
+      tip:'oo는 둥근 "우~" 소리! b·oo·k — This is my book. 📕',
+      fill:{pattern:'b??k', pool:['o','a','e','u']}},
+    {en:'pencil', ko:'연필', emoji:'✏️', g:'things', focus:false,
+      tip:'c는 "ㅅ" 소리! p·e·n·c·i·l — You write with a pencil. ✏️',
+      fill:{pattern:'p?nc?l', pool:['e','i','a','o']}},
+    {en:'eraser', ko:'지우개', emoji:'🧽', g:'things', focus:false,
+      tip:'e는 "에", 가운데 a는 "어"! e·r·a·s·er — This is an eraser. 🧽',
+      fill:{pattern:'?r?s?r', pool:['e','a','i','o']}},
+    {en:'crayon', ko:'크레용', emoji:'🖍️', g:'things', focus:false,
+      tip:'ay는 "에이", 끝 o는 "오"! c·r·ay·on — I have a crayon. 🖍️',
+      fill:{pattern:'cr???n', pool:['a','y','o','e']}},
+    {en:'scissors', ko:'가위', emoji:'✂️', g:'things', focus:false,
+      tip:'sc는 "ㅅ", 가운데 ss는 한 번만 소리! s·c·i·ss·o·r·s — Cut with scissors. ✂️',
+      fill:{pattern:'sc?ss?rs', pool:['i','o','e','a']}},
+    {en:'backpack', ko:'책가방', emoji:'🎒', g:'things', focus:false,
+      tip:'ck는 "ㅋ" 한 소리! b·a·ck·p·a·ck — This is my backpack. 🎒',
+      fill:{pattern:'b?ckp?ck', pool:['a','e','o','u']}},
+    {en:'desk', ko:'책상', emoji:'🪑', g:'things', focus:false,
+      tip:'e는 "에", s는 "ㅅ"! d·e·s·k — Sit at the desk. 🪑',
+      fill:{pattern:'d??k', pool:['e','s','a','o']}},
+    {en:'chair', ko:'의자', emoji:'💺', g:'things', focus:false,
+      tip:'ch는 "취", ai는 "에이"! ch·ai·r — Sit on the chair. 💺',
+      fill:{pattern:'ch??r', pool:['a','i','e','o']}},
+    {en:'board', ko:'칠판', emoji:'📋', g:'things', focus:false,
+      tip:'oa는 "오~" 짝꿍 모음! b·oa·r·d — Look at the board. 📋',
+      fill:{pattern:'b??rd', pool:['o','a','e','i']}},
+    {en:'playground', ko:'놀이터·운동장', emoji:'🏃', g:'things', focus:false,
+      tip:'ay는 "에이", ou는 "아우"! play·ground — We play on the playground. 🏃',
+      fill:{pattern:'pl??gr??nd', pool:['a','y','o','u','e']}},
+    {en:'friend', ko:'친구', emoji:'👫', g:'things', focus:false,
+      tip:'ie는 "에" 소리! fr·ie·nd — You are my friend. 👫',
+      fill:{pattern:'fri??d', pool:['e','n','a','o']}},
+    {en:'student', ko:'학생', emoji:'🧑‍🎓', g:'things', focus:false,
+      tip:'u는 "유", 끝 ent는 "언트"! s·t·u·d·e·n·t — I am a student. 🧑‍🎓',
+      fill:{pattern:'st?d?nt', pool:['u','e','a','o']}},
+
+    /* ---------- 🏫 학교 사람 · 장소 10 ---------- */
+    {en:'teacher', ko:'선생님', emoji:'👩‍🏫', g:'places', focus:false,
+      tip:'ea는 "이~", ch는 "취"! t·ea·ch·er — My teacher is kind. 👩‍🏫',
+      fill:{pattern:'t??cher', pool:['e','a','i','o']}},
+    {en:'classroom', ko:'교실', emoji:'🏫', g:'places', focus:false,
+      tip:'ss는 한 번만, oo는 "우~"! class·room — This is our classroom. 🏫',
+      fill:{pattern:'cl?ssr??m', pool:['a','o','e','u']}},
+    {en:'principal', ko:'교장선생님', emoji:'🎓', g:'places', focus:false,
+      tip:'끝 pal은 "펄"! prin·ci·pal — The principal says hello. 🎓',
+      fill:{pattern:'princ?p?l', pool:['i','a','e','o']}},
+    {en:'main office', ko:'교무실·행정실', emoji:'🏢', g:'places', focus:false,
+      tip:'두 단어예요! ai는 "에이", f는 두 번! main of·fice — Go to the main office. 🏢',
+      fill:{pattern:'m??n ?ffice', pool:['a','i','o','e']}},
+    {en:'librarian', ko:'사서선생님', emoji:'🧑‍💼', g:'places', focus:false,
+      tip:'li·brar·i·an, 가운데 r 소리를 살려요! — The librarian helps me. 🧑‍💼',
+      fill:{pattern:'libr?r??n', pool:['a','i','e','o']}},
+    {en:'library', ko:'도서관', emoji:'📚', g:'places', focus:false,
+      tip:'가운데 r 하나만! li·bra·ry — I read in the library. 📚',
+      fill:{pattern:'l?br?ry', pool:['i','a','e','o']}},
+    {en:'nurse', ko:'보건선생님', emoji:'👩‍⚕️', g:'places', focus:false,
+      tip:'ur는 "어~", 끝 e는 조용! n·ur·s·e — The nurse helps me. 👩‍⚕️',
+      fill:{pattern:'n?rs?', pool:['u','e','a','o']}},
+    {en:"nurse's office", ko:'보건실', emoji:'🩺', g:'places', focus:false,
+      tip:'nurse’s는 "너스즈", 두 단어예요! nurse’s of·fice — Go to the nurse’s office. 🩺',
+      fill:{pattern:"n?rse's ?ffice", pool:['u','o','e','a']}},
+    {en:'food server', ko:'급식선생님', emoji:'🍲', g:'places', focus:false,
+      tip:'두 단어예요! oo는 "우~", 끝 er는 "어"! food ser·ver — The food server gives lunch. 🍲',
+      fill:{pattern:'f??d s?rv?r', pool:['o','e','a','i']}},
+    {en:'cafeteria', ko:'급식실', emoji:'🍽️', g:'places', focus:false,
+      tip:'caf·e·te·ri·a, 길지만 천천히! — We eat in the cafeteria. 🍽️',
+      fill:{pattern:'c?f?t?ria', pool:['a','e','i','o']}},
+
+    /* ---------- 🔬 과학 핵심 4 ---------- */
+    {en:'nature', ko:'자연', emoji:'🌳', g:'science', focus:false,
+      tip:'끝 ture는 "처"! na·ture — I love nature. 🌳',
+      fill:{pattern:'n?t?r?', pool:['a','u','e','i']}},
+    {en:'earth', ko:'지구', emoji:'🌍', g:'science', show:'Earth', focus:false,
+      tip:'ear는 "어~", th는 혀를 살짝! earth — We live on Earth. 🌍',
+      fill:{pattern:'??rth', pool:['e','a','i','o']}},
+    {en:'space', ko:'우주', emoji:'🚀', g:'science', focus:false,
+      tip:'끝 e는 조용, a는 "에이"! sp·a·c·e — Earth is in space. 🚀',
+      fill:{pattern:'sp??e', pool:['a','c','e','o']}},
+    {en:'technology', ko:'기술·전자기기', emoji:'💻', g:'science', focus:false,
+      tip:'ch는 "ㅋ", gy는 "지"! tech·no·lo·gy — I like technology. 💻',
+      fill:{pattern:'t?chn?l?gy', pool:['e','o','a','i']}},
+
+    /* ---------- 💬 짧은 말 · 수업 키워드 9 ---------- */
+    {en:'poem', ko:'시', emoji:'📜', g:'short', focus:false,
+      tip:'po·em 두 덩어리로 읽어요! — We read a poem. 📜',
+      fill:{pattern:'p??m', pool:['o','e','a','i']}},
+    {en:'rhyme', ko:'운율', emoji:'🎶', g:'short', focus:false,
+      tip:'rh는 "r" 소리, y는 "아이"! rhyme — A poem has a rhyme. 🎶',
+      fill:{pattern:'rh?m?', pool:['y','e','a','i']}},
+    {en:'learn', ko:'배우다', emoji:'🧠', g:'short', focus:false,
+      tip:'ear는 "어~"! l·ear·n — We learn English. 🧠',
+      fill:{pattern:'l??rn', pool:['e','a','i','o']}},
+    {en:'play', ko:'놀다', emoji:'🧸', g:'short', focus:false,
+      tip:'ay는 "에이"! pl·ay — Let’s play outside. 🧸',
+      fill:{pattern:'pl??', pool:['a','y','e','i']}},
+    {en:'sing', ko:'노래하다', emoji:'🎤', g:'short', focus:false,
+      tip:'ng는 코로 "응"! s·i·n·g — We sing a song. 🎤',
+      fill:{pattern:'s??g', pool:['i','n','a','e']}},
+    {en:'can', ko:'~할 수 있다', emoji:'💪', g:'short', focus:false,
+      tip:'c는 "ㅋ", a는 "애"! c·a·n — I can sing. 💪',
+      fill:{pattern:'c??', pool:['a','n','e','o']}},
+    {en:'it', ko:'그것', emoji:'👉', g:'short', focus:false,
+      tip:'i는 "이", t는 "트"! i·t — It is a book. 👉',
+      fill:{pattern:'?t', pool:['i','a','e','o']}},
+    {en:'is', ko:'~이다', emoji:'🟰', g:'short', focus:false,
+      tip:'s는 "즈" 소리! i·s — It is fun. 🟰',
+      fill:{pattern:'?s', pool:['i','a','e','o']}},
+    {en:'to', ko:'~하기', emoji:'➡️', g:'short', focus:false,
+      tip:'o는 "우"에 가깝게! t·o — Time to play. ➡️',
+      fill:{pattern:'t?', pool:['o','a','e','i']}}
   ];
+
+  /* 목록 순서 = 작성 순서(짧고 쉬운 것부터). 묶음 안에서는 이 순서를 지킨다 */
+  WORDS.forEach(function(w, i){ w._i = i; });
 
   /* 정답 칭찬 문구 — 맞힐 때마다 Good! → Well done! → Excellent! → Perfect! → Great job! → Awesome! 순서로 돌아간다 */
   var PRAISE = [
@@ -859,6 +1018,31 @@
   var EASY6 = ['art','math','music','read','eat','draw'];
   var MID9 = EASY6.concat(['write','count','paint']);
   var FULL12 = MID9.concat(['reading','writing','recess']);
+
+  /* 단어 묶음 — 엄마 설정에서 묶음째 켜고 끈다 (새 단어는 저절로 켜지지 않는다) */
+  var GROUP_ORDER = ['base', 'things', 'places', 'science', 'short', 'custom'];
+  var GROUP_NAME = {
+    base:    '🌱 기본 12단어 · 학교 시간 · 동사',
+    things:  '✏️ 교실 물건 · 친구',
+    places:  '🏫 학교 사람 · 장소',
+    science: '🔬 과학 핵심 단어',
+    short:   '💬 짧은 말 · 수업 키워드',
+    custom:  '➕ 내가 추가한 단어'
+  };
+  var GROUP_CHIPS = [
+    {k:'base',    label:'🌱 기본 12개'},
+    {k:'things',  label:'✏️ 교실 물건'},
+    {k:'places',  label:'🏫 사람·장소'},
+    {k:'science', label:'🔬 과학'},
+    {k:'short',   label:'💬 짧은 말'},
+    {k:'all',     label:'🌟 전체 선택'}
+  ];
+  function groupOf(w){ return w.custom ? 'custom' : (w.g || 'base'); }
+  function groupIndex(w){
+    var i = GROUP_ORDER.indexOf(groupOf(w));
+    return i < 0 ? 99 : i;
+  }
+  function disp(w){ return (w && (w.show || w.en)) || ''; }
   var CUSTOM_KEY = 'spelling_custom_v1';
   var ACTIVE_KEY = 'spelling_active_v1';
   var customWords = [];
@@ -867,7 +1051,9 @@
   function allWords(){
     var a = WORDS.concat(customWords);
     a.sort(function(x, y){
-      var rx = rankOf(x.en), ry = rankOf(y.en);
+      var gx = groupIndex(x), gy = groupIndex(y);
+      if(gx !== gy) return gx - gy;
+      var rx = (x._i == null ? 999 : x._i), ry = (y._i == null ? 999 : y._i);
       if(rx !== ry) return rx - ry;
       return x.en < y.en ? -1 : (x.en > y.en ? 1 : 0);
     });
@@ -894,12 +1080,14 @@
 
   /* ================= schema migration =================
      v1 = 탈것 12단어 (2026-11-21 ~ 11-22)
-     v2 = Connect 1 · Unit 1 (2026-11-23 교체)
-     이미 탈것 단어가 저장된 아이폰·아이패드도 새로고침 한 번이면 새 단어 세트로 바뀐다.
-     - 엄마가 직접 추가한 단어는 그대로 둔다
-     - 사라진 탈것 단어의 별점만 정리하고 연속·플레이 기록은 남긴다 */
+     v2 = Connect 1 · Unit 1 기본 12단어 (2026-11-23 교체)
+     v3 = Connect 1 · Unit 1 + 새 단어 35개 (2026-11-25 추가)
+     - v1 → v2: 사라진 탈것 단어만 빼고 Connect 1 12단어로 (탈것 별점만 정리)
+     - v2 → v3: 아이가 지금 켜 두고 하는 단어(그대로)·엄마가 직접 추가한 단어·
+               별·연속·플레이 기록을 모두 보존하고, 새 35개는 자동으로 켜지 않는다
+               (엄마 설정 묶음 버튼으로 하나씩 켠다) */
   var SCHEMA_KEY = 'spelling_schema_v';
-  var SCHEMA_V = 2;
+  var SCHEMA_V = 3;
   var LEGACY_EN = ['bus','car','taxi','train','airplane','subway','on foot','bike','boat','motorcycle','helicopter','spaceship'];
   function migrateSchema(){
     var cur = 0;
@@ -919,15 +1107,23 @@
         }
       }
     }catch(e){}
-    /* 예전에 12개를 다 켜 두었으면 새 12개로, 아니면 기본 6개로 */
-    var next = (nLegacy >= LEGACY_EN.length ? FULL12 : EASY6).slice();
+    var next;
+    if(cur < 2){
+      /* v1(탈것) → v2: 예전에 12개를 다 켜 두었으면 기본 12개로, 아니면 쉬운 6개로 */
+      next = (nLegacy >= LEGACY_EN.length ? FULL12 : EASY6).slice();
+    }else{
+      /* v2 → v3: 켜 둔 단어를 손대지 않고 그대로 (비어 있으면 loadSettings가 쉬운 6개로 채운다) */
+      next = kept.slice();
+    }
     kept.forEach(function(en){ if(next.indexOf(en) < 0) next.push(en); });
     try{ localStorage.setItem(ACTIVE_KEY, JSON.stringify({v:SCHEMA_V, words:next})); }catch(e){}
-    var pruned = false;
-    LEGACY_EN.forEach(function(en){
-      if(prog.stars && prog.stars[en] != null){ delete prog.stars[en]; pruned = true; }
-    });
-    if(pruned) saveProg();
+    if(cur < 2){
+      var pruned = false;
+      LEGACY_EN.forEach(function(en){
+        if(prog.stars && prog.stars[en] != null){ delete prog.stars[en]; pruned = true; }
+      });
+      if(pruned) saveProg();
+    }
     try{ localStorage.setItem(SCHEMA_KEY, String(SCHEMA_V)); }catch(e){}
   }
 
@@ -963,7 +1159,7 @@
   }
 
   /* ================= word settings (엄마 설정) ================= */
-  function lettersOf(en){ return en.replace(/ /g, '').length; }
+  function lettersOf(en){ return en.replace(/[^a-z]/gi, '').length; }
   function mk(tag, cls, txt){
     var d = document.createElement(tag);
     if(cls) d.className = cls;
@@ -975,7 +1171,7 @@
   function makeFill(en){
     var chars = en.split('');
     var idx = [];
-    chars.forEach(function(c, i){ if(c !== ' ') idx.push(i); });
+    chars.forEach(function(c, i){ if(c !== ' ' && c !== "'") idx.push(i); });
     var L = idx.length;
     var need = (L <= 3) ? 1 : (L <= 6 ? 2 : 3);
     if(need > L - 1) need = Math.max(1, L - 1);
@@ -1099,63 +1295,120 @@
     sfx('tap');
   }
   function applyPreset(kind){
-    var set = (kind === 'easy') ? EASY6 : (kind === 'mid' ? MID9 : FULL12);
-    var keep = {};
-    customWords.forEach(function(w){ if(active[w.en]) keep[w.en] = true; });
-    active = {};
-    set.forEach(function(en){ if(wordByEn(en)) active[en] = true; });
-    Object.keys(keep).forEach(function(en){ active[en] = true; });
+    if(kind === 'all'){
+      active = {};
+      allWords().forEach(function(w){ active[w.en] = true; });
+    }else{
+      /* 기본 12개만 — 엄마가 직접 추가한 단어 중 켜 둔 것은 그대로 둔다 */
+      var keep = {};
+      customWords.forEach(function(w){ if(active[w.en]) keep[w.en] = true; });
+      active = {};
+      WORDS.forEach(function(w){ if(groupOf(w) === 'base') active[w.en] = true; });
+      Object.keys(keep).forEach(function(en){ active[en] = true; });
+    }
     saveSettings();
     renderSettings();
     updateScore();
     sfx('tap');
   }
+  /* 묶음 통째로 켜기/끄기 — 다 켜져 있으면 끄고, 아니면 다 켠다 */
+  function toggleGroup(gk){
+    var list = WORDS.filter(function(w){ return groupOf(w) === gk; });
+    if(!list.length) return;
+    var allOn = list.every(function(w){ return !!active[w.en]; });
+    if(allOn){
+      var onNow = list.filter(function(w){ return !!active[w.en]; }).length;
+      if(activeWords().length - onNow < 1){ warnMin(); return; }
+      list.forEach(function(w){ delete active[w.en]; });
+    }else{
+      list.forEach(function(w){ active[w.en] = true; });
+    }
+    saveSettings();
+    renderSettings();
+    updateScore();
+    sfx('tap');
+  }
+
+  function makeRow(w){
+    var on = !!active[w.en];
+    var row = mk('div', 'wrow' + (on ? ' on' : ''));
+    row.appendChild(mk('span', 'wr-e', w.emoji));
+    var main = mk('span', 'wr-main');
+    var wl = mk('span', 'wr-w');
+    wl.appendChild(document.createTextNode(disp(w) + ' '));
+    wl.appendChild(mk('em', null, lettersOf(w.en) + '글자'));
+    main.appendChild(wl);
+    main.appendChild(mk('span', 'wr-k', (w.ko || '—') + (w.custom ? ' · 내가 추가한 단어' : '')));
+    row.appendChild(main);
+    if(w.custom){
+      var del = mk('button', 'wr-del', '🗑');
+      del.type = 'button';
+      del.setAttribute('aria-label', w.en + ' 삭제');
+      var armed = false, tmr = null;
+      del.addEventListener('click', function(e){
+        if(e && e.stopPropagation) e.stopPropagation();
+        if(!armed){
+          armed = true;
+          del.textContent = '삭제?';
+          del.classList.add('arm');
+          tmr = setTimeout(function(){
+            armed = false;
+            del.textContent = '🗑';
+            del.classList.remove('arm');
+          }, 4200);
+          return;
+        }
+        clearTimeout(tmr);
+        deleteCustom(w.en);
+      });
+      row.appendChild(del);
+    }
+    var sw = mk('button', 'sw' + (on ? ' on' : ''));
+    sw.type = 'button';
+    sw.setAttribute('role', 'switch');
+    sw.setAttribute('aria-checked', on ? 'true' : 'false');
+    sw.setAttribute('aria-label', disp(w) + ' 연습 ' + (on ? '켜짐' : '꺼짐'));
+    sw.appendChild(document.createElement('i'));
+    sw.addEventListener('click', function(){ toggleWord(w.en); });
+    row.appendChild(sw);
+    return row;
+  }
+
+  /* 묶음 버튼: 켜진 개수를 함께 보여 준다 (다 켜짐 / 일부 / 다 꺼짐) */
+  function renderGroups(){
+    var wrap = $('wsGroups');
+    if(!wrap) return;
+    wrap.innerHTML = '';
+    GROUP_CHIPS.forEach(function(d){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'preset grp';
+      b.setAttribute('data-group', d.k);
+      var members = (d.k === 'all') ? allWords() : WORDS.filter(function(w){ return groupOf(w) === d.k; });
+      var on = 0;
+      members.forEach(function(w){ if(active[w.en]) on++; });
+      b.classList.add(on === 0 ? 'off' : (on === members.length ? 'on' : 'part'));
+      b.appendChild(mk('span', 'g-t', d.label));
+      b.appendChild(mk('i', 'g-n', on + '/' + members.length));
+      b.setAttribute('aria-pressed', on === members.length ? 'true' : 'false');
+      b.setAttribute('aria-label', d.label + ' ' + on + '/' + members.length);
+      wrap.appendChild(b);
+    });
+  }
+
   function renderSettings(){
     var box = $('wsList');
     box.innerHTML = '';
-    allWords().forEach(function(w){
-      var on = !!active[w.en];
-      var row = mk('div', 'wrow' + (on ? ' on' : ''));
-      row.appendChild(mk('span', 'wr-e', w.emoji));
-      var main = mk('span', 'wr-main');
-      var wl = mk('span', 'wr-w');
-      wl.appendChild(document.createTextNode(w.en + ' '));
-      wl.appendChild(mk('em', null, lettersOf(w.en) + '글자'));
-      main.appendChild(wl);
-      main.appendChild(mk('span', 'wr-k', (w.ko || '—') + (w.custom ? ' · 내가 추가한 단어' : '')));
-      row.appendChild(main);
-      if(w.custom){
-        var del = mk('button', 'wr-del', '🗑');
-        del.type = 'button';
-        del.setAttribute('aria-label', w.en + ' 삭제');
-        var armed = false, tmr = null;
-        del.addEventListener('click', function(e){
-          if(e && e.stopPropagation) e.stopPropagation();
-          if(!armed){
-            armed = true;
-            del.textContent = '삭제?';
-            del.classList.add('arm');
-            tmr = setTimeout(function(){
-              armed = false;
-              del.textContent = '🗑';
-              del.classList.remove('arm');
-            }, 4200);
-            return;
-          }
-          clearTimeout(tmr);
-          deleteCustom(w.en);
-        });
-        row.appendChild(del);
-      }
-      var sw = mk('button', 'sw' + (on ? ' on' : ''));
-      sw.type = 'button';
-      sw.setAttribute('role', 'switch');
-      sw.setAttribute('aria-checked', on ? 'true' : 'false');
-      sw.setAttribute('aria-label', w.en + ' 연습 ' + (on ? '켜짐' : '꺼짐'));
-      sw.appendChild(document.createElement('i'));
-      sw.addEventListener('click', function(){ toggleWord(w.en); });
-      row.appendChild(sw);
-      box.appendChild(row);
+    renderGroups();
+    GROUP_ORDER.forEach(function(gk){
+      var list = allWords().filter(function(w){ return groupOf(w) === gk; });
+      if(!list.length) return;
+      var on = list.filter(function(w){ return !!active[w.en]; }).length;
+      var sec = mk('div', 'ws-sec');
+      sec.appendChild(mk('span', 'ws-sec-t', GROUP_NAME[gk] || gk));
+      sec.appendChild(mk('span', 'ws-sec-n', on + '/' + list.length));
+      box.appendChild(sec);
+      list.forEach(function(w){ box.appendChild(makeRow(w)); });
     });
     var c = $('wsCount');
     c.classList.remove('bad');
@@ -1335,7 +1588,7 @@
     if(tc) tc.textContent = list.length + '개';
     var pv = $('activePreview');
     if(pv){
-      var names = list.map(function(w){ return w.emoji + ' ' + w.en; });
+      var names = list.map(function(w){ return w.emoji + ' ' + disp(w); });
       pv.textContent = names.length > 5
         ? names.slice(0, 5).join(' · ') + ' 외 ' + (names.length - 5) + '개'
         : names.join(' · ');
@@ -1490,25 +1743,34 @@
 
   /* ---------- mode 1: letter blocks ---------- */
   function buildBlocks(w, area){
-    var chars = w.en.split('');
-    var correct = chars.filter(function(c){ return c !== ' '; });
+    var longWord = lettersOf(w.en) >= 9;
     var slotsEl = document.createElement('div');
-    slotsEl.className = 'slots';
+    slotsEl.className = 'slots' + (longWord ? ' long' : '');
     var tilesEl = document.createElement('div');
-    tilesEl.className = 'tiles';
+    tilesEl.className = 'tiles' + (longWord ? ' long' : '');
 
+    /* 띄어쓰기 단어(main office · nurse's office)는 단어마다 한 묶음으로 —
+       줄바꿈이 단어 경계에서 일어나고, 어퍼스트로피는 이미 놓인 글자로 보여 준다 */
+    var correct = [];
     var seq = [];
-    chars.forEach(function(ch){
-      if(ch === ' '){
-        var g = document.createElement('div');
-        g.className = 'slot gap';
-        slotsEl.appendChild(g);
-        return;
-      }
-      var s = document.createElement('div');
-      s.className = 'slot';
-      slotsEl.appendChild(s);
-      seq.push(s);
+    w.en.split(' ').forEach(function(word){
+      var grp = document.createElement('div');
+      grp.className = 'wordgrp';
+      word.split('').forEach(function(ch){
+        if(ch === "'"){
+          var a = document.createElement('div');
+          a.className = 'slot ab';
+          a.textContent = "'";
+          grp.appendChild(a);
+          return;
+        }
+        var s = document.createElement('div');
+        s.className = 'slot';
+        grp.appendChild(s);
+        seq.push(s);
+        correct.push(ch);
+      });
+      slotsEl.appendChild(grp);
     });
 
     var order = shuffle(correct);
@@ -1589,28 +1851,34 @@
   /* ---------- mode 2: missing letters ---------- */
   function buildFill(w, area){
     var pat = w.fill.pattern.split('');
+    var longWord = lettersOf(w.en) >= 9;
     var row = document.createElement('div');
-    row.className = 'fillrow';
+    row.className = 'fillrow' + (longWord ? ' long' : '');
     var blanks = [];
 
-    pat.forEach(function(ch, i){
-      var d = document.createElement('div');
-      if(ch === ' '){
-        d.className = 'fl space';
-        d.textContent = ' ';
-        row.appendChild(d);
-        return;
-      }
-      if(ch === '?'){
-        d.className = 'fl blank';
-        d.dataset.idx = i;
-        row.appendChild(d);
-        blanks.push(d);
-      }else{
-        d.className = 'fl';
-        d.textContent = ch;
-        row.appendChild(d);
-      }
+    /* 띄어쓰기 단어는 단어 묶음으로 — 줄바꿈이 단어 경계에서만, 어퍼스트로피는 고정 글자 */
+    var offset = 0;
+    pat.join('').split(' ').forEach(function(chunk){
+      var grp = document.createElement('div');
+      grp.className = 'wordgrp';
+      chunk.split('').forEach(function(ch, k){
+        var i = offset + k;
+        var d = document.createElement('div');
+        if(ch === "'"){
+          d.className = 'fl apos';
+          d.textContent = "'";
+        }else if(ch === '?'){
+          d.className = 'fl blank';
+          d.dataset.idx = i;
+          blanks.push(d);
+        }else{
+          d.className = 'fl';
+          d.textContent = ch;
+        }
+        grp.appendChild(d);
+      });
+      offset += chunk.length + 1;
+      row.appendChild(grp);
     });
 
     var bub = document.createElement('div');
@@ -1868,7 +2136,7 @@
     sfx(perfect ? 'combo' : 'good');
     speak(sayAs(w), 0.78);
 
-    $('flashWord').textContent = w.en;
+    $('flashWord').textContent = disp(w);
     $('flashKo').textContent = w.ko || '';
     var pr = nextPraise();
     $('flashPraiseEmoji').textContent = pr.em;
@@ -1988,7 +2256,7 @@
       var d = document.createElement('div');
       d.className = 'rl';
       d.innerHTML = '<div class="e">' + w.emoji + '</div>' +
-                    '<div class="w">' + w.en + '</div>' +
+                    '<div class="w">' + disp(w) + '</div>' +
                     '<div class="s" style="color:#f59e0b">' + stars(r.stars) + '</div>';
       list.appendChild(d);
     });
@@ -2056,7 +2324,7 @@
       var b = document.createElement('button');
       b.className = 'wc' + (n === 0 ? ' locked' : '') + (on ? '' : ' resting');
       b.appendChild(mk('div', 'e', w.emoji));
-      b.appendChild(mk('div', 'w', w.en));
+      b.appendChild(mk('div', 'w', disp(w)));
       b.appendChild(mk('div', 'k', w.ko || '—'));
       var ss = mk('div', 's', n === 0 ? '☆☆☆' : stars(n));
       ss.style.color = '#f59e0b';
@@ -2069,7 +2337,8 @@
 
   function openWord(w){
     $('mEmoji').textContent = w.emoji;
-    $('mWord').textContent = w.en;
+    $('mWord').textContent = disp(w);
+    $('mWord').dataset.en = w.en;
     $('mKo').textContent = w.ko || '—';
     $('mTip').textContent = w.tip;
     $('modal').classList.add('on');
@@ -2084,9 +2353,16 @@
     $('wsModal').addEventListener('click', function(e){
       if(e.target === $('wsModal')) closeSettings();
     });
-    document.querySelectorAll('.preset').forEach(function(b){
-      b.addEventListener('click', function(){ applyPreset(b.dataset.preset); });
-    });
+    var gWrap = $('wsGroups');
+    if(gWrap){
+      gWrap.addEventListener('click', function(e){
+        var b = e.target && e.target.closest ? e.target.closest('button[data-group]') : null;
+        if(!b) return;
+        var g = b.getAttribute('data-group');
+        if(g === 'all' || g === 'base') applyPreset(g);
+        else toggleGroup(g);
+      });
+    }
     $('btnAddToggle').addEventListener('click', function(){
       var f = $('addForm');
       f.hidden = !f.hidden;
@@ -2150,10 +2426,10 @@
       showScreen('home');
     });
     $('mSpeak').addEventListener('click', function(){
-      var shown = $('mWord').textContent;
-      if(!shown) return;
-      var mw = wordByEn(shown);
-      speak(mw ? sayAs(mw) : shown);
+      var key = $('mWord').dataset.en || $('mWord').textContent;
+      if(!key) return;
+      var mw = wordByEn(key);
+      speak(mw ? sayAs(mw) : key);
     });
     $('mClose').addEventListener('click', function(){
       $('modal').classList.remove('on');
