@@ -131,6 +131,16 @@
     font-size:10.5px;font-weight:900;color:#2563eb;background:#eff6ff;
     border:1px solid #dbeafe;border-radius:999px;padding:2px 7px;
   }
+  .subhead .pg{font-size:10px;font-weight:900;color:#9aa9bd;letter-spacing:0}
+  .subhead{scroll-margin-top:78px}
+  /* 단어 구역 바로가기 */
+  .jump{display:flex;flex-wrap:wrap;gap:5px;margin:-2px 0 6px}
+  .jchip{
+    min-height:30px;padding:0 9px;border-radius:999px;
+    border:1.5px solid #dbeafe;background:#f8fbff;color:#2563eb;
+    font-family:inherit;font-size:11px;font-weight:900;white-space:nowrap;cursor:pointer;
+  }
+  .jchip:active{background:#eff6ff}
 
   /* ---------- buttons ---------- */
   .btn{
@@ -319,6 +329,7 @@
   @media (min-width:480px){.wgrid{grid-template-columns:repeat(3,1fr)}}
   .wcell{display:flex;flex-direction:column;gap:6px;min-width:0}
   .wcard{
+    position:relative;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     min-height:84px;padding:10px 5px;
     font-family:inherit;cursor:pointer;
@@ -331,8 +342,11 @@
     background:#fffbeb;border:1px solid #fde68a;
   }
   .wcard .em{font-size:23px;line-height:1.1}
-  .wcard .w{font-size:15.5px;font-weight:900;color:#1f2a44;letter-spacing:-.3px;line-height:1.15}
-  .wcard .ko{font-size:10.5px;font-weight:800;color:var(--muted)}
+  .wcard .w{font-size:15.5px;font-weight:900;color:#1f2a44;letter-spacing:-.3px;line-height:1.15;overflow-wrap:anywhere}
+  .wcard .w.long{font-size:13.5px;letter-spacing:-.4px}
+  .wcard .ko{font-size:10.5px;font-weight:800;color:var(--muted);overflow-wrap:anywhere}
+  /* 카드를 누르면 발음(🔊 듣기) — 누를 곳을 미리 보여 준다 */
+  .wcard::after{content:'🔊';position:absolute;top:4px;right:6px;font-size:10px;line-height:1;opacity:.6}
   .wcard.speaking{border-color:#93c5fd;background:#eff6ff}
   .wcard.speaking .w{color:#1d4ed8}
   .wcard:active{transform:scale(.97)}
@@ -409,6 +423,16 @@
   }
 
   /* ---------- quiz ---------- */
+  .qsets{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 3px}
+  .qchip{
+    min-height:28px;padding:0 8px;border-radius:999px;
+    border:1.5px solid #dbeafe;background:#f8fbff;color:#2563eb;
+    font-family:inherit;font-size:10.5px;font-weight:900;white-space:nowrap;cursor:pointer;
+  }
+  .qchip[aria-pressed="true"]{
+    background:linear-gradient(180deg,#3b82f6,#2563eb);border-color:#2563eb;color:#fff;
+    box-shadow:0 3px 10px rgba(37,99,235,.26);
+  }
   .quiz-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:2px}
   .quiz-score{
     font-size:13px;font-weight:900;color:#1d4ed8;
@@ -753,24 +777,51 @@
   <div class="panel" id="panel-words" role="tabpanel" aria-labelledby="tab-words">
 
     <section class="card" id="card-vocab">
-      <div class="card-head"><span class="num">📚</span><h3>꼭 익혀야 하는 단어<span class="badge">12+4</span></h3></div>
-      <p class="hint">단어를 누르면 <b>영어 발음</b>이 나와요. 두 번 누르면 또 들려줘요. 카드 바로 밑 <b>🎙️ 녹음</b>으로 내 목소리도 바로 녹음해요 (처음 한 번만 마이크 허용).</p>
+      <div class="card-head"><span class="num">📚</span><h3>꼭 익혀야 하는 단어<span class="badge">43+8</span></h3></div>
+      <p class="hint">단어를 누르면 <b>🔊 영어 발음</b>이 나와요. 두 번 누르면 또 들려줘요. 카드 바로 밑 <b>🎙️ 녹음</b>으로 내 목소리도 바로 녹음해요 (처음 한 번만 마이크 허용).</p>
 
-      <div class="subhead"><span>🏫 학교 시간 단어</span><span class="cnt">6</span></div>
+      <div class="jump" id="vocabJump" aria-label="단어 구역 바로가기">
+        <button class="jchip" type="button" data-jump="sec-school">🏫 학교시간</button>
+        <button class="jchip" type="button" data-jump="sec-keys">✏️ 핵심 동사</button>
+        <button class="jchip" type="button" data-jump="sec-places">🏫 사람·장소</button>
+        <button class="jchip" type="button" data-jump="sec-things">✏️ 교실 물건</button>
+        <button class="jchip" type="button" data-jump="sec-science">🔬 과학</button>
+        <button class="jchip" type="button" data-jump="sec-keywords">💬 수업</button>
+        <button class="jchip" type="button" data-jump="sec-hfw">🔤 자주 쓰는</button>
+        <button class="jchip" type="button" data-jump="sec-short">💬 짧은 말</button>
+      </div>
+
+      <div class="subhead" id="sec-school"><span>🏫 학교 시간 단어</span><span class="cnt">6</span></div>
       <div class="wgrid" id="gridSchool"></div>
 
-      <div class="subhead"><span>✏️ 스토리 핵심 동사 · Key Words</span><span class="cnt">6</span></div>
+      <div class="subhead" id="sec-keys"><span>✏️ 스토리 핵심 동사 · Key Words</span><span class="cnt">6</span></div>
       <div id="listKey"></div>
 
-      <div class="subhead"><span>🔤 자주 쓰는 단어 · High Frequency</span><span class="cnt">4</span></div>
+      <div class="subhead" id="sec-places"><span>🏫 학교 사람 · 장소</span><span class="pg">p.30~31</span><span class="cnt">10</span></div>
+      <div class="wgrid" id="gridPlaces"></div>
+
+      <div class="subhead" id="sec-things"><span>✏️ 교실 물건 · 친구</span><span class="pg">p.23 · 25</span><span class="cnt">12</span></div>
+      <div class="wgrid" id="gridThings"></div>
+
+      <div class="subhead" id="sec-science"><span>🔬 과학 핵심 단어</span><span class="pg">p.28~29</span><span class="cnt">4</span></div>
+      <div class="wgrid" id="gridScience"></div>
+
+      <div class="subhead" id="sec-keywords"><span>💬 수업 키워드</span><span class="pg">p.25 · 34</span><span class="cnt">5</span></div>
+      <div class="wgrid" id="gridKeywords"></div>
+
+      <div class="subhead" id="sec-hfw"><span>🔤 자주 쓰는 단어 · High Frequency</span><span class="cnt">4</span></div>
       <div class="hfw" id="listHFW"></div>
+
+      <div class="subhead" id="sec-short"><span>💬 꼭 외울 짧은 말</span><span class="pg">p.26</span><span class="cnt">4</span></div>
+      <div class="hfw" id="listShort"></div>
 
       <p class="say-note" id="vocabNote"></p>
     </section>
 
     <section class="card" id="card-quiz">
       <div class="card-head"><span class="num">🔊</span><h3>소리 듣고 단어 맞히기</h3></div>
-      <p class="hint">영어로 들려주는 단어를 골라 봐요. 12개 단어로 연습해요.</p>
+      <p class="hint" id="quizHint">영어로 들려주는 단어를 골라 봐요. 아래에서 연습할 구역을 골라도 돼요.</p>
+      <div class="qsets" id="quizSets" aria-label="연습할 단어 구역"></div>
       <div class="quiz-top">
         <span class="quiz-score" id="quizScore">0 / 0</span>
         <button class="chip" id="quizReplay" type="button">🔊 다시 듣기</button>
@@ -1705,7 +1756,7 @@
     words: {
       eyebrow: '📚 Vocabulary · Key Words',
       title: '꼭 익혀야 하는 단어',
-      sub: '12개 단어 + 자주 쓰는 단어 4개',
+      sub: '단어 43개 + 꼭 외울 짧은 말 8개',
       star: 'Unit 1',
       art: 'abc'
     },
@@ -1969,6 +2020,64 @@
     { w:'the',  ko:'그' },
     { w:'with', ko:'~와 함께' }
   ];
+  /* 2026-11-25 추가 — 교과서 Unit 1 에서 새로 뽑은 단어
+     (p.30~31 학교 사람·장소 / p.28~29 과학 / p.23·25 교실 물건·친구 / p.25·34 수업 키워드 / p.26 짧은 말) */
+  var PLACES = [
+    { w:'teacher',        ko:'선생님',          e:'👩‍🏫' },
+    { w:'classroom',      ko:'교실',            e:'🏫' },
+    { w:'principal',      ko:'교장선생님',      e:'🎓' },
+    { w:'main office',    ko:'교무실 · 행정실', e:'🗂️' },
+    { w:'librarian',      ko:'사서선생님',      e:'📚' },
+    { w:'library',        ko:'도서관',          e:'🏛️' },
+    { w:'nurse',          ko:'보건선생님',      e:'👩‍⚕️' },
+    { w:"nurse's office", ko:'보건실',          e:'🩺' },
+    { w:'food server',    ko:'급식선생님',      e:'🍽️' },
+    { w:'cafeteria',      ko:'급식실',          e:'🍱' }
+  ];
+  var SCIENCE = [
+    { w:'nature',     ko:'자연',            e:'🌿' },
+    { w:'Earth',      ko:'지구',            e:'🌍' },
+    { w:'space',      ko:'우주',            e:'🚀' },
+    { w:'technology', ko:'기술 · 전자기기', e:'💻' }
+  ];
+  var THINGS = [
+    { w:'book',       ko:'책',              e:'📕' },
+    { w:'pencil',     ko:'연필',            e:'✏️' },
+    { w:'eraser',     ko:'지우개',          e:'🧽' },
+    { w:'crayon',     ko:'크레용',          e:'🖍️' },
+    { w:'scissors',   ko:'가위',            e:'✂️' },
+    { w:'backpack',   ko:'책가방',          e:'🎒' },
+    { w:'desk',       ko:'책상',            e:'🗄️' },
+    { w:'chair',      ko:'의자',            e:'🪑' },
+    { w:'board',      ko:'칠판',            e:'⬛' },
+    { w:'playground', ko:'놀이터 · 운동장', e:'🛝' },
+    { w:'friend',     ko:'친구',            e:'👫' },
+    { w:'student',    ko:'학생',            e:'🧒' }
+  ];
+  var KEYWORDS = [
+    { w:'poem',  ko:'시',                  e:'📜' },
+    { w:'rhyme', ko:'운율 · 끝소리가 비슷한 말', e:'🎶' },
+    { w:'learn', ko:'배우다',              e:'💡' },
+    { w:'play',  ko:'놀다',                e:'⚽' },
+    { w:'sing',  ko:'노래하다',            e:'🎤' }
+  ];
+  var SHORT = [
+    { w:'can', ko:'~할 수 있다' },
+    { w:'it',  ko:'그것' },
+    { w:'is',  ko:'~이다' },
+    { w:'to',  ko:'~하기' }
+  ];
+  /* 화면의 구역 순서 = 이 순서 (buildVocab 이 채운다) */
+  var WORD_SECTIONS = [
+    { key:'school',   label:'🏫 학교시간', items:SCHOOL,   kind:'grid', el:'gridSchool' },
+    { key:'keys',     label:'✏️ 핵심 동사', items:KEYS,     kind:'key',  el:'listKey' },
+    { key:'places',   label:'🏫 사람·장소', items:PLACES,   kind:'grid', el:'gridPlaces' },
+    { key:'things',   label:'✏️ 교실 물건', items:THINGS,   kind:'grid', el:'gridThings' },
+    { key:'science',  label:'🔬 과학',      items:SCIENCE,  kind:'grid', el:'gridScience' },
+    { key:'keywords', label:'💬 수업',      items:KEYWORDS, kind:'grid', el:'gridKeywords' },
+    { key:'hfw',      label:'🔤 자주 쓰는', items:HFW,      kind:'hfw',  el:'listHFW' },
+    { key:'short',    label:'💬 짧은 말',   items:SHORT,    kind:'hfw',  el:'listShort' }
+  ];
   var sayNoteEl = $('vocabNote');
   function vnote(msg){ if (sayNoteEl) sayNoteEl.textContent = msg || ''; }
 
@@ -1976,91 +2085,118 @@
   var SAY_AS = { recess: 'REE-sess' };
   function wordSpeech(w){ return SAY_AS[w] || w; }
 
+  /* 카드 한 장 = 단어 · 한글 뜻 · 🔊 듣기(카드를 누름) · 🎙️ 녹음/재생 */
+  function makeWordCell(it, prefix){
+    var cell = document.createElement('div');
+    cell.className = 'wcell';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'wcard';
+    b.setAttribute('data-word', it.w);
+    b.setAttribute('aria-label', it.w + ' · ' + it.ko + ' · 듣기');
+    var wcls = 'w' + (it.w.length >= 11 ? ' long' : '');
+    b.innerHTML = '<span class="em">' + it.e + '</span>' +
+                  '<span class="' + wcls + '">' + it.w + '</span>' +
+                  '<span class="ko">' + it.ko + '</span>' +
+                  (it.tip ? '<span class="tip">' + it.tip + '</span>' : '');
+    b.addEventListener('click', function(){
+      var spoken = it.say || wordSpeech(it.w);
+      vnote('🔊 ' + it.w + ' · ' + it.ko + (it.tip ? ' · 앞 강세' : ''));
+      say(spoken, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
+      vibrate(8);
+    });
+    cell.appendChild(b);
+    makeMiniRec(cell, prefix + it.w);
+    return cell;
+  }
+
+  function makeKeyCard(it){
+    var card = document.createElement('div');
+    card.className = 'kcard';
+    card.setAttribute('data-word', it.w);
+
+    var top = document.createElement('div');
+    top.className = 'kcard-top';
+    var em = document.createElement('span'); em.className = 'em'; em.textContent = it.e;
+    var w = document.createElement('span'); w.className = 'w'; w.textContent = it.w;
+    var ko = document.createElement('span'); ko.className = 'ko'; ko.textContent = it.ko;
+    top.appendChild(em); top.appendChild(w); top.appendChild(ko);
+    top.addEventListener('click', function(){
+      vnote('🔊 ' + it.w + ' · ' + it.ko);
+      say(it.w, card, RATE);
+      vibrate(8);
+    });
+
+    var sent = document.createElement('button');
+    sent.type = 'button';
+    sent.className = 'sent';
+    sent.textContent = it.s;
+    sent.addEventListener('click', function(){
+      vnote('🔊 ' + it.s);
+      say(it.s, sent, RATE);
+      vibrate(8);
+    });
+
+    card.appendChild(top);
+    card.appendChild(sent);
+    makeMiniRec(card, 'k-' + it.w);
+    return card;
+  }
+
+  function makeHfwCell(it, prefix){
+    var cell = document.createElement('div');
+    cell.className = 'hfw-cell';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'hfw-card';
+    b.setAttribute('data-word', it.w);
+    b.innerHTML = '<span class="w">' + it.w + '</span><span class="ko">' + it.ko + '</span>';
+    b.addEventListener('click', function(){
+      vnote('🔊 ' + it.w + ' · ' + it.ko);
+      say(it.w, b, RATE);
+      vibrate(8);
+    });
+    cell.appendChild(b);
+    makeMiniRec(cell, prefix + it.w);
+    return cell;
+  }
+
   function buildVocab(){
-    var grid = $('gridSchool');
-    grid.innerHTML = '';
-    SCHOOL.forEach(function(it){
-      var cell = document.createElement('div');
-      cell.className = 'wcell';
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'wcard';
-      b.setAttribute('data-word', it.w);
-      b.innerHTML = '<span class="em">' + it.e + '</span>' +
-                    '<span class="w">' + it.w + '</span>' +
-                    '<span class="ko">' + it.ko + '</span>' +
-                    (it.tip ? '<span class="tip">' + it.tip + '</span>' : '');
-      b.addEventListener('click', function(){
-        var spoken = it.say || wordSpeech(it.w);
-        vnote('🔊 ' + it.w + ' · ' + it.ko + (it.tip ? ' · 앞 강세' : ''));
-        say(spoken, b, RATE).then(function(){ if (!isPlaying) vnote(''); });
-        vibrate(8);
+    WORD_SECTIONS.forEach(function(sec){
+      var host = $(sec.el);
+      if (!host) return;
+      host.innerHTML = '';
+      sec.items.forEach(function(it){
+        if (sec.kind === 'key') host.appendChild(makeKeyCard(it));
+        else if (sec.kind === 'hfw') host.appendChild(makeHfwCell(it, 'h-'));
+        else host.appendChild(makeWordCell(it, 'w-'));
       });
-      cell.appendChild(b);
-      makeMiniRec(cell, 'w-' + it.w);
-      grid.appendChild(cell);
-    });
-
-    var list = $('listKey');
-    list.innerHTML = '';
-    KEYS.forEach(function(it){
-      var card = document.createElement('div');
-      card.className = 'kcard';
-      card.setAttribute('data-word', it.w);
-
-      var top = document.createElement('div');
-      top.className = 'kcard-top';
-      var em = document.createElement('span'); em.className = 'em'; em.textContent = it.e;
-      var w = document.createElement('span'); w.className = 'w'; w.textContent = it.w;
-      var ko = document.createElement('span'); ko.className = 'ko'; ko.textContent = it.ko;
-      top.appendChild(em); top.appendChild(w); top.appendChild(ko);
-      top.addEventListener('click', function(){
-        vnote('🔊 ' + it.w + ' · ' + it.ko);
-        say(it.w, card, RATE);
-        vibrate(8);
-      });
-
-      var sent = document.createElement('button');
-      sent.type = 'button';
-      sent.className = 'sent';
-      sent.textContent = it.s;
-      sent.addEventListener('click', function(){
-        vnote('🔊 ' + it.s);
-        say(it.s, sent, RATE);
-        vibrate(8);
-      });
-
-      card.appendChild(top);
-      card.appendChild(sent);
-      makeMiniRec(card, 'k-' + it.w);
-      list.appendChild(card);
-    });
-
-    var hfw = $('listHFW');
-    hfw.innerHTML = '';
-    HFW.forEach(function(it){
-      var cell = document.createElement('div');
-      cell.className = 'hfw-cell';
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'hfw-card';
-      b.setAttribute('data-word', it.w);
-      b.innerHTML = '<span class="w">' + it.w + '</span><span class="ko">' + it.ko + '</span>';
-      b.addEventListener('click', function(){
-        vnote('🔊 ' + it.w + ' · ' + it.ko);
-        say(it.w, b, RATE);
-        vibrate(8);
-      });
-      cell.appendChild(b);
-      makeMiniRec(cell, 'h-' + it.w);
-      hfw.appendChild(cell);
     });
   }
 
+  /* 단어 구역 바로가기 */
+  Array.prototype.forEach.call(document.querySelectorAll('#vocabJump .jchip'), function(b){
+    b.addEventListener('click', function(){
+      var el = document.getElementById(b.getAttribute('data-jump'));
+      if (el) { try { el.scrollIntoView({ block: 'start', behavior: 'smooth' }); } catch (e) {} }
+      vibrate(6);
+    });
+  });
+
   /* ---- 미니 퀴즈 ---- */
-  var QUIZ_WORDS = SCHOOL.map(function(x){ return x.w; }).concat(KEYS.map(function(x){ return x.w; }));
+  var QUIZ_ALL = [];
+  WORD_SECTIONS.forEach(function(sec){ QUIZ_ALL = QUIZ_ALL.concat(sec.items); });
   var QUIZ_INFO = {};
-  SCHOOL.concat(KEYS).forEach(function(x){ QUIZ_INFO[x.w] = { ko: x.ko, e: x.e }; });
+  QUIZ_ALL.forEach(function(x){ QUIZ_INFO[x.w] = { ko: x.ko, e: x.e || '' }; });
+  var quizSetKey = 'all';
+  function quizPool(){
+    if (quizSetKey !== 'all') {
+      for (var i = 0; i < WORD_SECTIONS.length; i++) {
+        if (WORD_SECTIONS[i].key === quizSetKey) return WORD_SECTIONS[i].items;
+      }
+    }
+    return QUIZ_ALL;
+  }
   var quiz = { on:false, score:0, done:0, target:null, last:null, locked:false, timer:null };
 
   function shuffle(a){
@@ -2093,13 +2229,15 @@
     if (quiz.timer) { clearTimeout(quiz.timer); quiz.timer = null; }
     quiz.locked = false;
 
+    var pool = quizPool().map(function(x){ return x.w; });
+    if (!pool.length) return;
     var t;
-    do { t = QUIZ_WORDS[Math.floor(Math.random() * QUIZ_WORDS.length)]; }
-    while (t === quiz.last && QUIZ_WORDS.length > 1);
+    do { t = pool[Math.floor(Math.random() * pool.length)]; }
+    while (t === quiz.last && pool.length > 1);
     quiz.target = t;
     quiz.last = t;
 
-    var others = shuffle(QUIZ_WORDS.filter(function(w){ return w !== t; })).slice(0, 3);
+    var others = shuffle(pool.filter(function(w){ return w !== t; })).slice(0, Math.min(3, pool.length - 1));
     var opts = shuffle([t].concat(others));
 
     var box = $('quizOptions');
@@ -2153,6 +2291,46 @@
     if (!quiz.on) { quizStart(); return; }
     if (quiz.target) say(wordSpeech(quiz.target), null, RATE);
   });
+
+  /* 연습할 구역 고르기 */
+  function quizSetLabel(key){
+    if (key === 'all') return '전체';
+    for (var i = 0; i < WORD_SECTIONS.length; i++) {
+      if (WORD_SECTIONS[i].key === key) return WORD_SECTIONS[i].label;
+    }
+    return '전체';
+  }
+  function buildQuizSets(){
+    var box = $('quizSets');
+    if (!box) return;
+    box.innerHTML = '';
+    [{ key:'all', label:'전체' }].concat(WORD_SECTIONS).forEach(function(s){
+      var n = (s.key === 'all') ? QUIZ_ALL.length : s.items.length;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'qchip';
+      b.setAttribute('data-set', s.key);
+      b.setAttribute('aria-pressed', s.key === quizSetKey ? 'true' : 'false');
+      b.textContent = s.label + ' ' + n;
+      b.addEventListener('click', function(){
+        quizSetKey = s.key;
+        Array.prototype.forEach.call(box.querySelectorAll('.qchip'), function(c){
+          c.setAttribute('aria-pressed', c === b ? 'true' : 'false');
+        });
+        var hint = $('quizHint');
+        if (hint) hint.textContent = (s.key === 'all' ? '전체 ' + n + '개' : s.label + ' ' + n + '개') +
+          ' 단어로 연습해요. 소리를 듣고 알맞은 단어를 골라요.';
+        if (quiz.on) quizStart();
+        else quizMsg('아래 버튼을 누르면 퀴즈가 시작돼요');
+        vibrate(6);
+      });
+      box.appendChild(b);
+    });
+    var hint = $('quizHint');
+    if (hint) hint.textContent = '영어로 들려주는 단어를 골라 봐요. 지금은 전체 ' + QUIZ_ALL.length +
+      '개 단어로 연습해요. 아래에서 구역을 골라도 돼요.';
+  }
+  buildQuizSets();
 
   /* =====================================================================
      7) 1과 스토리
@@ -2459,7 +2637,13 @@
       return {
         school: document.querySelectorAll('#gridSchool .wcard').length,
         keys: document.querySelectorAll('#listKey .kcard').length,
+        places: document.querySelectorAll('#gridPlaces .wcard').length,
+        things: document.querySelectorAll('#gridThings .wcard').length,
+        science: document.querySelectorAll('#gridScience .wcard').length,
+        keywords: document.querySelectorAll('#gridKeywords .wcard').length,
         hfw: document.querySelectorAll('#listHFW .hfw-card').length,
+        short: document.querySelectorAll('#listShort .hfw-card').length,
+        quizPool: quizPool().length,
         pages: document.querySelectorAll('#storyPages .pcard').length,
         pageIds: Array.prototype.map.call(document.querySelectorAll('#storyPages .pcard'), function(c){ return c.getAttribute('data-page'); }),
         dividers: document.querySelectorAll('#storyPages .pdiv').length,
@@ -2473,6 +2657,22 @@
         miniUrls: MINI_URLS.size
       };
     },
+    words: function(){
+      var out = {};
+      WORD_SECTIONS.forEach(function(sec){
+        var host = $(sec.el);
+        out[sec.key] = host ? Array.prototype.map.call(host.querySelectorAll('[data-word]'), function(b){ return b.getAttribute('data-word'); }) : [];
+      });
+      return out;
+    },
+    quizSet: function(key){
+      if (key === undefined) return quizSetKey;
+      var c = document.querySelector('#quizSets .qchip[data-set="' + key + '"]');
+      if (c) c.click();
+      return quizSetKey;
+    },
+    quizPoolSize: function(){ return quizPool().length; },
+    quizInfo: function(){ return QUIZ_INFO; },
     mic: function(){
       return minis.map(function(m){
         return { id: m.id, rec: m.isRecording(), has: m.hasAudio(), url: m.url() || null };
